@@ -1,4 +1,4 @@
-program problem2;
+program test;
 
 const
   Lim = 10000;
