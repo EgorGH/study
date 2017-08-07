@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="test.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="64"/>
+        <CursorPos X="20" Y="94"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\Новая папка\Program1.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="72" Y="39"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\program1_edited.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="79" Y="51"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\project1 (2).pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\project1.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="18"/>
+        <CursorPos X="37" Y="28"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+    </Units>
+    <JumpHistory Count="10" HistoryIndex="9">
+      <Position1>
+        <Filename Value="test.pas"/>
+        <Caret Line="50" Column="20" TopLine="13"/>
+      </Position1>
+      <Position2>
+        <Filename Value="test.pas"/>
+        <Caret Line="73" Column="5" TopLine="20"/>
+      </Position2>
+      <Position3>
+        <Filename Value="test.pas"/>
+        <Caret Line="71" Column="7" TopLine="23"/>
+      </Position3>
+      <Position4>
+        <Filename Value="test.pas"/>
+        <Caret Line="41" Column="9" TopLine="22"/>
+      </Position4>
+      <Position5>
+        <Filename Value="test.pas"/>
+        <Caret Line="48" Column="17" TopLine="23"/>
+      </Position5>
+      <Position6>
+        <Filename Value="test.pas"/>
+        <Caret Line="42" Column="23" TopLine="24"/>
+      </Position6>
+      <Position7>
+        <Filename Value="test.pas"/>
+        <Caret Line="68" Column="11" TopLine="25"/>
+      </Position7>
+      <Position8>
+        <Filename Value="test.pas"/>
+        <Caret Line="85" Column="70" TopLine="38"/>
+      </Position8>
+      <Position9>
+        <Filename Value="test.pas"/>
+        <Caret Line="71" TopLine="36"/>
+      </Position9>
+      <Position10>
+        <Filename Value="test.pas"/>
+        <Caret Line="101" Column="20" TopLine="75"/>
+      </Position10>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
