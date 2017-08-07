@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="2">
+      <Unit0>
+        <Filename Value="test.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="30"/>
+        <CursorPos X="77" Y="54"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\..\..\Проги\C4_4\test.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="104"/>
+        <CursorPos Y="129"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+    </Units>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="test.pas"/>
+        <Caret Line="66" Column="13" TopLine="36"/>
+      </Position1>
+      <Position2>
+        <Filename Value="test.pas"/>
+        <Caret Line="69" Column="16" TopLine="33"/>
+      </Position2>
+      <Position3>
+        <Filename Value="test.pas"/>
+        <Caret Line="39" Column="26" TopLine="33"/>
+      </Position3>
+      <Position4>
+        <Filename Value="test.pas"/>
+        <Caret Line="23" Column="14" TopLine="30"/>
+      </Position4>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
