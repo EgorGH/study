@@ -1,75 +1,72 @@
 program p123456789;
 
-uses math, sysutils;
+uses
+  Math,
+  SysUtils;
 
 const
-  D = 9;
-  Q = 8;
+  N = 9;
 
 var
-  N, i: integer;
+  M, v: integer;
 
-  function find_sum(v: integer): integer;
+  function eval(v: integer): integer;
   var
-    sum, digit, number, i: integer;
+    res, factor, temp, i: integer;
 
   begin
-    sum := 1;
-    number := 0;
-    digit := 1;
+    res := 0;
+    temp := 0;
+    factor := 1;
 
-    for i := D downto 1 do
+    for i := N downto 1 do
     begin
       if v mod 3 = 0 then
       begin
-        sum := sum + i * digit + number;
-        digit := 1;
-        number := 0;
+        res := res + i * factor + temp;
+        temp := 0;
+        factor := 1;
       end
       else if v mod 3 = 1 then
       begin
-        sum := sum - i * digit - number;
-        digit := 1;
-        number := 0;
+        res := res - i * factor - temp;
+        temp := 0;
+        factor := 1;
       end
       else if v mod 3 = 2 then
       begin
-        number := i * digit + number;
-        digit := digit * 10;
+        temp := i * factor + temp;
+        factor := factor * 10;
       end;
       v := v div 3;
     end;
 
-    exit(sum);
+    exit(res);
   end;
 
-  procedure print(a: integer);
+  function CodeToStr(v: integer): string;
   var
     s: string;
     i: integer;
-
   begin
     s := '';
-
-    for i := D downto 2 do
+    for i := N downto 1 do
     begin
-      if a mod 3 = 0 then
-        s := ' + ' + Inttostr(i) + s
-      else if a mod 3 = 1 then
-        s :=  ' - ' + Inttostr(i) + s
-      else if a mod 3 = 2 then
-        s := '' + Inttostr(i) + s ;
-      a := a div 3;
+      if v mod 3 = 0 then
+        s := ' + ' + IntToStr(i) + s
+      else if v mod 3 = 1 then
+        s := ' - ' + IntToStr(i) + s
+      else if v mod 3 = 2 then
+        s := IntToStr(i) + s;
+      v := v div 3;
     end;
-    writeln('1' + s);
+    exit(copy(s, 4, length(s) - 1));
   end;
 
 begin
-  readln(N);
-  for i := 1 to round(power(3, Q)) - 1 do
-  begin
-    if find_sum(i) = N + 1 then
-      print(i);
-  end;
+  readln(M);
+  for v := 1 to round(power(3, N - 1)) - 1 do
+    if eval(v) = M then
+      writeln(CodeToStr(v));
   readln();
 end.
