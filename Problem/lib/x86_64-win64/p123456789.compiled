@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="D:\lazarus64\fpc\3.0.2\bin\x86_64-win64\fpc.exe" Date="1247518955"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -l -vewnhibq -FiC:\Users\Home\Desktop\study\Problem\lib\x86_64-win64 -FuC:\Users\Home\Desktop\study\Problem\ -FUC:\Users\Home\Desktop\study\Problem\lib\x86_64-win64\ p123456789.pas"/>
+  <Complete Value="False"/>
+</CONFIG>
