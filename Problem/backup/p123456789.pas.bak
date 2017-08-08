@@ -68,7 +68,7 @@ begin
   readln(N);
   for i := 1 to round(power(3, Q)) - 1 do
   begin
-    if find_sum(i) = N + 1 then
+    if find_sum(i) = N then
       print(i);
   end;
   readln();
