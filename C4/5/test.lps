@@ -9,9 +9,8 @@
         <Filename Value="test.pas"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="36"/>
-        <CursorPos X="44" Y="55"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="42" Y="22"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -19,10 +18,10 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="104"/>
         <CursorPos Y="129"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
         <Filename Value="test.pas"/>
         <Caret Line="66" Column="13" TopLine="36"/>
@@ -37,12 +36,32 @@
       </Position3>
       <Position4>
         <Filename Value="test.pas"/>
-        <Caret Line="23" Column="14" TopLine="30"/>
+        <Caret Line="54" Column="77" TopLine="30"/>
       </Position4>
       <Position5>
         <Filename Value="test.pas"/>
-        <Caret Line="54" Column="77" TopLine="30"/>
+        <Caret Line="67" Column="5" TopLine="49"/>
       </Position5>
+      <Position6>
+        <Filename Value="test.pas"/>
+        <Caret Line="83" Column="22" TopLine="58"/>
+      </Position6>
+      <Position7>
+        <Filename Value="test.pas"/>
+        <Caret Line="89" Column="24" TopLine="58"/>
+      </Position7>
+      <Position8>
+        <Filename Value="test.pas"/>
+        <Caret Line="85" Column="23" TopLine="59"/>
+      </Position8>
+      <Position9>
+        <Filename Value="test.pas"/>
+        <Caret Line="94" TopLine="54"/>
+      </Position9>
+      <Position10>
+        <Filename Value="test.pas"/>
+        <Caret Line="88" Column="22" TopLine="59"/>
+      </Position10>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

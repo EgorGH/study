@@ -4,20 +4,20 @@ const
   Lim = 10000;
   MaxD = 99;
   MaxK = 1000;
-  MaxT = 10000;
+  MaxT = 100000;
 var
   d, k: array[1..Lim] of integer;
-  N, t, i: integer;
+  N, t: integer;
 
   procedure init();
   var
     i: integer;
   begin
-    N := 1 + random(10);
+    N := 1 + random(5);
     for i := 1 to N do
     begin
       d[i] := 1 + random(MaxD + 1);
-      k[i] := D[i] + random(MaxK - D[i]);
+      k[i] := d[i] + random(MaxK - d[i]);
     end;
   end;
 
@@ -51,8 +51,8 @@ var
       for j := 1 to N do
         if (m[i] = m[j]) and (i <> j) then
           Count := Count + 1;
-      if (m[i] <> 0) and (not flag or (Count >= maxCount)) and
-        (not flag or (m[i] > m_often)) then
+      if (not flag or (Count > maxCount) or (Count = maxCount) and
+        (m[i] > m_often)) and (m[i] <> 0) then
       begin
         flag := True;
         maxCount := Count;
@@ -60,18 +60,58 @@ var
       end;
     end;
 
+    if not flag then
+      m_often := 0;
+
     exit(m_often);
+  end;
+
+  function solveB(): integer;
+  var
+    i, rem, m_often: integer;
+    m: array[1..MaxD] of integer;
+    flag: boolean;
+
+  begin
+    flag := False;
+
+    for i := 1 to MaxD do
+      m[i] := 0;
+
+    for i := 1 to N do
+    begin
+      rem := k[i] mod d[i];
+      if rem <> 0 then
+        m[rem] := m[rem] + 1;
+    end;
+
+    for i := 1 to MaxD do
+      if not flag or (m[i] > m[m_often]) or ((m[i] = m[m_often]) and (i > m_often)) then
+      begin
+        flag := True;
+        m_often := i;
+      end;
+
+    if m[m_often] = 0 then
+      m_often := 0;
+
+    exit(m_often);
+
   end;
 
 begin
   randomize;
-  readln(N);
-  for i := 1 to N do
+  for t := 1 to maxT do
   begin
-    Read(d[i]);
-    readln(k[i]);
+    init();
+    if solveA <> solveB then
+    begin
+      print();
+      writeln(solveA);
+      writeln(solveB);
+    end;
   end;
-  writeln(solveA);
+  writeln('done');
 
   readln();
 end.
