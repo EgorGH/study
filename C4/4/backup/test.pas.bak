@@ -35,10 +35,40 @@ var
     writeln();
   end;
 
+  function get_option(v: longword): TRes;
+  var
+    j, q: longword;
+    prod, min: double;
+    fMin: boolean;
+  begin
+    fMin := False;
+    min := 1000001;
+    q := 0;
+    prod := 1;
+    for j := 1 to N do
+    begin
+      if v mod 2 <> 0 then
+      begin
+        q := q + 1;
+        prod := prod * a[j];
+        if not fMin or (a[j] < min) then
+        begin
+          fMin := True;
+          min := a[j];
+        end;
+      end;
+      v := v div 2;
+
+      get_option.q := q;
+      get_option.prod := prod;
+      get_option.min := min;
+    end;
+  end;
+
   function solveA(): TRes;
   var
     i, j, v, q: longword;
-    res: Tres;
+    res: TRes;
     prod, min: double;
     fMin, fProd: boolean;
 
@@ -47,33 +77,14 @@ var
     for i := 1 to (1 shl N) - 1 do
     begin
 
-      fMin := False;
-      min := 1000001;
-      v := i;
-      q := 0;
-      prod := 1;
+      get_option(i);
 
-      for j := 1 to N do
-      begin
-        if v mod 2 <> 0 then
-        begin
-          q := q + 1;
-          prod := prod * a[j];
-          if not fMin or (a[j] < min) then
-          begin
-            fMin := True;
-            min := a[j];
-          end;
-        end;
-        v := v div 2;
-      end;
-
-      if not fProd or (prod > res.prod) then
+      if not fProd or (get_option(i).prod > res.prod) then
       begin
         fProd := True;
-        res.prod := prod;
-        res.q := q;
-        res.min := min;
+        res.prod := get_option(i).prod;
+        res.q := get_option(i).q;
+        res.min := get_option(i).min;
       end;
     end;
 
