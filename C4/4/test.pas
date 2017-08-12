@@ -35,56 +35,52 @@ var
     writeln();
   end;
 
-  function get_option(v: longword): TRes;
+  function eval(v: longword): TRes;
   var
-    j, q: longword;
+    i, q: longword;
     prod, min: double;
     fMin: boolean;
   begin
     fMin := False;
-    min := 1000001;
     q := 0;
     prod := 1;
 
-    for j := 1 to N do
+    for i := 1 to N do
     begin
       if v mod 2 <> 0 then
       begin
         q := q + 1;
-        prod := prod * a[j];
-        if not fMin or (a[j] < min) then
+        prod := prod * a[i];
+        if not fMin or (a[i] < min) then
         begin
           fMin := True;
-          min := a[j];
+          min := a[i];
         end;
       end;
 
       v := v div 2;
 
-      get_option.q := q;
-      get_option.prod := prod;
-      get_option.min := min;
+      eval.q := q;
+      eval.prod := prod;
+      eval.min := min;
     end;
   end;
 
   function solveA(): TRes;
   var
-    i: longword;
+    v: longword;
     res: TRes;
     fProd: boolean;
 
   begin
     fProd := False;
 
-    for i := 1 to (1 shl N) - 1 do
+    for v := 1 to (1 shl N) - 1 do
     begin
-      get_option(i);
-      if not fProd or (get_option(i).prod > res.prod) then
+      if not fProd or (eval(v).prod > res.prod) then
       begin
         fProd := True;
-        res.prod := get_option(i).prod;
-        res.q := get_option(i).q;
-        res.min := get_option(i).min;
+        res := eval(v);
       end;
     end;
 
