@@ -37,13 +37,13 @@ var
 
   function solveA(): integer;
   var
-    i, j, Count, max, m_often, temp, o: integer;
+    i, j, q, max, m_often, temp, imin: integer;
     m: array[1..Lim] of integer;
     found: boolean;
 
   begin
     found := False;
-    Count := 1;
+    q := 1;
     max := 1;
 
     for i := 1 to N do       // заполнение массива
@@ -51,31 +51,31 @@ var
 
     for i := 1 to N - 1 do   // сортировка по неубыванию
     begin
-      o := i;
+      imin := i;
       for j := i + 1 to N do
-        if m[j] < m[o] then
-          o := j;
-      temp := m[o];
-      m[o] := m[i];
+        if m[j] < m[imin] then
+          imin := j;
+      temp := m[imin];
+      m[imin] := m[i];
       m[i] := temp;
     end;
 
     m_often := m[1];
 
-    for i := 1 to N - 1 do   // нахождение одинаковых элементов
-      if m[i] = m[i + 1] then
+    for i := 1 to N - 1 do   // нахождение одинаковых элементов (не равных 0)
+      if (m[i] = m[i + 1]) and (m[i] <> 0) then
       begin
         found := True;
-        Count := Count + 1;
-        if Count >= max then
+        q := q + 1;
+        if q >= max then
         begin
-          max := Count;
+          max := q;
           m_often := m[i + 1];
         end;
       end
       else
       begin
-        Count := 1;
+        q := 1;
         if not found then
           m_often := m[i + 1];
       end;
@@ -121,13 +121,13 @@ begin
   for t := 1 to maxT do
   begin
     init();
-    if solveA <> solveB then
+    if solveA() <> solveB() then
     begin
       print();
-      solveA;
-      writeln(solveA);
-      writeln(solveB);
+      writeln(solveA());
+      writeln(solveB());
     end;
   end;
+  writeln('Done.');
   readln();
 end.
