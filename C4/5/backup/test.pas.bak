@@ -5,6 +5,7 @@ const
   MaxD = 99;
   MaxK = 1000;
   MaxT = 100000;
+
 var
   d, k: array[1..Lim] of integer;
   N, t: integer;
@@ -17,7 +18,7 @@ var
     for i := 1 to N do
     begin
       d[i] := 1 + random(MaxD + 1);
-      k[i] := D[i] + random(MaxK - D[i]);
+      k[i] := d[i] + random(MaxK - d[i]);
     end;
   end;
 
@@ -36,44 +37,57 @@ var
 
   function solveA(): integer;
   var
-    i, j, Count, maxCount, m_often: integer;
+    i, j, Count, max, m_often, temp, o: integer;
     m: array[1..Lim] of integer;
-    flag: boolean;
+    found: boolean;
 
   begin
-    flag := False;
+    found := False;
+    Count := 1;
+    max := 1;
 
-    for i := 1 to N do
+    for i := 1 to N do       // заполнение массива
       m[i] := k[i] mod d[i];
-    for i := 1 to N do
+
+    for i := 1 to N - 1 do   // сортировка по неубыванию
     begin
-      Count := 1;
-      for j := 1 to N do
-        if (m[i] = m[j]) and (i <> j) then
-          Count := Count + 1;
-      if (not flag or (Count > maxCount) or (Count = maxCount) and
-        (m[i] > m_often)) and (m[i] <> 0) then
-      begin
-        flag := True;
-        maxCount := Count;
-        m_often := m[i];
-      end;
+      o := i;
+      for j := i + 1 to N do
+        if m[j] < m[o] then
+          o := j;
+      temp := m[o];
+      m[o] := m[i];
+      m[i] := temp;
     end;
 
-    if not flag then
-      m_often := 0;
+    for i := 1 to N - 1 do   // нахождение одинаковых элементов
+      if m[i] = m[i + 1] then
+      begin
+        found := True;
+        Count := Count + 1;
+        if Count >= max then
+        begin
+          max := Count;
+          m_often := m[i + 1];
+        end;
+      end
+      else
+      begin
+        Count := 1;
+        if not found then
+          m_often := m[i + 1];
+      end;
 
     exit(m_often);
   end;
 
   function solveB(): integer;
   var
-    i, rem, m_often: integer;
-    m: array[1..MaxD] of integer;
-    flag: boolean;
-
+    i, rem, max, m_often: integer;
+    m: array[0..MaxD] of integer;
+    found: boolean;
   begin
-    flag := False;
+    found := False;
 
     for i := 1 to MaxD do
       m[i] := 0;
@@ -81,22 +95,23 @@ var
     for i := 1 to N do
     begin
       rem := k[i] mod d[i];
-      if rem <> 0 then
-        m[rem] := m[rem] + 1;
+      m[rem] := m[rem] + 1;
     end;
 
+    max := 1;
+
     for i := 1 to MaxD do
-      if not flag or (m[i] > m[m_often]) or ((m[i] = m[m_often]) and (i > m_often)) then
+      if m[i] >= max then
       begin
-        flag := True;
+        found := True;
+        max := m[i];
         m_often := i;
       end;
 
-    if m[m_often] = 0 then
-      m_often := 0;
-
-    exit(m_often);
-
+    if not found then
+      exit(0)
+    else
+      exit(m_often);
   end;
 
 begin
@@ -107,11 +122,10 @@ begin
     if solveA <> solveB then
     begin
       print();
+      solveA;
       writeln(solveA);
       writeln(solveB);
     end;
   end;
-  writeln('done');
-
   readln();
 end.
