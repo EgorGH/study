@@ -22,6 +22,22 @@ var
     end;
   end;
 
+  procedure sort(var m: array of integer);
+  var
+    i, j, imin, temp: integer;
+  begin
+    for i := 1 to N - 1 do
+    begin
+      imin := i;
+      for j := i + 1 to N do
+        if m[j] < m[imin] then
+          imin := j;
+      temp := m[imin];
+      m[imin] := m[i];
+      m[i] := temp;
+    end;
+  end;
+
   procedure print();
   var
     i: integer;
@@ -37,7 +53,7 @@ var
 
   function solveA(): integer;
   var
-    i, j, q, max, m_often, temp, imin: integer;
+    i, q, max, m_often: integer;
     m: array[1..Lim] of integer;
     found: boolean;
 
@@ -46,19 +62,10 @@ var
     q := 1;
     max := 1;
 
-    for i := 1 to N do       // заполнение массива
+    for i := 1 to N do
       m[i] := k[i] mod d[i];
 
-    for i := 1 to N - 1 do   // сортировка по неубыванию
-    begin
-      imin := i;
-      for j := i + 1 to N do
-        if m[j] < m[imin] then
-          imin := j;
-      temp := m[imin];
-      m[imin] := m[i];
-      m[i] := temp;
-    end;
+    sort(m);
 
     m_often := m[1];
 

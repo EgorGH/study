@@ -69,7 +69,7 @@ var
   function solveA(): TRes;
   var
     v: longword;
-    res: TRes;
+    res, temp: TRes;
     fProd: boolean;
 
   begin
@@ -77,10 +77,11 @@ var
 
     for v := 1 to (1 shl N) - 1 do
     begin
-      if not fProd or (eval(v).prod > res.prod) then
+      temp := eval(v);
+      if not fProd or (temp.prod > res.prod) then
       begin
         fProd := True;
-        res := eval(v);
+        res := temp;
       end;
     end;
 
@@ -90,7 +91,7 @@ var
   function solveB(): TRes;
   var
     i, q: longint;
-    found, fMin, fMax: boolean;
+    fMin, fMax: boolean;
     res: TRes;
     min, max: double;
 
@@ -98,13 +99,11 @@ var
     q := 0;
     fMin := False;
     fMax := False;
-    found := False;
 
     for i := 1 to N do
     begin
       if a[i] > 1 then
       begin
-        found := True;
         q := q + 1;
         if not fMin or (a[i] < min) then
         begin
@@ -120,7 +119,7 @@ var
       end;
     end;
 
-    if found then
+    if fMin then
     begin
       res.q := q;
       res.min := min;
