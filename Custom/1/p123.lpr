@@ -1,4 +1,4 @@
-program p123456789;
+program p123;
 
 uses
   Math,
