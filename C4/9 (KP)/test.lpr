@@ -14,9 +14,8 @@ var
     i: integer;
   begin
     N := 1 + random(10);
-    for i := 1 to N - 1 do
+    for i := 1 to N do
       a[i] := 1 + random(MaxR + 1);
-    a[N] := 0;
   end;
 
   procedure print();
@@ -31,20 +30,13 @@ var
 
   function solveA(): longword;
   var
-    i, j, q, max: longword;
+    i, j, max: longword;
     found: boolean;
   begin
     found := False;
-    i := 0;
 
-    repeat
-      i := i + 1;
-    until a[i] = 0;
-
-    q := i;
-
-    for i := 1 to q - 1 do
-      for j := i to q do
+    for i := 1 to N - 1 do
+      for j := i to N do
         if (a[i] * a[j] mod 7 = 0) and (a[i] * a[j] mod 49 <> 0) and
           ((a[i] * a[j] > max) or not found) then
         begin
@@ -63,12 +55,11 @@ var
     i, maxA, maxB: longword;
     fA, fB: boolean;
   begin
-    i := 0;
     fA := False;
     fB := False;
 
-    repeat
-      i := i + 1;
+    for i := 1 to N do
+    begin
       if (a[i] mod 7 = 0) and (a[i] mod 49 <> 0) and ((a[i] > maxA) or not fA) then
       begin
         fA := True;
@@ -79,7 +70,7 @@ var
         fB := True;
         maxB := a[i];
       end;
-    until a[i] = 0;
+    end;
 
     if fA and fB then
       exit(maxA * maxB)
