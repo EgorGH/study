@@ -5,7 +5,7 @@ uses
 
 const
   Lim = 10000;
-  MaxR = 100000000;
+  MaxR = 1000;
   MaxT = 100000;
 
 type
@@ -24,7 +24,7 @@ var
   begin
     N := 3 + random(5);
     for i := 1 to N do
-      a[i] := random(MaxR + 1);
+      a[i] := 1 + random(MaxR + 1);
   end;
 
   procedure print();
@@ -87,26 +87,25 @@ var
   var
     index: string;
     i, min_odd, imin_odd, q_odd, izero: longint;
-
+    found: boolean;
   begin
     index := '';
-    min_odd := 1000000001;
+    found := False;
     q_odd := 0;
 
     for i := 1 to N do
-    begin
       if a[i] = 0 then
         izero := i
       else if a[i] mod 2 <> 0 then
       begin
-        if a[i] < min_odd then
+        if (a[i] <= min_odd) or not found then
         begin
+          found := True;
           imin_odd := i;
           min_odd := a[i];
         end;
         q_odd := q_odd + 1;
       end;
-    end;
 
     if q_odd mod 2 <> 0 then
       for i := 1 to N do
@@ -133,6 +132,6 @@ begin
       writeln(solveB());
     end;
   end;
-  writeln('Done!!!');
+  writeln('Done!');
   readln();
 end.

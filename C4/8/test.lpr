@@ -52,51 +52,50 @@ var
 
   function solveB(): longint;
   var
-    i, min_prod, min_left_odd, min_left_even, pOdd, pEven: longint;
+    i, prod, mEven, min, temp: longint;
     w: array[0..M - 1] of integer;
-    found, fOdd, fEven: boolean;
+    found, fEven, fMin: boolean;
   begin
     found := False;
-    fOdd := False;
     fEven := False;
+    fMin := False;
 
     for i := 1 to M do
       w[i mod M] := a[i];
 
     for i := M + 1 to N do
     begin
-      if (w[i mod M] mod 2 <> 0) and ((w[i mod M] < min_left_odd) or not fOdd) then
+      temp := w[i mod M];
+
+      if (temp < min) or not fMin then
       begin
-        fOdd := True;
-        min_left_odd := w[i mod M];
+        fMin := True;
+        min := temp;
       end;
 
-      if (w[i mod M] mod 2 = 0) and ((w[i mod M] < min_left_even) or not fEven) then
+      if (temp mod 2 = 0) and ((temp < mEven) or not fEven) then
       begin
         fEven := True;
-        min_left_even := w[i mod M];
+        mEven := temp;
       end;
 
-      pOdd := min_left_odd * a[i];
-      pEven := min_left_even * a[i];
-
-      if fOdd and (pOdd mod 2 = 0) and ((pOdd < min_prod) or not found) then
+      if fMin and (a[i] mod 2 = 0) and ((a[i] * min < prod) or not found) then
       begin
         found := True;
-        min_prod := pOdd;
+        prod := a[i] * min;
       end;
 
-      if fEven and (pEven mod 2 = 0) and ((pEven < min_prod) or not found) then
+      if fEven and (a[i] mod 2 <> 0) and ((a[i] * mEven < prod) or not found) then
       begin
         found := True;
-        min_prod := pEven;
+        prod := a[i] * mEven;
       end;
 
       w[i mod M] := a[i];
     end;
 
     if found then
-      exit(min_prod)
+      exit(prod)
     else
       exit(-1);
   end;
@@ -113,6 +112,6 @@ begin
       writeln(solveB());
     end;
   end;
-  writeln('Done!@!');
+  writeln('Done!');
   readln();
 end.

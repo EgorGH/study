@@ -6,10 +6,10 @@ uses
 var
   index: string;
   N, a, i, min_odd, imin_odd, q_odd, izero: longint;
-
+  found: boolean;
 begin
   index := '';
-  min_odd := 1000000001;
+  found := False;
   q_odd := 0;
 
   readln(N);
@@ -21,8 +21,9 @@ begin
       izero := i
     else if a mod 2 <> 0 then
     begin
-      if a < min_odd then
+      if (a <= min_odd) or not found then
       begin
+        found := True;
         imin_odd := i;
         min_odd := a;
       end;
