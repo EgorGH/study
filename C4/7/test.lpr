@@ -94,28 +94,24 @@ var
     q_odd := 0;
 
     for i := 1 to N do
+    begin
       if a[i] = 0 then
-        izero := i
-      else if a[i] mod 2 <> 0 then
+        izero := i;
+
+      if (a[i] mod 2 <> 0) and (not found or (a[i] <= min_odd)) then
       begin
-        if (a[i] <= min_odd) or not found then
-        begin
-          found := True;
-          imin_odd := i;
-          min_odd := a[i];
-        end;
-        q_odd := q_odd + 1;
+        found := True;
+        imin_odd := i;
+        min_odd := a[i];
       end;
 
-    if q_odd mod 2 <> 0 then
-      for i := 1 to N do
-        if (imin_odd <> i) and (i <> izero) then
-          index := index + IntToStr(i) + ' ';
+      if (a[i] mod 2 <> 0) then
+        q_odd := q_odd + 1;
+    end;
 
-    if q_odd mod 2 = 0 then
-      for i := 1 to N do
-        if i <> izero then
-          index := index + IntToStr(i) + ' ';
+    for i := 1 to N do
+      if (i <> izero) and ((q_odd mod 2 = 0) or (i <> imin_odd)) then
+        index := index + IntToStr(i) + ' ';
 
     exit(index);
   end;

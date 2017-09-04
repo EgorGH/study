@@ -3,7 +3,7 @@ program answer;
 const
   M = 6;
 var
-  N, a, i, prod, mEven, min, temp: longint;
+  N, a, i, prod, mEven, min, r: longint;
   w: array[0..M - 1] of integer;
   found, fEven, fMin: boolean;
 begin
@@ -23,27 +23,27 @@ begin
   begin
     readln(a);
 
-    temp := w[i mod M];
+    r := w[i mod M];
 
-    if (temp < min) or not fMin then
+    if not fMin or (r < min) then
     begin
       fMin := True;
-      min := temp;
+      min := r;
     end;
 
-    if (temp mod 2 = 0) and ((temp < mEven) or not fEven) then
+    if (r mod 2 = 0) and (not fEven or (r < mEven)) then
     begin
       fEven := True;
-      mEven := temp;
+      mEven := r;
     end;
 
-    if fMin and (a mod 2 = 0) and ((a * min < prod) or not found) then
+    if (a mod 2 = 0) and (not found or (a * min < prod)) then
     begin
       found := True;
       prod := a * min;
     end;
 
-    if fEven and (a mod 2 <> 0) and ((a * mEven < prod) or not found) then
+    if (a mod 2 <> 0) and fEven and (not found or (a * mEven < prod)) then
     begin
       found := True;
       prod := a * mEven;

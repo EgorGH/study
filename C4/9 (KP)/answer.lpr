@@ -15,12 +15,15 @@ begin
       fA := True;
       maxA := x;
     end;
+
     if (x mod 7 <> 0) and ((x > maxB) or not fB) then
     begin
       fB := True;
       maxB := x;
     end;
+
     q := q + 1;
+
     readln(x);
   until x = 0;
 

@@ -52,7 +52,7 @@ var
 
   function solveB(): longint;
   var
-    i, prod, mEven, min, temp: longint;
+    i, prod, mEven, min, r: longint;
     w: array[0..M - 1] of integer;
     found, fEven, fMin: boolean;
   begin
@@ -65,27 +65,27 @@ var
 
     for i := M + 1 to N do
     begin
-      temp := w[i mod M];
+      r := w[i mod M];
 
-      if (temp < min) or not fMin then
+      if (r < min) or not fMin then
       begin
         fMin := True;
-        min := temp;
+        min := r;
       end;
 
-      if (temp mod 2 = 0) and ((temp < mEven) or not fEven) then
+      if (r mod 2 = 0) and (not fEven or (r < mEven)) then
       begin
         fEven := True;
-        mEven := temp;
+        mEven := r;
       end;
 
-      if fMin and (a[i] mod 2 = 0) and ((a[i] * min < prod) or not found) then
+      if (a[i] mod 2 = 0) and (not found or (a[i] * min < prod)) then
       begin
         found := True;
         prod := a[i] * min;
       end;
 
-      if fEven and (a[i] mod 2 <> 0) and ((a[i] * mEven < prod) or not found) then
+      if (a[i] mod 2 <> 0) and fEven and (not found or (a[i] * mEven < prod)) then
       begin
         found := True;
         prod := a[i] * mEven;

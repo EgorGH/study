@@ -65,6 +65,7 @@ var
         fA := True;
         maxA := a[i];
       end;
+
       if (a[i] mod 7 <> 0) and ((a[i] > maxB) or not fB) then
       begin
         fB := True;
