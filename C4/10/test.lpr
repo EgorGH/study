@@ -1,5 +1,8 @@
 program test;
 
+uses
+  Math;
+
 const
   Lim = 10000;
   MaxR = 10;
@@ -78,9 +81,57 @@ var
 
   function solveB(): longint;
   var
+    i, sum0, sum1, sum2, res: longint;
 
   begin
+    sum0 := 0;
+    sum1 := 0;
+    sum2 := 0;
 
+    for i := 1 to N do
+    begin
+      if sum0 + a[i] mod 2 = 0 then
+        sum0 := sum0 + a[i];
+      if sum1 + a[i] mod 2 = 0 then
+        sum0 := sum1 + a[i];
+      if sum2 + a[i] mod 2 = 0 then
+        sum0 := sum2 + a[i];
+      if sum0 + a[i] mod 2 = 1 then
+        sum1 := sum0 + a[i];
+      if sum1 + a[i] mod 2 = 1 then
+        sum1 := sum1 + a[i];
+      if sum2 + a[i] mod 2 = 1 then
+        sum1 := sum2 + a[i];
+      if sum0 + a[i] mod 2 = 2 then
+        sum2 := sum0 + a[i];
+      if sum1 + a[i] mod 2 = 2 then
+        sum2 := sum1 + a[i];
+      if sum2 + a[i] mod 2 = 2 then
+        sum2 := sum2 + a[i];
+
+      if sum0 + b[i] mod 2 = 0 then
+        sum0 := sum0 + b[i];
+      if sum1 + b[i] mod 2 = 0 then
+        sum0 := sum1 + b[i];
+      if sum2 + b[i] mod 2 = 0 then
+        sum0 := sum2 + b[i];
+      if sum0 + b[i] mod 2 = 1 then
+        sum1 := sum0 + b[i];
+      if sum1 + b[i] mod 2 = 1 then
+        sum1 := sum1 + b[i];
+      if sum2 + b[i] mod 2 = 1 then
+        sum1 := sum2 + b[i];
+      if sum0 + b[i] mod 2 = 2 then
+        sum2 := sum0 + b[i];
+      if sum1 + b[i] mod 2 = 2 then
+        sum2 := sum1 + b[i];
+      if sum2 + b[i] mod 2 = 2 then
+        sum2 := sum2 + b[i];
+    end;
+
+    res := max(sum1, sum2);
+
+    exit(res);
   end;
 
 begin
