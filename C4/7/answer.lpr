@@ -4,11 +4,9 @@ uses
   SysUtils;
 
 var
-  index: string;
   N, a, i, min_odd, imin_odd, q_odd, izero: longint;
   found: boolean;
 begin
-  index := '';
   found := False;
   q_odd := 0;
 

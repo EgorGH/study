@@ -66,7 +66,7 @@ var
   begin
     fSum := False;
 
-    for v := 1 to (1 shl N) - 1 do
+    for v := 0 to (1 shl N) - 1 do
     begin
       temp := eval(v);
       if (temp mod 3 <> 0) and (not fSum or (temp > res)) then
@@ -76,62 +76,73 @@ var
       end;
     end;
 
-    exit(res);
+    if fSum then
+      exit(res)
+    else
+      exit(0);
   end;
 
   function solveB(): longint;
   var
-    i, sum0, sum1, sum2, res: longint;
-
+    i, j, sa, sb: longint;
+    oldsums, newsums: array[0..2] of longint;
+    f0, f1, f2: boolean;
   begin
-    sum0 := 0;
-    sum1 := 0;
-    sum2 := 0;
+    f0 := False;
+    f1 := False;
+    f2 := False;
+
+    for i := 0 to 2 do
+    begin
+      newsums[i] := 0;
+      oldsums[i] := 0;
+    end;
 
     for i := 1 to N do
     begin
-      if sum0 + a[i] mod 2 = 0 then
-        sum0 := sum0 + a[i];
-      if sum1 + a[i] mod 2 = 0 then
-        sum0 := sum1 + a[i];
-      if sum2 + a[i] mod 2 = 0 then
-        sum0 := sum2 + a[i];
-      if sum0 + a[i] mod 2 = 1 then
-        sum1 := sum0 + a[i];
-      if sum1 + a[i] mod 2 = 1 then
-        sum1 := sum1 + a[i];
-      if sum2 + a[i] mod 2 = 1 then
-        sum1 := sum2 + a[i];
-      if sum0 + a[i] mod 2 = 2 then
-        sum2 := sum0 + a[i];
-      if sum1 + a[i] mod 2 = 2 then
-        sum2 := sum1 + a[i];
-      if sum2 + a[i] mod 2 = 2 then
-        sum2 := sum2 + a[i];
+      for j := 0 to 2 do
+      begin
+        sa := oldsums[j] + a[i];
+        sb := oldsums[j] + b[i];
 
-      if sum0 + b[i] mod 2 = 0 then
-        sum0 := sum0 + b[i];
-      if sum1 + b[i] mod 2 = 0 then
-        sum0 := sum1 + b[i];
-      if sum2 + b[i] mod 2 = 0 then
-        sum0 := sum2 + b[i];
-      if sum0 + b[i] mod 2 = 1 then
-        sum1 := sum0 + b[i];
-      if sum1 + b[i] mod 2 = 1 then
-        sum1 := sum1 + b[i];
-      if sum2 + b[i] mod 2 = 1 then
-        sum1 := sum2 + b[i];
-      if sum0 + b[i] mod 2 = 2 then
-        sum2 := sum0 + b[i];
-      if sum1 + b[i] mod 2 = 2 then
-        sum2 := sum1 + b[i];
-      if sum2 + b[i] mod 2 = 2 then
-        sum2 := sum2 + b[i];
+        if (sa mod 3 = 0) and (not f0 or (sa > newsums[0])) then
+        begin
+          f0 := True;
+          newsums[0] := sa;
+        end;
+        if (sa mod 3 = 1) and (not f1 or (sa > newsums[1])) then
+        begin
+          f1 := True;
+          newsums[1] := sa;
+        end;
+        if (sa mod 3 = 2) and (not f2 or (sa > newsums[2])) then
+        begin
+          f2 := True;
+          newsums[2] := sa;
+        end;
+
+        if (sb mod 3 = 0) and (not f0 or (sb > newsums[0])) then
+        begin
+          f0 := True;
+          newsums[0] := sb;
+        end;
+        if (sb mod 3 = 1) and (not f1 or (sb > newsums[1])) then
+        begin
+          f1 := True;
+          newsums[1] := sb;
+        end;
+        if (sb mod 3 = 2) and (not f2 or (sb > newsums[2])) then
+        begin
+          f2 := True;
+          newsums[2] := sb;
+        end;
+      end;
+
+      for j := 0 to 2 do
+        oldsums[j] := newsums[j];
     end;
 
-    res := max(sum1, sum2);
-
-    exit(res);
+    exit(max(newsums[1], newsums[2]));
   end;
 
 begin
