@@ -84,65 +84,36 @@ var
 
   function solveB(): longint;
   var
-    i, j, sa, sb: longint;
-    oldsums, newsums: array[0..2] of longint;
-    f0, f1, f2: boolean;
-  begin
-    f0 := False;
-    f1 := False;
-    f2 := False;
+    i, sum, maxE, minE, diff, diff_min: longint;
+    found: boolean;
 
-    for i := 0 to 2 do
-    begin
-      newsums[i] := 0;
-      oldsums[i] := 0;
-    end;
+  begin
+    sum := 0;
+    found := False;
 
     for i := 1 to N do
     begin
-      for j := 0 to 2 do
+      maxE := max(a[i], b[i]);
+      minE := min(a[i], b[i]);
+
+      sum := sum + maxE;
+
+      diff := maxE - minE;
+
+      if (diff mod 3 <> 0) and (not found or (diff < diff_min)) then
       begin
-        sa := oldsums[j] + a[i];
-        sb := oldsums[j] + b[i];
-
-        if (sa mod 3 = 0) and (not f0 or (sa > newsums[0])) then
-        begin
-          f0 := True;
-          newsums[0] := sa;
-        end;
-        if (sa mod 3 = 1) and (not f1 or (sa > newsums[1])) then
-        begin
-          f1 := True;
-          newsums[1] := sa;
-        end;
-        if (sa mod 3 = 2) and (not f2 or (sa > newsums[2])) then
-        begin
-          f2 := True;
-          newsums[2] := sa;
-        end;
-
-        if (sb mod 3 = 0) and (not f0 or (sb > newsums[0])) then
-        begin
-          f0 := True;
-          newsums[0] := sb;
-        end;
-        if (sb mod 3 = 1) and (not f1 or (sb > newsums[1])) then
-        begin
-          f1 := True;
-          newsums[1] := sb;
-        end;
-        if (sb mod 3 = 2) and (not f2 or (sb > newsums[2])) then
-        begin
-          f2 := True;
-          newsums[2] := sb;
-        end;
+        found := True;
+        diff_min := diff;
       end;
-
-      for j := 0 to 2 do
-        oldsums[j] := newsums[j];
     end;
 
-    exit(max(newsums[1], newsums[2]));
+    if found and (sum mod 3 = 0) then
+      sum := sum - diff_min;
+
+    if not found and (sum mod 3 = 0) then
+      sum := 0;
+
+    exit(sum);
   end;
 
 begin
