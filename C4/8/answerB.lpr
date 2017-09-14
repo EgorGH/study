@@ -1,4 +1,4 @@
-program answer;
+program answerB;
 
 const
   M = 6;
