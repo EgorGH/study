@@ -134,44 +134,4 @@ begin
   end;
   writeln('Done!');
   readln();
-end.   m2 := update_max(m2, a[i]);
-
-      if a[i] mod 26 = 0 then
-        m26 := update_max(m26, a[i]);
-
-      m := update_max(m, a[i]);
-    end;
-
-    if m26.maxA = m.maxA then
-      mMax := m.maxB
-    else
-      mMax := m.maxA;
-
-    prod1 := m2.maxA * m13.maxA;
-    prod2 := m26.maxA * mMax;
-
-    if m26.fA and m13.fA and m2.fA then
-      exit(max(prod1, prod2))
-    else if m2.fA and m13.fA then
-      exit(prod1)
-    else if m26.fA then
-      exit(prod2)
-    else
-      exit(0);
-  end;
-
-begin
-  randomize;
-  for t := 1 to MaxT do
-  begin
-    init();
-    if solveA() <> solveB() then
-    begin
-      print();
-      writeln(solveA());
-      writeln(solveB());
-    end;
-  end;
-  writeln('Done!');
-  readln();
 end.
