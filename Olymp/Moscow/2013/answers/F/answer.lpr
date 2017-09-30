@@ -33,8 +33,8 @@ begin
       begin
         Write(i, ' ', j);
         readln();
+        exit();
       end;
     end;
 
-  readln();
 end.
