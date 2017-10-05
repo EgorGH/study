@@ -11,8 +11,18 @@ var
     'vclwcrlbh', 'xujk', 'xjbh', 'duu');
   T: array[0..25, 0..25] of boolean;
   S: array[0..25] of char;
-  N, i, j, x, y, ltr: integer;
-  d, q: integer = 0;
+  N, i, j, x, y, ltr, k: integer;
+  q: integer = -1;
+
+  procedure Clear(x: integer);
+  var
+    i: integer;
+  begin
+    for i := 0 to 25 do
+      if T[i, x] = True then
+        T[i, x] := False;
+  end;
+
 begin
   N := 33;
 
@@ -31,23 +41,41 @@ begin
       T[x, y] := True;
     end;
 
+  Write('  ');
+  for i := 0 to 25 do
+    Write(chr(i + 97): 2);
+  writeln();
   for i := 0 to 25 do
   begin
+    Write(chr(i + 97): 2);
     for j := 0 to 25 do
-      Write(T[i, j]: 6);
+      if T[i, j] = True then
+        Write(1: 2)
+      else
+        Write(0: 2);
     writeln();
   end;
 
   for i := 0 to 25 do
   begin
+    k := 0;
     for j := 0 to 25 do
-    begin
       if T[i, j] = False then
-        q := q + 1;
+        k := k + 1;
+    if k = 26 then
+    begin
+      q := q + 1;
+      S[i] := chr(q + 97);
+      Clear(i);
     end;
-    if q = 26 then
-      S[i] := chr(d + 1);
   end;
+
+  writeln();
+  for i := 0 to 25 do
+    Write(chr(i + 97), ' ');
+  writeln();
+  for i := 0 to 25 do
+    Write(s[i], ' ');
 
   readln();
 end.
