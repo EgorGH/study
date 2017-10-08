@@ -1,4 +1,4 @@
-program answer_optimized;
+program answer_slow;
 
 const
   Lim = 260;
@@ -6,68 +6,27 @@ var
   Source, Destination: array[1..Lim] of string;
   T: array[0..26, 0..26] of boolean;
   Cypher: array[0..25] of char;
-  i, N: integer;
-
-  procedure p(a, b, c: integer);
-  var
-    i: integer;
-    let1, let2: integer;
-  begin
-    i := a;
-
-    if a >= b then
-      exit();
-
-    while (i < b) and (Source[i][c] = Source[i + 1][c]) do
-    begin
-      i := i + 1;
-    end;
-
-    if i <> a then
-    begin
-      if (c = 1) and (i < N) then
-      begin
-        let1 := Ord(Source[i][c]) - 97;
-        let2 := Ord(Source[i + 1][c]) - 97;
-        if (let1 >= 0) and (let2 >= 0) then
-          T[let1, let2] := True;
-      end;
-      p(a, i, c + 1);
-    end;
-
-    if (i = a) then
-    begin
-      let1 := Ord(Source[i][c]) - 97;
-      let2 := Ord(Source[i + 1][c]) - 97;
-      if (let1 >= 0) and (let2 >= 0) then
-        T[let1, let2] := True;
-      if (c <> 1) and (i = b) then
-        exit();
-    end;
-
-    if (i < N) and (i <> a) then
-    begin
-      p(i, b, c);
-      while (i < b) and (c <> 1) do
-      begin
-        p(i + 1, b, c);
-        i := i + 1;
-      end;
-    end;
-
-    if (i < N) and (i = a) then
-      p(i + 1, b, c);
-  end;
+  N, i: integer;
 
   procedure process_data();
   var
-    i, j: integer;
+    i, j, ltr, a, b: integer;
   begin
-    for i := 0 to 25 do
-      for j := 0 to 25 do
+    for i := 0 to 26 do
+      for j := 0 to 26 do
         T[i, j] := False;
 
-    p(1, N, 1);
+    for i := 1 to N - 1 do
+      for j := i + 1 to N do
+      begin
+        ltr := 1;
+        while Source[i][ltr] = Source[j][ltr] do
+          ltr := ltr + 1;
+        a := Ord(Source[i][ltr]) - 97;
+        b := Ord(Source[j][ltr]) - 97;
+        if (a >= 0) and (b >= 0) then
+          T[a, b] := True;
+      end;
   end;
 
   procedure print_table();
@@ -88,18 +47,6 @@ var
           Write('': 3);
       writeln();
     end;
-  end;
-
-  procedure print_cypher();
-  var
-    i: integer;
-  begin
-    for i := 0 to 25 do
-      Write(chr(i + 97): 3);
-    writeln();
-    for i := 0 to 25 do
-      Write(Cypher[i]: 3);
-    writeln();
   end;
 
   procedure fill_cypher();
@@ -124,6 +71,18 @@ var
       Cypher[j] := chr(c + 97);
       c := c + 1;
     end;
+  end;
+
+  procedure print_cypher();
+  var
+    i: integer;
+  begin
+    for i := 0 to 25 do
+      Write(chr(i + 97): 3);
+    writeln();
+    for i := 0 to 25 do
+      Write(Cypher[i]: 3);
+    writeln();
   end;
 
   function decode(s: string): string;
@@ -155,9 +114,8 @@ begin
     readln(Source[i]);
 
   process_data();
-  print_table();
+
   fill_cypher();
-  print_cypher();
 
   for i := 1 to N do
     Destination[i] := decode(Source[i]);
@@ -168,7 +126,5 @@ begin
   else
     writeln('Error');
 
-  writeln();
-  writeln('DONE!');
   readln();
 end.

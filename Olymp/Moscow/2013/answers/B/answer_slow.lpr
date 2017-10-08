@@ -1,4 +1,4 @@
-program answer_not_optimized;
+program answer_slow;
 
 uses
   Math;
