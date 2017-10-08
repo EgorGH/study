@@ -1,9 +1,9 @@
-program answer;
+program answer_slow;
 
 const
   Lim = 10000;
 var
-  i, j, a, b, q, N, c, temp: longword;
+  i, j, a, b, q, N, c, temp: longint;
 begin
   readln(N);
 
@@ -31,10 +31,9 @@ begin
 
       if q = N then
       begin
-        Write(i, ' ', j);
+        Writeln(i, ' ', j);
         readln();
         exit();
       end;
     end;
-
 end.
