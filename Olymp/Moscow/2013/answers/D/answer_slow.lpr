@@ -4,8 +4,9 @@ const
   Lim = 10000;
 var
   m: array of longint;
-  N, a, b, i, k, s1, s2: longint;
+  a, b, i, k, s1, s2: longint;
   s: longint = 0;
+  N: longint = 0;
 
   procedure get_sum(x, y: longint);
   begin
@@ -18,13 +19,11 @@ var
   end;
 
 begin
-  readln(N);
-
-  SetLength(m, N);
-
-  for i := 0 to N - 1 do
+  while not eof(input) do
   begin
-    readln(a, b);
+    readln(input, a, b);
+    N := N + 1;
+    SetLength(m, N + 1);
     for k := 10 to Lim do
     begin
       get_sum(k, a);
@@ -35,13 +34,13 @@ begin
       s := 0;
       if s1 = s2 then
       begin
-        m[i] := k;
+        m[N] := k;
         break;
       end;
     end;
   end;
 
-  for i := 0 to N - 1 do
+  for i := 1 to N do
     writeln(m[i]);
 
   readln();
