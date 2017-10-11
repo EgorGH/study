@@ -1,7 +1,7 @@
 program answer_slow;
 
 var
-  a, b: array of byte;
+  a, b, c: array of byte;
   N, i, j, p, k, q: longint;
 begin
   readln(N);
@@ -31,8 +31,9 @@ begin
       else
         b[j] := 0;
 
-    for j := 1 to N do
-      a[j] := b[j];
+    c := a;
+    a := b;
+    b := c;
   end;
 
   for i := 1 to N do
