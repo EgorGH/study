@@ -1,10 +1,14 @@
 program answer_slow;
 
+uses
+  Math,
+  SysUtils;
+
 const
   Lim = 260;
 var
   Source, Destination: array[1..Lim] of string;
-  T: array[0..26, 0..26] of boolean;
+  T: array[0..25] of longword;
   Cypher: array[0..25] of char;
   N, i: integer;
 
@@ -12,9 +16,8 @@ var
   var
     i, j, ltr, a, b: integer;
   begin
-    for i := 0 to 26 do
-      for j := 0 to 26 do
-        T[i, j] := False;
+    for i := 0 to 25 do
+      T[i] := 0;
 
     for i := 1 to N - 1 do
       for j := i + 1 to N do
@@ -24,50 +27,25 @@ var
           ltr := ltr + 1;
         a := Ord(Source[i][ltr]) - 97;
         b := Ord(Source[j][ltr]) - 97;
-        if (a >= 0) and (b >= 0) then
-          T[a, b] := True;
+        if (a >= 0) and (b >= 0) and ((T[b] shr a) mod 2 = 0) then
+          T[b] := T[b] + round(power(2, a));
       end;
-  end;
-
-  procedure print_table();
-  var
-    i, j: integer;
-  begin
-    Write('': 3);
-    for i := 0 to 25 do
-      Write(chr(i + 97): 3);
-    writeln();
-    for i := 0 to 25 do
-    begin
-      Write(chr(i + 97): 3);
-      for j := 0 to 25 do
-        if T[i, j] then
-          Write(1: 3)
-        else
-          Write('': 3);
-      writeln();
-    end;
   end;
 
   procedure fill_cypher();
   var
-    i, j, k, s: integer;
+    i, j, k: integer;
     c: byte = 0;
   begin
     for i := 0 to 25 do
     begin
       for j := 0 to 25 do
-      begin
-        s := 0;
-        for k := 0 to 26 do
-          if T[k, j] then
-            s := s + 1;
-        if s = 0 then
+        if T[j] = 0 then
           break;
-      end;
       for k := 0 to 25 do
-        T[j, k] := False;
-      T[26, j] := True;
+        if (T[k] <> round(power(2, 26))) and ((T[k] shr j) mod 2 = 1) then
+          T[k] := T[k] - round(power(2, j));
+      T[j] := round(power(2, 26));
       Cypher[j] := chr(c + 97);
       c := c + 1;
     end;
