@@ -2,31 +2,50 @@ program answer;
 
 uses
   Math;
-
 var
-  N, p, i, diff: longword;
+  N, ans, k, p: qword;
+
+  procedure f(m, v: qword);
+  var
+    d: qword;
+  begin
+    d := (v - m) div 2 + m;
+
+    if (N = d) or (v - d = 1) then
+      exit();
+
+    if N > d then
+    begin
+      ans := ans * 2;
+      f(d, v);
+    end;
+
+    if N < d then
+      f(m, d);
+  end;
+
 begin
   readln(N);
 
+  k := 1;
   p := 0;
-  i := 2;
+  ans := 1;
 
-  while i <= N do
+  while k < N / 2 do
   begin
-    i := 2 * i;
+    k := 2 * k;
     p := p + 1;
   end;
 
-  k := round(power(2,p));
-  diff := N - k;
-  t := k;
-
-  while N < k + t do
+  if N = 2 * k then
+    ans := 1
+  else
   begin
-    t := t div 2;
-    q := q + 1;
+    ans := ans * 2;
+    f(k, k * 2);
   end;
 
+  writeln(ans);
   readln();
 end.
 
