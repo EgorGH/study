@@ -1,7 +1,5 @@
 program answer;
 
-uses
-  Math;
 var
   N, ans, k, p: qword;
 
@@ -31,7 +29,7 @@ begin
   p := 0;
   ans := 1;
 
-  while k < N / 2 do
+  while 2 * k < N do
   begin
     k := 2 * k;
     p := p + 1;

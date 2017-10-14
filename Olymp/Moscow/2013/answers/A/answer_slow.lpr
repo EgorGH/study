@@ -1,8 +1,7 @@
 program answer_slow;
 
 uses
-  Math,
-  SysUtils;
+  Math;
 
 const
   Lim = 260;
@@ -92,7 +91,6 @@ begin
     readln(Source[i]);
 
   process_data();
-
   fill_cypher();
 
   for i := 1 to N do
