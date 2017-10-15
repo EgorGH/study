@@ -3,36 +3,31 @@ program answer_slow;
 const
   Lim = 10000;
 var
-  m: array of longint;
-  a, b, i, k, s1, s2: longint;
-  s: longint = 0;
-  N: longint = 0;
+  m: array of longword;
+  a, b, i, k: longword;
+  N: longword = 0;
 
-  procedure get_sum(x, y: longint);
+  function get_sum(x, y: longword): longword;
+  var
+    sum: longword = 0;
   begin
-    while (x div y) > 0 do
+    while x > 0 do
     begin
-      get_sum(x div y, y);
-      x := x mod y;
+      sum := sum + (x mod y);
+      x := x div y;
     end;
-    s := s + x;
+    exit(sum);
   end;
 
 begin
-  while not eof(input) do
+  while not EOF(input) do
   begin
     readln(input, a, b);
     N := N + 1;
     SetLength(m, N + 1);
     for k := 10 to Lim do
     begin
-      get_sum(k, a);
-      s1 := s;
-      s := 0;
-      get_sum(k, b);
-      s2 := s;
-      s := 0;
-      if s1 = s2 then
+      if get_sum(k, a) = get_sum(k, b) then
       begin
         m[N] := k;
         break;
