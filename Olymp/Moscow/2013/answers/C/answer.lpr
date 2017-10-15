@@ -1,49 +1,35 @@
 program answer;
 
+uses
+  Math;
+
 var
-  N, ans, k, p: qword;
-
-  procedure f(m, v: qword);
-  var
-    d: qword;
-  begin
-    d := (v - m) div 2 + m;
-
-    if (N = d) or (v - d = 1) then
-      exit();
-
-    if N > d then
-    begin
-      ans := ans * 2;
-      f(d, v);
-    end;
-
-    if N < d then
-      f(m, d);
-  end;
-
+  N, q, p, w: qword;
 begin
   readln(N);
 
-  k := 1;
-  p := 0;
-  ans := 1;
-
-  while 2 * k < N do
+  p := 1;
+  while p * 2 < N do
   begin
-    k := 2 * k;
-    p := p + 1;
+    p := p * 2;
   end;
 
-  if N = 2 * k then
-    ans := 1
-  else
+  q := 1;
+  w := p;
+
+  while p <> N do
   begin
-    ans := ans * 2;
-    f(k, k * 2);
+    w := w div 2;
+    if N > p then
+    begin
+      q := q * 2;
+      p := p + w;
+    end
+    else
+      p := p - w;
   end;
 
-  writeln(ans);
+  writeln(q);
   readln();
 end.
 
