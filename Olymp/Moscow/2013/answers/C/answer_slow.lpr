@@ -2,7 +2,7 @@ program answer_slow;
 
 var
   a, b, c: array of byte;
-  N, i, j, p, k, q: longint;
+  N, i, j, q: longint;
 begin
   readln(N);
 
@@ -11,19 +11,9 @@ begin
   SetLength(b, N + 2);
   FillByte(b[0], N + 2, 0);
 
-  k := 1;
-  p := 0;
-  q := 0;
+  A[1] := 1;
 
-  while k < N / 2 do
-  begin
-    k := 2 * k;
-    p := p + 1;
-  end;
-
-  A[k] := 1;
-
-  for i := k + 1 to N do
+  for i := 2 to N do
   begin
     for j := 1 to N do
       if a[j - 1] + a[j + 1] = 1 then
@@ -36,6 +26,7 @@ begin
     b := c;
   end;
 
+  q := 0;
   for i := 1 to N do
     if a[i] = 1 then
       q := q + 1;
