@@ -1,32 +1,40 @@
 program answer_slow;
 
 var
-  N, K, a, b: integer;
+  T, N, K, a, b, i: integer;
 
   function f(n, k: integer): integer;
   var
-    a, b, i, d, max: integer;
+    a, b, i, d, w, max, min: integer;
   begin
     max := 0;
-    d := 0;
-    if n = k then
+    min := 100;
+    if (n = k) or (k = 0) then
       exit(0);
-    if k = 0 then
-      exit(0);
-    a := n div 2;
-    b := n - n div 2;
-    for i := k downto 0 do
-      if (i <= a) and (k - i <= b) then
-      begin
-        d := f(a, i) + f(b, k - i) + 1;
-        if d > max then
-          max := d;
-      end;
-    exit(max);
+    for w := 1 to n - 1 do
+    begin
+      a := w;
+      b := n - w;
+      for i := 0 to k do
+        if (i <= a) and (k - i <= b) then
+        begin
+          d := f(a, i) + f(b, k - i) + 1;
+          if d > max then
+            max := d;
+        end;
+      if max < min then
+        min := max;
+    end;
+    exit(min);
   end;
 
 begin
-  readln(N, K);
-  writeln(f(n, k));
+  //readln(T);
+  //for i := 1 to T do
+  //begin
+  //  readln(N, K, a, b);
+  //  writeln(f(n, k));
+  //end;
+  writeln(f(10, 2));
   readln();
 end.
