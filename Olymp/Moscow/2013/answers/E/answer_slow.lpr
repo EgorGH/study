@@ -7,12 +7,12 @@ var
   var
     a, b, i, d, w, max, min: integer;
   begin
-    max := 0;
     min := 100;
     if (n = k) or (k = 0) then
       exit(0);
     for w := 1 to n - 1 do
     begin
+      max := 0;
       a := w;
       b := n - w;
       for i := 0 to k do
@@ -29,12 +29,11 @@ var
   end;
 
 begin
-  //readln(T);
-  //for i := 1 to T do
-  //begin
-  //  readln(N, K, a, b);
-  //  writeln(f(n, k));
-  //end;
-  writeln(f(10, 2));
+  readln(T);
+  for i := 1 to T do
+  begin
+    readln(N, K, a, b);
+    writeln(f(n, k));
+  end;
   readln();
 end.
