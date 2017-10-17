@@ -9,7 +9,7 @@ begin
   readln(N);
 
   p := 1;
-  while p * 2 < N do
+  while p * 2 <= N do
   begin
     p := p * 2;
   end;
