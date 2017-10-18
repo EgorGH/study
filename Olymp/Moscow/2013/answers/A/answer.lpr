@@ -3,32 +3,59 @@ program answer;
 uses
   Math;
 
-const
-  Lim = 260;
 var
-  Source, Destination: array[1..Lim] of string;
+  Source, Destination: array of string;
   T: array[0..25] of longword;
   Cypher: array[0..25] of char;
   N, i: integer;
 
-  procedure process_data();
+  procedure mark(a, b: char);
   var
-    i, j, ltr, a, b: integer;
+    x, y: word;
   begin
-    for i := 0 to 25 do
-      T[i] := 0;
+    x := Ord(a) - 97;
+    y := Ord(b) - 97;
+    if (x >= 0) and (y >= 0) and (x <= 25) and (y <= 25) then
+      T[y] := T[y] or (1 shl x);
+  end;
 
-    for i := 1 to N - 1 do
-      for j := i + 1 to N do
+  procedure p(a, b, c: integer);
+  var
+    x, y: integer;
+  begin
+    if a = b then
+      exit();
+    x := a;
+    for y := a to b do
+    begin
+      if Source[x][c] <> Source[y][c] then
       begin
-        ltr := 1;
-        while Source[i][ltr] = Source[j][ltr] do
-          ltr := ltr + 1;
-        a := Ord(Source[i][ltr]) - 97;
-        b := Ord(Source[j][ltr]) - 97;
-        if (a >= 0) and (b >= 0) then
-          T[b] := T[b] or (1 shl a);
+        mark(Source[x][c], Source[y][c]);
+        p(x, y - 1, c + 1);
+        x := y;
       end;
+    end;
+    p(x, b, c + 1);
+  end;
+
+  procedure print_table();
+  var
+    i, j: longword;
+  begin
+    Write('': 2);
+    for i := 0 to 25 do
+      Write(char(i + 97): 2);
+    writeln();
+    for i := 0 to 25 do
+    begin
+      Write(char(i + 97): 2);
+      for j := 0 to 25 do
+        if (T[i] shr j) mod 2 = 1 then
+          Write(1: 2)
+        else
+          Write('': 2);
+      writeln();
+    end;
   end;
 
   procedure fill_cypher();
@@ -87,10 +114,14 @@ var
 begin
   readln(N);
 
+  SetLength(Source, N + 1);
+  SetLength(Destination, N + 1);
+
   for i := 1 to N do
     readln(Source[i]);
 
-  process_data();
+  p(1, N, 1);
+
   fill_cypher();
 
   for i := 1 to N do
