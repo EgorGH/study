@@ -1,9 +1,8 @@
 program answer_slow;
 
-const
-  Lim = 260;
+
 var
-  Source, Destination: array[1..Lim] of string;
+  Source, Destination: array of string;
   T: array[0..25, 0..26] of boolean;
   Cypher: array[0..25] of char;
   N, i: integer;
@@ -109,6 +108,9 @@ var
 
 begin
   readln(N);
+
+  SetLength(Source, N + 1);
+  SetLength(Destination, N + 1);
 
   for i := 1 to N do
     readln(Source[i]);
