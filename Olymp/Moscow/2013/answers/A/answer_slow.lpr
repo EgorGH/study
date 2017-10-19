@@ -11,12 +11,8 @@ var
   var
     i, j, ltr, a, b: integer;
   begin
-    for i := 0 to 25 do
-      for j := 0 to 26 do
-        T[i, j] := False;
-
-    for i := 1 to N - 1 do
-      for j := i + 1 to N do
+    for i := 0 to N - 2 do
+      for j := i + 1 to N - 1 do
       begin
         ltr := 1;
         while Source[i][ltr] = Source[j][ltr] do
@@ -100,7 +96,7 @@ var
   var
     i: integer;
   begin
-    for i := 1 to N - 1 do
+    for i := 0 to N - 2 do
       if Destination[i] > Destination[i + 1] then
         exit(False);
     exit(True);
@@ -109,20 +105,20 @@ var
 begin
   readln(N);
 
-  SetLength(Source, N + 1);
-  SetLength(Destination, N + 1);
+  SetLength(Source, N);
+  SetLength(Destination, N);
 
-  for i := 1 to N do
+  for i := 0 to N - 1 do
     readln(Source[i]);
 
   process_data();
   fill_cypher();
 
-  for i := 1 to N do
+  for i := 0 to N - 1 do
     Destination[i] := decode(Source[i]);
 
   if check_result() then
-    for i := 1 to N do
+    for i := 0 to N - 1 do
       writeln(Destination[i])
   else
     writeln('Error');

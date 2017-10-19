@@ -69,8 +69,8 @@ var
         if T[j] = 0 then
           break;
       for k := 0 to 25 do
-        if (T[k] <> 1 shl 26) and ((T[k] shr j) mod 2 = 1) then
-          T[k] := T[k] xor (1 shl j);
+        if (T[k] <> 1 shl 26) then
+          T[k] := T[k] and not (1 shl j);
       T[j] := 1 shl 26;
       Cypher[j] := chr(c + 97);
       c := c + 1;
@@ -105,7 +105,7 @@ var
   var
     i: integer;
   begin
-    for i := 1 to N - 1 do
+    for i := 0 to N - 2 do
       if Destination[i] > Destination[i + 1] then
         exit(False);
     exit(True);
@@ -114,21 +114,21 @@ var
 begin
   readln(N);
 
-  SetLength(Source, N + 1);
-  SetLength(Destination, N + 1);
+  SetLength(Source, N);
+  SetLength(Destination, N);
 
-  for i := 1 to N do
+  for i := 0 to N - 1 do
     readln(Source[i]);
 
-  p(1, N, 1);
+  p(0, N - 1, 1);
 
   fill_cypher();
 
-  for i := 1 to N do
+  for i := 0 to N - 1 do
     Destination[i] := decode(Source[i]);
 
   if check_result() then
-    for i := 1 to N do
+    for i := 0 to N - 1 do
       writeln(Destination[i])
   else
     writeln('Error');
