@@ -69,8 +69,7 @@ var
         if T[j] = 0 then
           break;
       for k := 0 to 25 do
-        if (T[k] <> 1 shl 26) then
-          T[k] := T[k] and not (1 shl j);
+        T[k] := T[k] and not (1 shl j);
       T[j] := 1 shl 26;
       Cypher[j] := chr(c + 97);
       c := c + 1;
