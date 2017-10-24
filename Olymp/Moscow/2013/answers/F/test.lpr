@@ -1,7 +1,7 @@
 program test;
 
 const
-  MaxT = 50;
+  MaxT = 30;
   Max = 15;
   Lim = 10000;
 var
@@ -20,7 +20,7 @@ type
 
   function f(n: integer): TRes;
   var
-    a, b, c, temp: qword;
+    a, b, temp: qword;
     i, j: integer;
     q: integer = 0;
   begin
@@ -40,9 +40,9 @@ type
 
         while b > 0 do
         begin
-          c := a mod b;
+          temp := a mod b;
           a := b;
-          b := c;
+          b := temp;
           q := q + 1;
         end;
 
@@ -73,12 +73,38 @@ type
     exit(g);
   end;
 
+  function check(x: TRes): boolean;
+  var
+    temp: qword;
+    q: integer = 0;
+  begin
+    if x.a < x.b then
+    begin
+      temp := x.a;
+      x.a := x.b;
+      x.b := temp;
+    end;
+
+    while x.b > 0 do
+    begin
+      temp := x.a mod x.b;
+      x.a := x.b;
+      x.b := temp;
+      q := q + 1;
+    end;
+
+    if q = N then
+      exit(True)
+    else
+      exit(False);
+  end;
+
 begin
   randomize();
   for i := 1 to MaxT do
   begin
     init();
-    if (f(N).a <> g(N).a) and (f(N).b <> g(N).b) then
+    if not check(f(N)) or not check(g(N)) then
       writeln('Error!');
   end;
   writeln('All tests passed');
