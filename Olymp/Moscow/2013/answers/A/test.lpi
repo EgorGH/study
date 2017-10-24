@@ -35,6 +35,7 @@
       <Unit0>
         <Filename Value="test.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="test_slow"/>
       </Unit0>
     </Units>
   </ProjectOptions>

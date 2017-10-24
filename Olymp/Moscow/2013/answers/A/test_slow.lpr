@@ -1,9 +1,9 @@
 program test_slow;
 
 const
-  HMax = 20;
+  HMax = 10;
   WMax = 8;
-  TMax = 1;
+  TMax = 2;
 type
   tdata = ^shortstring;
   tcypher = ^char;
@@ -12,7 +12,7 @@ var
   Source, Destination: tdata;
   Cypher: tcypher;
   T: array[0..25, 0..26] of boolean;
-  N, tt: integer;
+  N, tt, i: integer;
 
   procedure randomize_text(Source: tdata);
   var
@@ -111,7 +111,7 @@ var
     writeln();
   end;
 
-  procedure process_data(Source: tdata);
+  procedure process_data(Data: tdata);
   var
     i, j, ltr, a, b: integer;
   begin
@@ -119,13 +119,33 @@ var
       for j := i + 1 to N - 1 do
       begin
         ltr := 1;
-        while Source[i][ltr] = Source[j][ltr] do
+        while Data[i][ltr] = Data[j][ltr] do
           ltr := ltr + 1;
-        a := Ord(Source[i][ltr]) - 97;
-        b := Ord(Source[j][ltr]) - 97;
+        a := Ord(Data[i][ltr]) - 97;
+        b := Ord(Data[j][ltr]) - 97;
         if (a >= 0) and (b >= 0) then
           T[b, a] := True;
       end;
+  end;
+
+  procedure print_table();
+  var
+    i, j: integer;
+  begin
+    Write('': 3);
+    for i := 0 to 25 do
+      Write(chr(i + 97): 3);
+    writeln();
+    for i := 0 to 25 do
+    begin
+      Write(chr(i + 97): 3);
+      for j := 0 to 25 do
+        if T[i, j] then
+          Write(1: 3)
+        else
+          Write('': 3);
+      writeln();
+    end;
   end;
 
   procedure generate_cypher(Cypher: tcypher);
@@ -144,12 +164,12 @@ var
             s := s + 1;
         if s = 0 then
           break;
+        for k := 0 to 25 do
+          T[k, j] := False;
+        T[j, 26] := True;
+        Cypher[j] := chr(c + 97);
+        c := c + 1;
       end;
-      for k := 0 to 25 do
-        T[k, j] := False;
-      T[j, 26] := True;
-      Cypher[j] := chr(c + 97);
-      c := c + 1;
     end;
   end;
 
@@ -162,16 +182,23 @@ begin
   for tt := 1 to TMax do
   begin
     randomize_text(Source);
+
     sort_text(Source);
-    if not check_text(Source) then
-      print_text(Source);
+
     randomize_cypher(Cypher);
+
     decode(Source, Destination, Cypher);
+
+    for i := 0 to 25 do
+      Cypher[i] := chr(i + 97);
     generate_cypher(Cypher);
+
     decode(Destination, Source, Cypher);
+
     if not check_text(Source) then
     begin
       print_text(Destination);
+      print_table();
       print_cypher(Cypher);
       print_text(Source);
     end;
