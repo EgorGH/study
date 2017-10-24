@@ -80,11 +80,7 @@ begin
     min1 := f(n, k);
     min2 := g(n, k);
     if min1 <> min2 then
-    begin
-      writeln('Error! ', n, ' ', k);
-      break;
-    end;
+      writeln('Error! ', n, ' ', k, ' ', min1, ' ', min2);
   end;
   writeln('All tests passed');
-  readln();
 end.
