@@ -10,9 +10,7 @@ var
   procedure init();
   begin
     n := random(Max) + 1;
-    k := random(Max) + 1;
-    while k > n do
-      k := random(Max) + 1;
+    k := random(n) + 1;
   end;
 
   function f(n, k: integer): integer;
