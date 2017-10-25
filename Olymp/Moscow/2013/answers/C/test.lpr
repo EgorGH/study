@@ -5,14 +5,9 @@ const
   Max = 1000;
 
 var
-  i, N, q1, q2: longint;
+  t, N, q1, q2: longint;
 
-  procedure init();
-  begin
-    N := random(Max) + 1;
-  end;
-
-  function f(): longint;
+  function full_search(N: longint): longint;
   var
     a, b, c: array of byte;
     i, j, q: longint;
@@ -45,7 +40,7 @@ var
     exit(q);
   end;
 
-  function g(): longint;
+  function optimal_search(N: longint): longint;
   var
     q, p, w: qword;
   begin
@@ -76,16 +71,13 @@ var
 
 begin
   randomize();
-  for i := 1 to MaxT do
+  for t := 1 to MaxT do
   begin
-    init();
-    q1 := f();
-    q2 := g();
+    N := random(Max) + 1;
+    q1 := full_search(N);
+    q2 := optimal_search(N);
     if q1 <> q2 then
-    begin
       writeln('Error! ', N);
-      break;
-    end;
   end;
   writeln('All tests passed');
 end.
