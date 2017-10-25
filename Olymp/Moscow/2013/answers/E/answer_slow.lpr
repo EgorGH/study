@@ -35,5 +35,4 @@ begin
     readln(N, K, a, b);
     writeln(f(n, k));
   end;
-  readln();
 end.

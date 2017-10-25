@@ -29,5 +29,4 @@ begin
   end;
 
   writeln(xmin, ' ', ymin);
-  readln();
 end.

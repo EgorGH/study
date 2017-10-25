@@ -30,6 +30,5 @@ begin
   end;
 
   writeln(q);
-  readln();
 end.
 

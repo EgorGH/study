@@ -32,7 +32,6 @@ begin
       if q = N then
       begin
         Writeln(i, ' ', j);
-        readln();
         exit();
       end;
     end;

@@ -17,5 +17,4 @@ begin
     y := (k - a * x) div c;
 
   writeln(x, ' ', y);
-  readln();
 end.

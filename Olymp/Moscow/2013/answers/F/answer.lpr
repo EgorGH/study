@@ -15,5 +15,4 @@ begin
     a := c;
   end;
   writeln(a, ' ', b);
-  readln();
 end.

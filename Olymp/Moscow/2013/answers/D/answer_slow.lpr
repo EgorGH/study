@@ -30,6 +30,4 @@ begin
       end;
     end;
   end;
-
-  readln();
 end.

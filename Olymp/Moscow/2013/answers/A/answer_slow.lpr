@@ -122,6 +122,4 @@ begin
       writeln(Destination[i])
   else
     writeln('Error');
-
-  readln();
 end.

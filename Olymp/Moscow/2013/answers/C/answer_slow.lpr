@@ -32,5 +32,4 @@ begin
       q := q + 1;
 
   writeln(q);
-  readln();
 end.

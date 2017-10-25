@@ -1,4 +1,4 @@
 @echo off
-fpc test.lpr -otest.exe > test.tmp
+fpc -MObjFPC test.lpr -otest.exe > test.tmp 
 test.exe
 del *.tmp *.exe *.o
