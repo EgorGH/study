@@ -1,9 +1,9 @@
-program test_slow;
+program test;
 
 const
-  HMax = 20;
-  WMax = 8;
-  TMax = 1;
+  HMax = 10;
+  WMax = 10;
+  TMax = 1000;
 type
   tdata = ^shortstring;
   tcypher = ^char;
@@ -13,7 +13,7 @@ var
   Source, Destination: tdata;
   Cypher: tcypher;
   Predecessors: tpred;
-  N, tt, i: integer;
+  N, tt: integer;
 
   procedure randomize_text(Source: tdata);
   var
@@ -112,58 +112,6 @@ var
     writeln();
   end;
 
-  procedure mark(a, b: char; Pr: tpred);
-  var
-    x, y: integer;
-  begin
-    x := Ord(a) - 97;
-    y := Ord(b) - 97;
-    if (x >= 0) and (y >= 0) and (x <= 25) and (y <= 25) then
-      Pr[y] := Pr[y] or (1 shl x);
-  end;
-
-  procedure p(D: tdata; a, b, c: integer; Pr: tpred);
-  var
-    x, y: integer;
-  begin
-    if a = b then
-      exit();
-    x := a;
-    for y := a to b do
-    begin
-      if D[x][c] <> D[y][c] then
-      begin
-        mark(D[x][c], D[y][c], Pr);
-        p(D, x, y - 1, c + 1, Pr);
-        x := y;
-      end;
-    end;
-    p(D, x, b, c + 1, Pr);
-  end;
-
-  procedure fill_predecessors(D: tdata; Pr: tpred);
-  begin
-    p(D, 0, N - 1, 1, Pr);
-  end;
-
-  procedure generate_cypher(Predecessors: tpred; Cypher: tcypher);
-  var
-    i, j, k: integer;
-    c: byte = 0;
-  begin
-    for i := 0 to 25 do
-    begin
-      for j := 0 to 25 do
-        if Predecessors[j] = 0 then
-          break;
-      for k := 0 to 25 do
-        Predecessors[k] := Predecessors[k] and not (1 shl j);
-      Predecessors[j] := 1 shl 26;
-      Cypher[j] := chr(c + 97);
-      c := c + 1;
-    end;
-  end;
-
   procedure print_table(Predecessors: tpred);
   var
     i, j: longword;
@@ -184,6 +132,65 @@ var
     end;
   end;
 
+  procedure mark(a, b: char; Pr: tpred);
+  var
+    x, y: integer;
+  begin
+    x := Ord(a) - 97;
+    y := Ord(b) - 97;
+    if (x >= 0) and (y >= 0) and (x <= 25) and (y <= 25) then
+      Pr[y] := Pr[y] or (1 shl x);
+  end;
+
+  procedure p(D: tdata; a, b, c: integer; Predecessors: tpred; debug: boolean);
+  var
+    x, y: integer;
+  begin
+    if a = b then
+      exit();
+    x := a;
+    for y := a to b do
+    begin
+      if (D[x][c] <> D[y][c]) then
+      begin
+        mark(D[x][c], D[y][c], Predecessors);
+        if debug then
+          print_table(predecessors);
+        p(D, x, y - 1, c + 1, Predecessors, debug);
+        x := y;
+      end;
+    end;
+    p(D, x, b, c + 1, Predecessors, debug);
+  end;
+
+  procedure fill_predecessors(D: tdata; predecessors: tpred; Cypher: tcypher;
+    debug: boolean);
+  var
+    i: integer;
+  begin
+    for i := 0 to 26 do
+      predecessors[i] := 0;
+    p(D, 0, N - 1, 1, predecessors, debug);
+  end;
+
+  procedure generate_cypher(Predecessors: tpred; Cypher: tcypher);
+  var
+    i, j, c, k: integer;
+  begin
+    c := 0;
+    for i := 0 to 25 do
+    begin
+      for j := 0 to 25 do
+        if Predecessors[j] = 0 then
+          break;
+      for k := 0 to 25 do
+        Predecessors[k] := Predecessors[k] and not (1 shl j);
+      Predecessors[j] := 1 shl 26;
+      Cypher[j] := chr(c + 97);
+      c := c + 1;
+    end;
+  end;
+
 begin
   Source := GetMem(HMax * sizeof(shortstring));
   Destination := GetMem(HMax * sizeof(shortstring));
@@ -201,7 +208,7 @@ begin
 
     decode(Source, Destination, Cypher);
 
-    fill_predecessors(Destination, Predecessors);
+    fill_predecessors(Destination, Predecessors, Cypher, False);
 
     generate_cypher(Predecessors, Cypher);
 
@@ -212,6 +219,9 @@ begin
       print_text(Destination);
       print_table(Predecessors);
       print_cypher(Cypher);
+      print_text(Source);
+      fill_predecessors(Destination, Predecessors, Cypher, True);
+      generate_cypher(Predecessors, Cypher);
       writeln('Test failed');
     end;
   end;
