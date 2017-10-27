@@ -1,7 +1,7 @@
 program test;
 
 const
-  HMax = 10;
+  HMax = 1000;
   WMax = 10;
   TMax = 1000;
 type
@@ -149,6 +149,11 @@ var
     if a = b then
       exit();
     x := a;
+    if (length(D[x]) < c) then
+    begin
+      p(D, x + 1, b, c, Predecessors, debug);
+      exit();
+    end;
     for y := a to b do
     begin
       if (D[x][c] <> D[y][c]) then
