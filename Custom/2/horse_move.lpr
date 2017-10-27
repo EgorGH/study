@@ -4,7 +4,7 @@ var
   a, b, c, d: integer;
   moves: array[1..8, 1..2] of
   integer = ((1, 2), (-1, -2), (2, 1), (-2, -1), (-1, 2), (1, -2), (-2, 1), (2, -1));
-  trace: array[1..4, 1..4] of boolean;
+  trace: array[1..8, 1..8] of boolean;
 
   function full_search(a, b, c, d: integer): integer;
   var
@@ -15,7 +15,7 @@ var
     if (a = c) and (b = d) then
       exit(0);
 
-    if (a < 1) or (b < 1) or (a > 4) or (b > 4) then
+    if (a < 1) or (b < 1) or (a > 8) or (b > 8) then
       exit(-1);
 
     if trace[a, b] then
@@ -25,8 +25,6 @@ var
 
     for i := 1 to 8 do
       q[i] := full_search(a + moves[i, 1], b + moves[i, 2], c, d);
-
-    trace[a, b] := False;
 
     for i := 1 to 8 do
       if (q[i] >= 0) and (not found or (q[i] < minq)) then
