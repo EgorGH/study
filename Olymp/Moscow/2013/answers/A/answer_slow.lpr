@@ -162,5 +162,4 @@ begin
   end
   else
     print_text(Source);
-  readln();
 end.
