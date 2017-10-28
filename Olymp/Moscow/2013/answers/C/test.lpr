@@ -2,7 +2,7 @@ program test;
 
 const
   MaxT = 1000;
-  Max = 1000;
+  MaxN = 1000;
 
 var
   t, N, q1, q2: longint;
@@ -42,7 +42,7 @@ var
 
   function optimal_search(N: longint): longint;
   var
-    q, p, w: qword;
+    q, p, w: longint;
   begin
 
     p := 1;
@@ -73,7 +73,7 @@ begin
   randomize();
   for t := 1 to MaxT do
   begin
-    N := random(Max) + 1;
+    N := random(MaxN) + 1;
     q1 := full_search(N);
     q2 := optimal_search(N);
     if q1 <> q2 then
