@@ -1,50 +1,118 @@
 program answer_slow;
 
+type
+  tdata = array of shortstring;
+  tcypher = array of char;
+  tpred = array of array of boolean;
 
 var
-  Source, Destination: array of string;
-  T: array[0..25, 0..26] of boolean;
-  Cypher: array[0..25] of char;
+  Source, Destination: tdata;
+  Cypher: tcypher;
+  Predecessors: tpred;
   N, i: integer;
 
-  procedure process_data();
+  procedure print_text(var Source: tdata);
   var
-    i, j, ltr, a, b: integer;
+    i: integer;
   begin
-    for i := 0 to N - 2 do
-      for j := i + 1 to N - 1 do
-      begin
-        ltr := 1;
-        while Source[i][ltr] = Source[j][ltr] do
-          ltr := ltr + 1;
-        a := Ord(Source[i][ltr]) - 97;
-        b := Ord(Source[j][ltr]) - 97;
-        if (a >= 0) and (b >= 0) then
-          T[b, a] := True;
-      end;
+    for i := 0 to N - 1 do
+      writeln(Source[i]);
   end;
 
-  procedure print_table();
+  function check_text(var Source: tdata): boolean;
+  var
+    i: integer;
+  begin
+    for i := 0 to N - 2 do
+      if Source[i] > Source[i + 1] then
+        exit(False);
+    exit(True);
+  end;
+
+  function decode(s: shortstring; var cypher: tcypher): shortstring;
+  var
+    d: shortstring;
+    i: integer;
+  begin
+    d := '';
+    for i := 1 to Length(s) do
+      d := d + cypher[Ord(s[i]) - 97];
+    exit(d);
+  end;
+
+  procedure decode(var Source, Destination: tdata; cypher: tcypher);
+  var
+    i: integer;
+  begin
+    for i := 0 to N - 1 do
+      Destination[i] := decode(Source[i], Cypher);
+  end;
+
+  procedure print_cypher(var Cypher: tcypher);
+  var
+    i: integer;
+  begin
+    for i := 0 to 25 do
+      Write(chr(i + 97): 2);
+    writeln();
+    for i := 0 to 25 do
+      Write(Cypher[i]: 2);
+    writeln();
+  end;
+
+  procedure print_table(var Predecessors: tpred);
   var
     i, j: integer;
   begin
-    Write('': 3);
+    Write('': 2);
     for i := 0 to 25 do
-      Write(chr(i + 97): 3);
+      Write(chr(i + 97): 2);
     writeln();
     for i := 0 to 25 do
     begin
-      Write(chr(i + 97): 3);
+      Write(chr(i + 97): 2);
       for j := 0 to 25 do
-        if T[i, j] then
-          Write(1: 3)
+        if Predecessors[i, j] then
+          Write(1: 2)
         else
-          Write('': 3);
+          Write('': 2);
       writeln();
     end;
   end;
 
-  procedure fill_cypher();
+  procedure fill_predecessors(var Destination: tdata; Predecessors: tpred);
+  var
+    i, j, ltr, a, b: integer;
+    error: boolean;
+  begin
+    for i := 0 to 25 do
+      for j := 0 to 26 do
+        Predecessors[i, j] := False;
+
+    for i := 0 to N - 2 do
+      for j := i + 1 to N - 1 do
+      begin
+        error := False;
+        ltr := 1;
+        while (Destination[i][ltr] = Destination[j][ltr]) do
+        begin
+          ltr := ltr + 1;
+          if (ltr > length(Destination[i])) or (ltr > length(Destination[j])) then
+          begin
+            error := True;
+            break;
+          end;
+        end;
+        if error then
+          break;
+        a := Ord(Destination[i][ltr]) - 97;
+        b := Ord(Destination[j][ltr]) - 97;
+        if (a >= 0) and (b >= 0) and (a <= 25) and (b <= 25) then
+          Predecessors[b, a] := True;
+      end;
+  end;
+
+  procedure generate_cypher(var Predecessors: tpred; Cypher: tcypher);
   var
     i, j, k, s: integer;
     c: byte = 0;
@@ -55,51 +123,17 @@ var
       begin
         s := 0;
         for k := 0 to 26 do
-          if T[j, k] then
+          if Predecessors[j, k] then
             s := s + 1;
         if s = 0 then
           break;
       end;
       for k := 0 to 25 do
-        T[k, j] := False;
-      T[j, 26] := True;
+        Predecessors[k, j] := False;
+      Predecessors[j, 26] := True;
       Cypher[j] := chr(c + 97);
       c := c + 1;
     end;
-  end;
-
-  procedure print_cypher();
-  var
-    i: integer;
-  begin
-    for i := 0 to 25 do
-      Write(chr(i + 97): 3);
-    writeln();
-    for i := 0 to 25 do
-      Write(Cypher[i]: 3);
-    writeln();
-  end;
-
-  function decode(s: string): string;
-  var
-    i, j: integer;
-  begin
-    decode := '';
-    for i := 1 to length(s) do
-    begin
-      j := Ord(s[i]) - 97;
-      decode := decode + Cypher[j];
-    end;
-  end;
-
-  function check_result(): boolean;
-  var
-    i: integer;
-  begin
-    for i := 0 to N - 2 do
-      if Destination[i] > Destination[i + 1] then
-        exit(False);
-    exit(True);
   end;
 
 begin
@@ -107,19 +141,26 @@ begin
 
   SetLength(Source, N);
   SetLength(Destination, N);
+  SetLength(Cypher, 26);
+  SetLength(Predecessors, 26, 27);
 
   for i := 0 to N - 1 do
-    readln(Source[i]);
+    readln(Destination[i]);
 
-  process_data();
-  fill_cypher();
+  fill_predecessors(Destination, Predecessors);
 
-  for i := 0 to N - 1 do
-    Destination[i] := decode(Source[i]);
+  generate_cypher(Predecessors, Cypher);
 
-  if check_result() then
-    for i := 0 to N - 1 do
-      writeln(Destination[i])
+  decode(Destination, Source, Cypher);
+
+  if not check_text(Source) then
+  begin
+    print_text(Source);
+    print_table(Predecessors);
+    print_cypher(Cypher);
+    writeln('Error!');
+  end
   else
-    writeln('Error');
+    print_text(Source);
+  readln();
 end.

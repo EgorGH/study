@@ -132,50 +132,47 @@ var
     end;
   end;
 
-  procedure mark(a, b: char; Pr: tpred);
+  procedure mark(a, b: char; Predecessors: tpred);
   var
     x, y: integer;
   begin
     x := Ord(a) - 97;
     y := Ord(b) - 97;
     if (x >= 0) and (y >= 0) and (x <= 25) and (y <= 25) then
-      Pr[y] := Pr[y] or (1 shl x);
+      Predecessors[y] := Predecessors[y] or (1 shl x);
   end;
 
-  procedure p(D: tdata; a, b, c: integer; Predecessors: tpred; debug: boolean);
+  procedure p(Destination: tdata; a, b, c: integer; Predecessors: tpred);
   var
     x, y: integer;
   begin
     if a = b then
       exit();
     x := a;
-    if (length(D[x]) < c) then
+    if (length(Destination[x]) < c) then
     begin
-      p(D, x + 1, b, c, Predecessors, debug);
+      p(Destination, x + 1, b, c, Predecessors);
       exit();
     end;
     for y := a to b do
     begin
-      if (D[x][c] <> D[y][c]) then
+      if (Destination[x][c] <> Destination[y][c]) then
       begin
-        mark(D[x][c], D[y][c], Predecessors);
-        if debug then
-          print_table(predecessors);
-        p(D, x, y - 1, c + 1, Predecessors, debug);
+        mark(Destination[x][c], Destination[y][c], Predecessors);
+        p(Destination, x, y - 1, c + 1, Predecessors);
         x := y;
       end;
     end;
-    p(D, x, b, c + 1, Predecessors, debug);
+    p(Destination, x, b, c + 1, Predecessors);
   end;
 
-  procedure fill_predecessors(D: tdata; predecessors: tpred; Cypher: tcypher;
-    debug: boolean);
+  procedure fill_predecessors(Destination: tdata; Predecessors: tpred);
   var
     i: integer;
   begin
     for i := 0 to 26 do
-      predecessors[i] := 0;
-    p(D, 0, N - 1, 1, predecessors, debug);
+      Predecessors[i] := 0;
+    p(Destination, 0, N - 1, 1, Predecessors);
   end;
 
   procedure generate_cypher(Predecessors: tpred; Cypher: tcypher);
@@ -213,7 +210,7 @@ begin
 
     decode(Source, Destination, Cypher);
 
-    fill_predecessors(Destination, Predecessors, Cypher, False);
+    fill_predecessors(Destination, Predecessors);
 
     generate_cypher(Predecessors, Cypher);
 
@@ -225,11 +222,8 @@ begin
       print_table(Predecessors);
       print_cypher(Cypher);
       print_text(Source);
-      fill_predecessors(Destination, Predecessors, Cypher, True);
-      generate_cypher(Predecessors, Cypher);
       writeln('Test failed');
     end;
   end;
   writeln('Done');
-  readln();
 end.
