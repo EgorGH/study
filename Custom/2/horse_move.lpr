@@ -1,43 +1,47 @@
 program horse_move;
 
 var
-  a, b, c, d: integer;
-  moves: array[1..8, 1..2] of
-  integer = ((1, 2), (-1, -2), (2, 1), (-2, -1), (-1, 2), (1, -2), (-2, 1), (2, -1));
-  trace: array[1..8, 1..8] of boolean;
+  a, b, c, d: longint;
 
-  function full_search(a, b, c, d: integer): integer;
+  function min_moves(a, b, c, d: longint): longint;
   var
-    minq, i: integer;
+    i, j, q, k, x, y: longint;
     found: boolean = False;
-    q: array[1..8] of integer = (-1, -1, -1, -1, -1, -1, -1, -1);
+    moves: array[1..8, 1..2] of
+    longint = ((1, 2), (-1, -2), (2, 1), (-2, -1), (-1, 2), (1, -2), (-2, 1), (2, -1));
+    trace: array[1..8, 1..8] of longint;
   begin
-    if (a = c) and (b = d) then
-      exit(0);
-
-    if (a < 1) or (b < 1) or (a > 8) or (b > 8) then
-      exit(-1);
-
-    if trace[a, b] then
-      exit(-1);
-
-    trace[a, b] := True;
-
     for i := 1 to 8 do
-      q[i] := full_search(a + moves[i, 1], b + moves[i, 2], c, d);
+      for j := 1 to 8 do
+        trace[i, j] := 0;
 
-    for i := 1 to 8 do
-      if (q[i] >= 0) and (not found or (q[i] < minq)) then
-      begin
-        found := True;
-        minq := q[i];
-      end;
+    trace[a, b] := 1;
+    q := 0;
 
-    exit(minq + 1);
+    while not found do
+    begin
+      q := q + 1;
+      for i := 1 to 8 do
+        for j := 1 to 8 do
+        begin
+          if (i = c) and (j = d) and (trace[i, j] <> 0) then
+            exit(trace[i, j] - 1);
+
+          if trace[i, j] = q then
+            for k := 1 to 8 do
+            begin
+              x := i + moves[k, 1];
+              y := j + moves[k, 2];
+              if (trace[x, y] = 0) and (x >= 1) and (y >= 1) and
+                (x <= 8) and (y <= 8) then
+                trace[x, y] := q + 1;
+            end;
+        end;
+    end;
   end;
 
 begin
   readln(a, b, c, d);
-  writeln(full_search(a, b, c, d));
+  writeln(min_moves(a, b, c, d));
   readln();
 end.
