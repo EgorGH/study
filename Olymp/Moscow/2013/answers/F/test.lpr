@@ -1,61 +1,62 @@
 program test;
 
 const
-  MaxT = 30;
-  Max = 15;
-  Lim = 10000;
-var
-  i, N: integer;
+  MaxT = 100;
+  MaxN = 15;
 
 type
   TRes = record
-    a: qword;
-    b: qword;
+    a: longint;
+    b: longint;
   end;
 
-  procedure init();
-  begin
-    N := random(Max) + 1;
-  end;
+var
+  t, N: longint;
+  r1, r2: TRes;
 
-  function f(n: integer): TRes;
+  function euclid(a, b: longint): longint;
   var
-    a, b, temp: qword;
-    i, j: integer;
-    q: integer = 0;
+    temp: longint;
+    q: longint = 0;
   begin
-    for i := 1 to Lim do
-      for j := 1 to Lim do
-      begin
-        a := i;
-        b := j;
-        q := 0;
+    if a < b then
+    begin
+      temp := a;
+      a := b;
+      b := temp;
+    end;
 
-        if a < b then
-        begin
-          temp := a;
-          a := b;
-          b := temp;
-        end;
+    while b > 0 do
+    begin
+      temp := a mod b;
+      a := b;
+      b := temp;
+      q := q + 1;
+    end;
 
-        while b > 0 do
-        begin
-          temp := a mod b;
-          a := b;
-          b := temp;
-          q := q + 1;
-        end;
-
-        if q = N then
-        begin
-          f.a := i;
-          f.b := j;
-          exit(f);
-        end;
-      end;
+    exit(q);
   end;
 
-  function g(n: integer): TRes;
+  function full_search(N: longint): TRes;
+  var
+    d, i: longint;
+    found: boolean = False;
+  begin
+    d := 2;
+    while not found do
+    begin
+      for i := 1 to d - 1 do
+        if euclid(i, d - i) = N then
+        begin
+          full_search.a := i;
+          full_search.b := d - i;
+          exit(full_search);
+        end;
+      d := d + 1;
+    end;
+  end;
+
+  function optimal_search(N: longint): TRes;
   var
     a, b, c: qword;
     i: integer;
@@ -68,44 +69,20 @@ type
       b := a + b;
       a := c;
     end;
-    g.a := a;
-    g.b := b;
-    exit(g);
-  end;
-
-  function check(x: TRes): boolean;
-  var
-    temp: qword;
-    q: integer = 0;
-  begin
-    if x.a < x.b then
-    begin
-      temp := x.a;
-      x.a := x.b;
-      x.b := temp;
-    end;
-
-    while x.b > 0 do
-    begin
-      temp := x.a mod x.b;
-      x.a := x.b;
-      x.b := temp;
-      q := q + 1;
-    end;
-
-    if q = N then
-      exit(True)
-    else
-      exit(False);
+    optimal_search.a := a;
+    optimal_search.b := b;
+    exit(optimal_search);
   end;
 
 begin
   randomize();
-  for i := 1 to MaxT do
+  for t := 1 to MaxT do
   begin
-    init();
-    if not check(f(N)) or not check(g(N)) then
+    N := random(MaxN) + 1;
+    r1 := full_search(N);
+    r2 := optimal_search(N);
+    if (euclid(r1.a, r1.b) <> N) or (euclid(r2.a, r2.b) <> N) then
       writeln('Error!');
   end;
-  writeln('All tests passed');
+  writeln('Done');
 end.

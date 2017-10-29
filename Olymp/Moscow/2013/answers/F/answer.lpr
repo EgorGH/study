@@ -5,30 +5,30 @@ uses
 
 var
   a, b, c: shortstring;
-  i, N: integer;
+  i, N: longint;
 
-  function sum_of_str(s1, s2: shortstring): shortstring;
+  function add(a, b: shortstring): shortstring;
   var
-    i, d1, d2, rem, dsum: integer;
+    i, x, y, rem, dsum: longint;
     sum: shortstring;
   begin
-    while length(s1) <> length(s2) do
+    while length(a) <> length(b) do
     begin
-      if length(s1) > length(s2) then
-        s2 := '0' + s2
+      if length(a) > length(b) then
+        b := '0' + b
       else
-        s1 := '0' + s1;
+        a := '0' + a;
     end;
 
     sum := '';
     rem := 0;
 
-    for i := length(s1) downto 1 do
+    for i := length(a) downto 1 do
     begin
-      d1 := StrToInt(s1[i]);
-      d2 := StrToInt(s2[i]);
+      x := StrToInt(a[i]);
+      y := StrToInt(b[i]);
 
-      dsum := d1 + d2 + rem;
+      dsum := x + y + rem;
 
       rem := dsum div 10;
       dsum := dsum mod 10;
@@ -49,7 +49,7 @@ begin
   for i := 3 to N + 2 do
   begin
     c := b;
-    b := sum_of_str(a, b);
+    b := add(a, b);
     a := c;
   end;
   writeln(a, ' ', b);
