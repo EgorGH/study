@@ -5,8 +5,9 @@ uses
 
 const
   MaxT = 1000000;
-  Max = 100;
-  RMax = 1000;
+  MaxABCD = 100;
+  MaxR = 1000;
+  MaxQ = 1000000;
 
 type
   TRes = record
@@ -15,31 +16,45 @@ type
     r: longint;
   end;
 var
-  a, b, c, d, k, n: int64;
+  a, b, c, d, k, n: longint;
   i: longint;
   r1, r2, r3: TRes;
 
   procedure init();
   begin
-    a := int64(random(Max)) + 1;
-    b := int64(random(Max)) + 1;
-    c := int64(random(Max)) + 1;
-    d := int64(random(Max)) + 1;
-    k := int64(random(RMax)) + 1;
-    n := int64(random(RMax)) + 1;
+    a := random(MaxABCD) + 1;
+    b := random(MaxABCD) + 1;
+    c := random(MaxABCD) + 1;
+    d := random(MaxABCD) + 1;
+    k := random(MaxR) + 1;
+    n := random(MaxR) + 1;
   end;
 
-  function min(a, b: int64): int64;
+  function min(a, b: longint): longint;
   begin
-    if (a < b) then
+    if a < b then
       min := a
     else
       min := b;
   end;
 
-  function full_search(a, b, c, d, k, n: int64): TRes;
+  function min(a, b, c: longint): longint;
+  begin
+    if a < b then
+      if a < c then
+        min := a
+      else
+        min := c
+    else
+    if b < c then
+      min := b
+    else
+      min := c;
+  end;
+
+  function full_search(a, b, c, d, k, n: longint): TRes;
   var
-    x, y, r, xmin, ymin, rmin: int64;
+    x, y, r, xmin, ymin, rmin: longint;
   begin
     x := 0;
     y := min(k div c, n div d);
@@ -70,7 +85,7 @@ var
   var
     x0, y0: longint;
   begin
-    if (a * d - b * c) = 0 then
+    if a * d - b * c = 0 then
       exit(0);
 
     x0 := floor((k * d - n * c) / (a * d - b * c));
@@ -88,101 +103,75 @@ var
       y0 := min((k - a * x0) div c, (n - b * x0) div d);
     end;
 
-    if (x0 < 0) then
-      exit(0);
-
-    exit(x0);
+    if x0 < 0 then
+      exit(0)
+    else
+      exit(x0);
   end;
 
-  function f(x0, delta, a, b, c, d, k, n: longint): TRes;
+  function get_res(x0, delta, a, b, c, d, k, n: longint): TRes;
   begin
-    f.x := x0 + delta;
-    f.y := min((k - a * f.x) div c, (n - b * f.x) div d);
-    f.r := k + n - a * f.x - b * f.x - c * f.y - d * f.y;
+    get_res.x := x0 + delta;
+    get_res.y := min((k - a * get_res.x) div c, (n - b * get_res.x) div d);
+    get_res.r := k + n - a * get_res.x - b * get_res.x - c * get_res.y - d * get_res.y;
+  end;
+
+  function full_search(res0, res1, res2: TRes;
+    x0, delta, a, b, c, d, k, n: longint): TRes;
+  var
+    x, min: longint;
+    q: longint = 0;
+    save: TRes;
+    found: boolean = False;
+  begin
+    x := x0;
+
+    while (k - c * res2.y >= 0) and (n - d * res2.y >= 0) and
+      (k - a * res2.x >= 0) and (n - b * res2.x >= 0) and (res0.x >= 0) and
+      (res0.y >= 0) and (q < MaxQ) do
+    begin
+      x := x + delta;
+
+      res0 := get_res(x, 0, a, b, c, d, k, n);
+      res1 := get_res(x, -1 * delta, a, b, c, d, k, n);
+      res2 := get_res(x, delta, a, b, c, d, k, n);
+
+      if not found or (res0.r < min) then
+      begin
+        found := True;
+        min := res0.r;
+        save := res0;
+      end;
+
+      q := q + 1;
+    end;
+    exit(save);
   end;
 
   function optimal_search(a, b, c, d, k, n: longint): TRes;
   var
-    res0, res1, res2, save, save0, save1, save2: TRes;
-    min0, min1, min2, x0: longint;
-    qa: integer = 0;
-    qb: integer = 0;
+    res0, res1, res2, x, y, z: TRes;
+    x0: longint;
   begin
     x0 := analyze(a, b, c, d, k, n);
+
     if x0 = 0 then
       exit(full_search(a, b, c, d, k, n));
 
-    res0 := f(x0, 0, a, b, c, d, k, n);
-    res1 := f(x0, -1, a, b, c, d, k, n);
-    res2 := f(x0, 1, a, b, c, d, k, n);
+    res0 := get_res(x0, 0, a, b, c, d, k, n);
+    res1 := get_res(x0, -1, a, b, c, d, k, n);
+    res2 := get_res(x0, 1, a, b, c, d, k, n);
 
-    save0 := res0;
-    save := res0;
-    min0 := res0.r;
+    x := res0;
+    y := full_search(res0, res1, res2, x0, 1, a, b, c, d, k, n);
+    z := full_search(res0, res2, res1, x0, -1, a, b, c, d, k, n);
 
-    while (k - c * res2.y >= 0) and (n - d * res2.y >= 0) and
-      (k - a * res2.x >= 0) and (n - b * res2.x >= 0) and (res0.x >= 0) and
-      (res0.y >= 0) and (qa < 30) do
-    begin
-      x0 := x0 + 1;
-
-      res0 := f(x0, 0, a, b, c, d, k, n);
-      res1 := f(x0, -1, a, b, c, d, k, n);
-      res2 := f(x0, 1, a, b, c, d, k, n);
-
-      if (res0.r <= res2.r) and (res0.r <= res1.r) then
-      begin
-        qa := qa + 1;
-        if res0.r < min0 then
-        begin
-          min0 := res0.r;
-          save0 := res0;
-        end;
-      end;
-    end;
-
-    min1 := res0.r;
-    save1 := res0;
-
-    x0 := save.x;
-    res0 := f(x0, 0, a, b, c, d, k, n);
-    res1 := f(x0, -1, a, b, c, d, k, n);
-    res2 := f(x0, 1, a, b, c, d, k, n);
-
-    while (k - c * res1.y >= 0) and (n - d * res1.y >= 0) and
-      (k - a * res1.x >= 0) and (n - b * res1.x >= 0) and (res0.x >= 0) and
-      (res0.y >= 0) and (qb < 30) do
-    begin
-      x0 := x0 - 1;
-
-      res0 := f(x0, 0, a, b, c, d, k, n);
-      res1 := f(x0, -1, a, b, c, d, k, n);
-      res2 := f(x0, 1, a, b, c, d, k, n);
-
-      if (res0.r <= res2.r) and (res0.r <= res1.r) then
-      begin
-        qb := qb + 1;
-        if res0.r < min0 then
-        begin
-          min0 := res0.r;
-          save0 := res0;
-        end;
-      end;
-    end;
-
-    min2 := res0.r;
-    save2 := res0;
-
-    if min2 < min1 then
-      if min2 < min0 then
-        optimal_search := save2
-      else
-        optimal_search := save0
+    if min(x.r, y.r, z.r) = x.r then
+      exit(x)
+    else if min(x.r, y.r, z.r) = y.r then
+      exit(y)
     else
-    if min1 < min0 then
-      optimal_search := save1
-    else
-      optimal_search := save0;
+      exit(z);
   end;
 
 begin
@@ -197,7 +186,6 @@ begin
     begin
       writeln(a, ' ', b, ' ', c, ' ', d, ' ', k, ' ', n);
       writeln(r1.r, ' ', r2.r, ' ', r3.r);
-      r3 := optimal_search(a, b, c, d, k, n);
       writeln('Error');
     end;
   end;
