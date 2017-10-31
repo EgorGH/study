@@ -16,27 +16,25 @@ var
         trace[i, j] := 0;
 
     trace[a, b] := 1;
-    q := 0;
+    q := 1;
 
     while not found do
     begin
+      if trace[c, d] > 0 then
+        exit(trace[c, d] - 1);
+
       q := q + 1;
       for i := 1 to 8 do
         for j := 1 to 8 do
-        begin
-          if (i = c) and (j = d) and (trace[i, j] <> 0) then
-            exit(trace[i, j] - 1);
-
-          if trace[i, j] = q then
+          if trace[i, j] = q - 1 then
             for k := 1 to 8 do
             begin
               x := i + moves[k, 1];
               y := j + moves[k, 2];
               if (trace[x, y] = 0) and (x >= 1) and (y >= 1) and
                 (x <= 8) and (y <= 8) then
-                trace[x, y] := q + 1;
+                trace[x, y] := q;
             end;
-        end;
     end;
   end;
 
