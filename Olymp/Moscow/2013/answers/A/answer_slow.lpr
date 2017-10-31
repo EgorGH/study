@@ -1,5 +1,8 @@
 program answer_slow;
 
+uses
+  Math;
+
 type
   tdata = array of shortstring;
   tcypher = array of char;
@@ -9,11 +12,11 @@ var
   Source, Destination: tdata;
   Cypher: tcypher;
   Predecessors: tpred;
-  N, i: integer;
+  N, i, j: longint;
 
   procedure print_text(var Source: tdata);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 1 do
       writeln(Source[i]);
@@ -21,7 +24,7 @@ var
 
   function check_text(var Source: tdata): boolean;
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 2 do
       if Source[i] > Source[i + 1] then
@@ -32,7 +35,7 @@ var
   function decode(s: shortstring; var cypher: tcypher): shortstring;
   var
     d: shortstring;
-    i: integer;
+    i: longint;
   begin
     d := '';
     for i := 1 to Length(s) do
@@ -42,7 +45,7 @@ var
 
   procedure decode(var Source, Destination: tdata; cypher: tcypher);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 1 do
       Destination[i] := decode(Source[i], Cypher);
@@ -50,7 +53,7 @@ var
 
   procedure print_cypher(var Cypher: tcypher);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to 25 do
       Write(chr(i + 97): 2);
@@ -62,7 +65,7 @@ var
 
   procedure print_table(var Predecessors: tpred);
   var
-    i, j: integer;
+    i, j: longint;
   begin
     Write('': 2);
     for i := 0 to 25 do
@@ -82,39 +85,29 @@ var
 
   procedure fill_predecessors(var Destination: tdata; Predecessors: tpred);
   var
-    i, j, ltr, a, b: integer;
-    error: boolean;
+    i, j, ltr, a, b, min_len: longint;
   begin
-    for i := 0 to 25 do
-      for j := 0 to 26 do
-        Predecessors[i, j] := False;
-
     for i := 0 to N - 2 do
       for j := i + 1 to N - 1 do
       begin
-        error := False;
+        min_len := min(length(Destination[i]), length(Destination[j]));
         ltr := 1;
-        while (Destination[i][ltr] = Destination[j][ltr]) do
-        begin
+
+        while (Destination[i][ltr] = Destination[j][ltr]) and (ltr <= min_len) do
           ltr := ltr + 1;
-          if (ltr > length(Destination[i])) or (ltr > length(Destination[j])) then
-          begin
-            error := True;
-            break;
-          end;
-        end;
-        if error then
-          break;
-        a := Ord(Destination[i][ltr]) - 97;
-        b := Ord(Destination[j][ltr]) - 97;
-        if (a >= 0) and (b >= 0) and (a <= 25) and (b <= 25) then
+
+        if ltr <= min_len then
+        begin
+          a := Ord(Destination[i][ltr]) - 97;
+          b := Ord(Destination[j][ltr]) - 97;
           Predecessors[b, a] := True;
+        end;
       end;
   end;
 
   procedure generate_cypher(var Predecessors: tpred; Cypher: tcypher);
   var
-    i, j, k, s: integer;
+    i, j, k, s: longint;
     c: byte = 0;
   begin
     for i := 0 to 25 do
@@ -143,23 +136,19 @@ begin
   SetLength(Destination, N);
   SetLength(Cypher, 26);
   SetLength(Predecessors, 26, 27);
+  for i := 0 to 25 do
+    for j := 0 to 26 do
+      Predecessors[i, j] := False;
 
   for i := 0 to N - 1 do
     readln(Destination[i]);
 
   fill_predecessors(Destination, Predecessors);
-
   generate_cypher(Predecessors, Cypher);
-
   decode(Destination, Source, Cypher);
 
   if not check_text(Source) then
-  begin
-    print_text(Source);
-    print_table(Predecessors);
-    print_cypher(Cypher);
-    writeln('Error!');
-  end
+    writeln('Error!')
   else
     print_text(Source);
 end.

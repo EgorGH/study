@@ -1,5 +1,8 @@
 program test_slow;
 
+uses
+  Math;
+
 const
   HMax = 300;
   WMax = 10;
@@ -14,7 +17,7 @@ var
   Source, Destination: tdata;
   Cypher: tcypher;
   Predecessors: tpred;
-  N, tt: integer;
+  N, i, j, tt: integer;
 
   procedure randomize_text(var Source: tdata);
   var
@@ -135,33 +138,23 @@ var
 
   procedure fill_predecessors(var Destination: tdata; Predecessors: tpred);
   var
-    i, j, ltr, a, b: integer;
-    error: boolean;
+    i, j, ltr, a, b, min_len: longint;
   begin
-    for i := 0 to 25 do
-      for j := 0 to 26 do
-        Predecessors[i, j] := False;
-
     for i := 0 to N - 2 do
       for j := i + 1 to N - 1 do
       begin
-        error := False;
+        min_len := min(length(Destination[i]), length(Destination[j]));
         ltr := 1;
-        while (Destination[i][ltr] = Destination[j][ltr]) do
-        begin
+
+        while (Destination[i][ltr] = Destination[j][ltr]) and (ltr <= min_len) do
           ltr := ltr + 1;
-          if (ltr > length(Destination[i])) or (ltr > length(Destination[j])) then
-          begin
-            error := true;
-            break;
-          end;
-        end;
-        if error then
-          break;
-        a := Ord(Destination[i][ltr]) - 97;
-        b := Ord(Destination[j][ltr]) - 97;
-        if (a >= 0) and (b >= 0) and (a <= 25) and (b <= 25) then
+
+        if ltr <= min_len then
+        begin
+          a := Ord(Destination[i][ltr]) - 97;
+          b := Ord(Destination[j][ltr]) - 97;
           Predecessors[b, a] := True;
+        end;
       end;
   end;
 
@@ -199,17 +192,14 @@ begin
   for tt := 1 to TMax do
   begin
     randomize_text(Source);
-
     sort_text(Source);
-
     randomize_cypher(Cypher);
-
     decode(Source, Destination, Cypher);
-
+    for i := 0 to 25 do
+      for j := 0 to 26 do
+        Predecessors[i, j] := False;
     fill_predecessors(Destination, Predecessors);
-
     generate_cypher(Predecessors, Cypher);
-
     decode(Destination, Source, Cypher);
 
     if not check_text(Source) then
@@ -218,9 +208,8 @@ begin
       print_table(Predecessors);
       print_cypher(Cypher);
       print_text(Source);
-      writeln('Test failed');
+      writeln('Error!');
     end;
   end;
   writeln('Done');
-  readln();
 end.
