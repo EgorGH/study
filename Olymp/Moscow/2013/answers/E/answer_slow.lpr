@@ -1,11 +1,11 @@
 program answer_slow;
 
 var
-  T, N, K, a, b, i: integer;
+  T, N, K, a, b, i: longint;
 
-  function f(n, k: integer): integer;
+  function full_search(n, k: longint): longint;
   var
-    a, b, i, d, w, max, min: integer;
+    a, b, i, d, w, max, min: longint;
   begin
     min := 100;
     if (n = k) or (k = 0) then
@@ -18,7 +18,7 @@ var
       for i := 0 to k do
         if (i <= a) and (k - i <= b) then
         begin
-          d := f(a, i) + f(b, k - i) + 1;
+          d := full_search(a, i) + full_search(b, k - i) + 1;
           if d > max then
             max := d;
         end;
@@ -33,6 +33,6 @@ begin
   for i := 1 to T do
   begin
     readln(N, K, a, b);
-    writeln(f(n, k));
+    writeln(full_search(n, k));
   end;
 end.

@@ -3,12 +3,12 @@ program answer;
 const
   Lim = 100;
 var
-  T, N, K, a, b, i, j: integer;
-  m: array[1..Lim, 1..Lim] of integer;
+  T, N, K, a, b, i, j: longint;
+  m: array[1..Lim, 1..Lim] of longint;
 
-  function f(n, k: integer): integer;
+  function optimal_search(n, k: longint): longint;
   var
-    a, b, i, d, w, max, min: integer;
+    a, b, i, d, w, max, min: longint;
   begin
     if m[n, k] <> 0 then
       exit(m[n, k])
@@ -25,7 +25,7 @@ var
         for i := 0 to k do
           if (i <= a) and (k - i <= b) then
           begin
-            d := f(a, i) + f(b, k - i) + 1;
+            d := optimal_search(a, i) + optimal_search(b, k - i) + 1;
             if d > max then
               max := d;
           end;
@@ -46,6 +46,6 @@ begin
   for i := 1 to T do
   begin
     readln(N, K, a, b);
-    writeln(f(n, k));
+    writeln(optimal_search(n, k));
   end;
 end.
