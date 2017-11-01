@@ -17,11 +17,11 @@ var
   Source, Destination: tdata;
   Cypher: tcypher;
   Predecessors: tpred;
-  N, i, j, tt: integer;
+  N, i, j, tt: longint;
 
   procedure randomize_text(var Source: tdata);
   var
-    i, w, j: integer;
+    i, w, j: longint;
   begin
     N := random(HMax) + 1;
     for i := 0 to N - 1 do
@@ -35,7 +35,7 @@ var
 
   procedure sort_text(var Source: tdata);
   var
-    i, m, j: integer;
+    i, m, j: longint;
     t: string;
   begin
     for i := 0 to N - 2 do
@@ -52,7 +52,7 @@ var
 
   procedure print_text(var Source: tdata);
   var
-    i: integer;
+    i: longint;
   begin
     writeln(N);
     for i := 0 to N - 1 do
@@ -61,7 +61,7 @@ var
 
   function check_text(var Source: tdata): boolean;
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 2 do
       if Source[i] > Source[i + 1] then
@@ -72,7 +72,7 @@ var
   function decode(s: shortstring; var cypher: tcypher): shortstring;
   var
     d: shortstring;
-    i: integer;
+    i: longint;
   begin
     d := '';
     for i := 1 to Length(s) do
@@ -82,7 +82,7 @@ var
 
   procedure decode(var Source, Destination: tdata; cypher: tcypher);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 1 do
       Destination[i] := decode(Source[i], Cypher);
@@ -90,7 +90,7 @@ var
 
   procedure randomize_cypher(var cypher: tcypher);
   var
-    i: integer;
+    i: longint;
     r: qword;
     t: qword = 0;
   begin
@@ -106,7 +106,7 @@ var
 
   procedure print_cypher(var Cypher: tcypher);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to 25 do
       Write(chr(i + 97): 2);
@@ -118,7 +118,7 @@ var
 
   procedure print_table(var Predecessors: tpred);
   var
-    i, j: integer;
+    i, j: longint;
   begin
     Write('': 2);
     for i := 0 to 25 do
@@ -160,7 +160,7 @@ var
 
   procedure generate_cypher(var Predecessors: tpred; Cypher: tcypher);
   var
-    i, j, k, s: integer;
+    i, j, k, s: longint;
     c: byte = 0;
   begin
     for i := 0 to 25 do
@@ -198,6 +198,7 @@ begin
     for i := 0 to 25 do
       for j := 0 to 26 do
         Predecessors[i, j] := False;
+
     fill_predecessors(Destination, Predecessors);
     generate_cypher(Predecessors, Cypher);
     decode(Destination, Source, Cypher);

@@ -13,7 +13,7 @@ var
 
   procedure print_text(Source: tdata);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 1 do
       writeln(Source[i]);
@@ -21,7 +21,7 @@ var
 
   function check_text(Source: tdata): boolean;
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 2 do
       if Source[i] > Source[i + 1] then
@@ -32,7 +32,7 @@ var
   function decode(s: shortstring; cypher: tcypher): shortstring;
   var
     d: shortstring;
-    i: integer;
+    i: longint;
   begin
     d := '';
     for i := 1 to Length(s) do
@@ -42,7 +42,7 @@ var
 
   procedure decode(Source, Destination: tdata; cypher: tcypher);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to N - 1 do
       Destination[i] := decode(Source[i], Cypher);
@@ -50,7 +50,7 @@ var
 
   procedure print_cypher(Cypher: tcypher);
   var
-    i: integer;
+    i: longint;
   begin
     for i := 0 to 25 do
       Write(chr(i + 97): 2);
@@ -82,7 +82,7 @@ var
 
   procedure mark(a, b: char; Predecessors: tpred);
   var
-    x, y: integer;
+    x, y: longint;
   begin
     x := Ord(a) - 97;
     y := Ord(b) - 97;
@@ -90,42 +90,32 @@ var
       Predecessors[y] := Predecessors[y] or (1 shl x);
   end;
 
-  procedure p(Destination: tdata; a, b, c: integer; Predecessors: tpred);
+  procedure fill_predecessors(Destination: tdata; a, b, c: longint; Predecessors: tpred);
   var
-    x, y: integer;
+    x, y: longint;
   begin
+    while (a < b) and (length(Destination[a]) < c) do
+      a := a + 1;
+
     if a = b then
       exit();
     x := a;
-    if (length(Destination[x]) < c) then
-    begin
-      p(Destination, x + 1, b, c, Predecessors);
-      exit();
-    end;
+
     for y := a to b do
     begin
-      if (Destination[x][c] <> Destination[y][c]) then
+      if Destination[x][c] <> Destination[y][c] then
       begin
         mark(Destination[x][c], Destination[y][c], Predecessors);
-        p(Destination, x, y - 1, c + 1, Predecessors);
+        fill_predecessors(Destination, x, y - 1, c + 1, Predecessors);
         x := y;
       end;
     end;
-    p(Destination, x, b, c + 1, Predecessors);
-  end;
-
-  procedure fill_predecessors(Destination: tdata; Predecessors: tpred);
-  var
-    i: integer;
-  begin
-    for i := 0 to 26 do
-      Predecessors[i] := 0;
-    p(Destination, 0, N - 1, 1, Predecessors);
+    fill_predecessors(Destination, x, b, c + 1, Predecessors);
   end;
 
   procedure generate_cypher(Predecessors: tpred; Cypher: tcypher);
   var
-    i, j, c, k: integer;
+    i, j, c, k: longint;
   begin
     c := 0;
     for i := 0 to 25 do
@@ -148,23 +138,17 @@ begin
   Destination := GetMem(N * sizeof(shortstring));
   Cypher := GetMem(26 * sizeof(char));
   Predecessors := GetMem(26 * sizeof(longint));
+  FillByte(Predecessors[0], 26 * sizeof(longint), 0);
 
   for i := 0 to N - 1 do
     readln(Destination[i]);
 
-  fill_predecessors(Destination, Predecessors);
-
+  fill_predecessors(Destination, 0, N - 1, 1, Predecessors);
   generate_cypher(Predecessors, Cypher);
-
   decode(Destination, Source, Cypher);
 
   if not check_text(Source) then
-  begin
-    print_text(Source);
-    print_table(Predecessors);
-    print_cypher(Cypher);
-    writeln('Error!');
-  end
+    writeln('Error!')
   else
     print_text(Source);
 end.
