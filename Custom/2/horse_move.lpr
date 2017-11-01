@@ -1,20 +1,27 @@
 program horse_move;
 
+const
+  N = 8;
+type
+  ttrace_row = ^longint;
+  ttrace = ^ttrace_row;
 var
-  a, b, c, d: longint;
+  i, a, b, c, d: longint;
+  moves: array[0..7, 0..1] of
+  longint = ((1, 2), (-1, -2), (2, 1), (-2, -1), (-1, 2), (1, -2), (-2, 1), (2, -1));
+  trace: ttrace;
 
-  function min_moves(a, b, c, d: longint): longint;
-  var
-    i, j, q, k, x, y: longint;
-    found: boolean = False;
-    moves: array[1..8, 1..2] of
-    longint = ((1, 2), (-1, -2), (2, 1), (-2, -1), (-1, 2), (1, -2), (-2, 1), (2, -1));
-    trace: array[1..8, 1..8] of longint;
+  procedure reset_trace(trace: ttrace);
   begin
-    for i := 1 to 8 do
-      for j := 1 to 8 do
-        trace[i, j] := 0;
+    for i := 0 to N - 1 do
+      FillByte(trace[i, 0], N * sizeof(longint), 0);
+  end;
 
+  function optimal_search(N, a, b, c, d: longint): longint;
+  var
+    i, j, q, k, x, y, s: longint;
+    found: boolean = False;
+  begin
     trace[a, b] := 1;
     q := 1;
 
@@ -23,23 +30,36 @@ var
       if trace[c, d] > 0 then
         exit(trace[c, d] - 1);
 
+      s := 0;
       q := q + 1;
-      for i := 1 to 8 do
-        for j := 1 to 8 do
+      for i := 0 to N - 1 do
+        for j := 0 to N - 1 do
           if trace[i, j] = q - 1 then
-            for k := 1 to 8 do
+            for k := 0 to 7 do
             begin
-              x := i + moves[k, 1];
-              y := j + moves[k, 2];
-              if (trace[x, y] = 0) and (x >= 1) and (y >= 1) and
-                (x <= 8) and (y <= 8) then
-                trace[x, y] := q;
+              x := i + moves[k, 0];
+              y := j + moves[k, 1];
+              if (x >= 0) and (y >= 0) and (x < N) and (y < N) then
+                if (trace[x, y] = 0) then
+                  trace[x, y] := q;
             end;
+
+      for i := 0 to N - 1 do
+        for j := 0 to N - 1 do
+          if trace[i, j] >= q then
+            s := s + 1;
+      if s = 0 then
+        exit(-1);
     end;
   end;
 
 begin
+  trace := GetMem(N * sizeof(ttrace_row));
+  for i := 0 to N - 1 do
+    trace[i] := GetMem(N * sizeof(longint));
+  reset_trace(trace);
+
   readln(a, b, c, d);
-  writeln(min_moves(a, b, c, d));
+  writeln(optimal_search(N, a, b, c, d));
   readln();
 end.

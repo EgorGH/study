@@ -1,36 +1,45 @@
 program test;
 
 const
-  HMax = 4;
-  TMax = 10;
+  NMax = 4;
+  TMax = 10000;
+
+type
+  ttrace_row = ^longint;
+  ttrace = ^ttrace_row;
 
 var
-  a, b, c, d, t, i, j: longint;
-  moves: array[1..8, 1..2] of
+  N, a, b, c, d, t, i, res1, res2: longint;
+  moves: array[0..7, 0..1] of
   longint = ((1, 2), (-1, -2), (2, 1), (-2, -1), (-1, 2), (1, -2), (-2, 1), (2, -1));
-  trace: array[1..HMax, 1..HMax] of longint;
+  trace: ttrace;
 
-  procedure init();
+  procedure randomize_params(var N, a, b, c, d: longint);
   begin
-    a := random(HMax) + 1;
-    b := random(HMax) + 1;
-    c := random(HMax) + 1;
-    d := random(HMax) + 1;
-    for i := 1 to HMax do
-      for j := 1 to HMax do
-        trace[i, j] := 0;
+    N := random(NMax) + 1;
+    a := random(N);
+    b := random(N);
+    c := random(N);
+    d := random(N);
   end;
 
-  function full_search(a, b, c, d: longint): longint;
+  procedure reset_trace(trace: ttrace);
+  begin
+    for i := 0 to NMax - 1 do
+      FillByte(trace[i, 0], NMax * sizeof(longint), 0);
+  end;
+
+  function full_search(N, a, b, c, d: longint): longint;
   var
     minq, i: longint;
+    s: longint = 0;
     found: boolean = False;
-    q: array[1..8] of longint = (-1, -1, -1, -1, -1, -1, -1, -1);
+    q: array[0..7] of longint = (-2, -2, -2, -2, -2, -2, -2, -2);
   begin
     if (a = c) and (b = d) then
       exit(0);
 
-    if (a < 1) or (b < 1) or (a > HMax) or (b > HMax) then
+    if (a < 0) or (b < 0) or (a >= N) or (b >= N) then
       exit(-1);
 
     if trace[a, b] = 1 then
@@ -38,30 +47,32 @@ var
 
     trace[a, b] := 1;
 
-    for i := 1 to 8 do
-      q[i] := full_search(a + moves[i, 1], b + moves[i, 2], c, d);
+    for i := 0 to 7 do
+      q[i] := full_search(N, a + moves[i, 0], b + moves[i, 1], c, d);
 
     trace[a, b] := 0;
 
-    for i := 1 to 8 do
+    for i := 0 to 7 do
       if (q[i] >= 0) and (not found or (q[i] < minq)) then
       begin
         found := True;
         minq := q[i];
       end;
 
+    for i := 0 to 7 do
+      if q[i] = -1 then
+        s := s + 1;
+    if s = 8 then
+      exit(-1);
+
     exit(minq + 1);
   end;
 
-  function optimal_search(a, b, c, d: longint): longint;
+  function optimal_search(N, a, b, c, d: longint): longint;
   var
-    i, j, q, k, x, y: longint;
+    i, j, q, k, x, y, s: longint;
     found: boolean = False;
   begin
-    for i := 1 to HMax do
-      for j := 1 to HMax do
-        trace[i, j] := 0;
-
     trace[a, b] := 1;
     q := 1;
 
@@ -70,27 +81,51 @@ var
       if trace[c, d] > 0 then
         exit(trace[c, d] - 1);
 
+      s := 0;
       q := q + 1;
-      for i := 1 to 8 do
-        for j := 1 to 8 do
+      for i := 0 to N - 1 do
+        for j := 0 to N - 1 do
           if trace[i, j] = q - 1 then
-            for k := 1 to 8 do
+            for k := 0 to 7 do
             begin
-              x := i + moves[k, 1];
-              y := j + moves[k, 2];
-              if (trace[x, y] = 0) and (x >= 1) and (y >= 1) and
-                (x <= HMax) and (y <= HMax) then
-                trace[x, y] := q;
+              x := i + moves[k, 0];
+              y := j + moves[k, 1];
+              if (x >= 0) and (y >= 0) and (x < N) and (y < N) then
+                if (trace[x, y] = 0) then
+                  trace[x, y] := q;
             end;
+
+      for i := 0 to N - 1 do
+        for j := 0 to N - 1 do
+          if trace[i, j] > q - 1 then
+            s := s + 1;
+      if s = 0 then
+        exit(-1);
     end;
   end;
 
 begin
+  randomize();
+  trace := GetMem(NMax * sizeof(ttrace_row));
+  for i := 0 to NMax - 1 do
+    trace[i] := GetMem(NMax * sizeof(longint));
+
   for t := 1 to TMax do
   begin
-    init();
-    if full_search(a, b, c, d) <> optimal_search(a, b, c, d) then
+    randomize_params(N, a, b, c, d);
+
+    reset_trace(trace);
+    res1 := full_search(N, a, b, c, d);
+
+    reset_trace(trace);
+    res2 := optimal_search(N, a, b, c, d);
+
+    if res1 <> res2 then
+    begin
       writeln('Error');
+      writeln(N, ' ', a, ' ', b, ' ', c, ' ', d);
+      writeln(res1, ' ', res2);
+    end;
   end;
   writeln('Done');
   readln();
