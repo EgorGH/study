@@ -121,11 +121,7 @@ begin
     res2 := optimal_search(N, a, b, c, d);
 
     if res1 <> res2 then
-    begin
       writeln('Error');
-      writeln(N, ' ', a, ' ', b, ' ', c, ' ', d);
-      writeln(res1, ' ', res2);
-    end;
   end;
   writeln('Done');
   readln();
