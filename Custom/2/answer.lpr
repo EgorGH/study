@@ -1,4 +1,4 @@
-program horse_move;
+program answer;
 
 const
   N = 8;
@@ -61,5 +61,4 @@ begin
 
   readln(a, b, c, d);
   writeln(optimal_search(N, a, b, c, d));
-  readln();
 end.

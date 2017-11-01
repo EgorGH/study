@@ -124,5 +124,4 @@ begin
       writeln('Error');
   end;
   writeln('Done');
-  readln();
 end.

@@ -1,4 +1,4 @@
-program horse_move_slow;
+program answer_slow;
 
 const
   N = 4;
@@ -66,5 +66,4 @@ begin
 
   readln(a, b, c, d);
   writeln(full_search(N, a, b, c, d));
-  readln();
 end.
