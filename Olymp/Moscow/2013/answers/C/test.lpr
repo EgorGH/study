@@ -6,17 +6,12 @@ const
 
 var
   t, N, q1, q2: longint;
+  a, b, c: ^byte;
 
   function full_search(N: longint): longint;
   var
-    a, b, c: array of byte;
     i, j, q: longint;
   begin
-    SetLength(a, N + 2);
-    FillByte(a[0], N + 2, 0);
-    SetLength(b, N + 2);
-    FillByte(b[0], N + 2, 0);
-
     A[1] := 1;
 
     for i := 2 to N do
@@ -74,10 +69,17 @@ begin
   for t := 1 to MaxT do
   begin
     N := random(MaxN) + 1;
+
+    a := GetMem((N + 2) * sizeof(byte));
+    b := GetMem((N + 2) * sizeof(byte));
+    c := GetMem((N + 2) * sizeof(byte));
+    FillByte(a[0], N + 2, 0);
+    FillByte(b[0], N + 2, 0);
+
     q1 := full_search(N);
     q2 := optimal_search(N);
     if q1 <> q2 then
-      writeln('Error! ', N);
+      writeln('Error!');
   end;
-  writeln('All tests passed');
+  writeln('Done');
 end.
