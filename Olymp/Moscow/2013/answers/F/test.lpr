@@ -4,7 +4,6 @@ uses
   SysUtils;
 
 const
-  MaxT = 100;
   MaxN = 15;
 
 type
@@ -14,7 +13,7 @@ type
   end;
 
 var
-  t, N: longint;
+  N: longint;
   r1, r2: TRes;
 
   function euclid(a, b: longint): longint;
@@ -114,9 +113,8 @@ var
 
 begin
   randomize();
-  for t := 1 to MaxT do
+  for N := 1 to MaxN do
   begin
-    N := random(MaxN) + 1;
     r1 := full_search(N);
     r2 := optimal_search(N);
     if (euclid(r1.a, r1.b) <> N) or (euclid(r2.a, r2.b) <> N) then

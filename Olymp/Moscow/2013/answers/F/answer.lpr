@@ -3,9 +3,15 @@ program answer;
 uses
   SysUtils;
 
+type
+  TRes = record
+    a: shortstring;
+    b: shortstring;
+  end;
+
 var
-  a, b, c: shortstring;
-  i, N: longint;
+  N: longint;
+  r: TRes;
 
   function add(a, b: shortstring): shortstring;
   var
@@ -42,15 +48,26 @@ var
     exit(sum);
   end;
 
+  function optimal_search(N: longint): TRes;
+  var
+    a, b, c: shortstring;
+    i: longint;
+  begin
+    a := '1';
+    b := '1';
+    for i := 3 to N + 2 do
+    begin
+      c := b;
+      b := add(a, b);
+      a := c;
+    end;
+    optimal_search.a := a;
+    optimal_search.b := b;
+    exit(optimal_search);
+  end;
+
 begin
   readln(N);
-  a := '1';
-  b := '1';
-  for i := 3 to N + 2 do
-  begin
-    c := b;
-    b := add(a, b);
-    a := c;
-  end;
-  writeln(a, ' ', b);
+  r := optimal_search(N);
+  writeln(r.a, ' ', r.b);
 end.
