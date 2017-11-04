@@ -4,22 +4,23 @@ uses
   Math;
 
 const
-  HMax = 300;
+  HMax = 2000;
   WMax = 10;
   TMax = 1000;
 
 type
-  tdata = array of shortstring;
-  tcypher = array of char;
-  tpred = array of array of boolean;
+  tdata = ^shortstring;
+  tcypher = ^char;
+  ttpredecessors = ^boolean;
+  tpredecessors = ^ttpredecessors;
 
 var
   Source, Destination: tdata;
   Cypher: tcypher;
-  Predecessors: tpred;
+  Predecessors: tpredecessors;
   N, i, j, tt: longint;
 
-  procedure randomize_text(var Source: tdata);
+  procedure randomize_text(Source: tdata);
   var
     i, w, j: longint;
   begin
@@ -33,21 +34,33 @@ var
     end;
   end;
 
-  procedure sort_text(var Source: tdata);
+  procedure quicksort_text(data: tdata; lo, hi: longint);
   var
-    i, m, j: longint;
-    t: string;
+    i, j: longint;
+    pivot, t: shortstring;
   begin
-    for i := 0 to N - 2 do
+    i := lo;
+    j := hi;
+    pivot := data[(lo + hi) div 2];
+    while i <= j do
     begin
-      m := i;
-      for j := i + 1 to N - 1 do
-        if Source[j] < Source[m] then
-          m := j;
-      t := Source[m];
-      Source[m] := Source[i];
-      Source[i] := t;
+      while data[i] < pivot do
+        i := i + 1;
+      while data[j] > pivot do
+        j := j - 1;
+      if i <= j then
+      begin
+        t := data[i];
+        data[i] := data[j];
+        data[j] := t;
+        i := i + 1;
+        j := j - 1;
+      end;
     end;
+    if lo < j then
+      quicksort_text(data, lo, j);
+    if hi > i then
+      quicksort_text(data, i, hi);
   end;
 
   procedure print_text(var Source: tdata);
@@ -59,7 +72,7 @@ var
       writeln(Source[i]);
   end;
 
-  function check_text(var Source: tdata): boolean;
+  function check_text(Source: tdata): boolean;
   var
     i: longint;
   begin
@@ -69,7 +82,7 @@ var
     exit(True);
   end;
 
-  function decode(s: shortstring; var cypher: tcypher): shortstring;
+  function decode(s: shortstring; cypher: tcypher): shortstring;
   var
     d: shortstring;
     i: longint;
@@ -80,7 +93,7 @@ var
     exit(d);
   end;
 
-  procedure decode(var Source, Destination: tdata; cypher: tcypher);
+  procedure decode(Source, Destination: tdata; cypher: tcypher);
   var
     i: longint;
   begin
@@ -88,7 +101,7 @@ var
       Destination[i] := decode(Source[i], Cypher);
   end;
 
-  procedure randomize_cypher(var cypher: tcypher);
+  procedure randomize_cypher(cypher: tcypher);
   var
     i: longint;
     r: qword;
@@ -104,7 +117,7 @@ var
     end;
   end;
 
-  procedure print_cypher(var Cypher: tcypher);
+  procedure print_cypher(Cypher: tcypher);
   var
     i: longint;
   begin
@@ -116,7 +129,7 @@ var
     writeln();
   end;
 
-  procedure print_table(var Predecessors: tpred);
+  procedure print_table(Predecessors: tpredecessors);
   var
     i, j: longint;
   begin
@@ -136,29 +149,29 @@ var
     end;
   end;
 
-  procedure fill_predecessors(var Destination: tdata; Predecessors: tpred);
+  procedure full_search(data: tdata; Predecessors: tpredecessors);
   var
     i, j, ltr, a, b, min_len: longint;
   begin
     for i := 0 to N - 2 do
       for j := i + 1 to N - 1 do
       begin
-        min_len := min(length(Destination[i]), length(Destination[j]));
+        min_len := min(length(data[i]), length(data[j]));
         ltr := 1;
 
-        while (Destination[i][ltr] = Destination[j][ltr]) and (ltr <= min_len) do
+        while (data[i][ltr] = data[j][ltr]) and (ltr <= min_len) do
           ltr := ltr + 1;
 
         if ltr <= min_len then
         begin
-          a := Ord(Destination[i][ltr]) - 97;
-          b := Ord(Destination[j][ltr]) - 97;
+          a := Ord(data[i][ltr]) - 97;
+          b := Ord(data[j][ltr]) - 97;
           Predecessors[b, a] := True;
         end;
       end;
   end;
 
-  procedure generate_cypher(var Predecessors: tpred; Cypher: tcypher);
+  procedure generate_cypher(Predecessors: tpredecessors; Cypher: tcypher);
   var
     i, j, k, s: longint;
     c: byte = 0;
@@ -183,23 +196,24 @@ var
   end;
 
 begin
-  SetLength(Source, HMax);
-  SetLength(Destination, HMax);
-  SetLength(Cypher, 26);
-  SetLength(Predecessors, 26, 27);
+  Source := GetMem(HMax * sizeof(shortstring));
+  Destination := GetMem(HMax * sizeof(shortstring));
+  Cypher := GetMem(26 * sizeof(char));
+  Predecessors := GetMem(26 * sizeof(ttpredecessors));
+  for i := 0 to 25 do
+    Predecessors[i] := GetMem(27 * sizeof(boolean));
   randomize();
 
   for tt := 1 to TMax do
   begin
     randomize_text(Source);
-    sort_text(Source);
+    quicksort_text(Source, 0, N - 1);
     randomize_cypher(Cypher);
     decode(Source, Destination, Cypher);
     for i := 0 to 25 do
-      for j := 0 to 26 do
-        Predecessors[i, j] := False;
+      FillByte(Predecessors[i, 0], 27, 0);
 
-    fill_predecessors(Destination, Predecessors);
+    full_search(Destination, Predecessors);
     generate_cypher(Predecessors, Cypher);
     decode(Destination, Source, Cypher);
 

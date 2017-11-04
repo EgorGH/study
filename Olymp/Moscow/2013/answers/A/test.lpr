@@ -1,18 +1,18 @@
 program test;
 
 const
-  HMax = 500;
+  HMax = 2000;
   WMax = 10;
   TMax = 1000;
 type
   tdata = ^shortstring;
   tcypher = ^char;
-  tpred = ^longint;
+  tpredecessors = ^longint;
 
 var
   Source, Destination: tdata;
   Cypher: tcypher;
-  Predecessors: tpred;
+  Predecessors: tpredecessors;
   N, tt: longint;
 
   procedure randomize_text(Source: tdata);
@@ -29,21 +29,33 @@ var
     end;
   end;
 
-  procedure sort_text(Source: tdata);
+  procedure quicksort_text(Source: tdata; lo, hi: longint);
   var
-    i, m, j: longint;
-    t: string;
+    i, j: longint;
+    pivot, t: shortstring;
   begin
-    for i := 0 to N - 2 do
+    i := lo;
+    j := hi;
+    pivot := Source[(lo + hi) div 2];
+    while i <= j do
     begin
-      m := i;
-      for j := i + 1 to N - 1 do
-        if Source[j] < Source[m] then
-          m := j;
-      t := Source[m];
-      Source[m] := Source[i];
-      Source[i] := t;
+      while Source[i] < pivot do
+        i := i + 1;
+      while Source[j] > pivot do
+        j := j - 1;
+      if i <= j then
+      begin
+        t := Source[i];
+        Source[i] := Source[j];
+        Source[j] := t;
+        i := i + 1;
+        j := j - 1;
+      end;
     end;
+    if lo < j then
+      quicksort_text(Source, lo, j);
+    if hi > i then
+      quicksort_text(Source, i, hi);
   end;
 
   procedure print_text(Source: tdata);
@@ -112,7 +124,7 @@ var
     writeln();
   end;
 
-  procedure print_table(Predecessors: tpred);
+  procedure print_table(Predecessors: tpredecessors);
   var
     i, j: longword;
   begin
@@ -132,21 +144,20 @@ var
     end;
   end;
 
-  procedure mark(a, b: char; Predecessors: tpred);
+  procedure mark(a, b: char; Predecessors: tpredecessors);
   var
     x, y: longint;
   begin
     x := Ord(a) - 97;
     y := Ord(b) - 97;
-    if (x >= 0) and (y >= 0) and (x <= 25) and (y <= 25) then
-      Predecessors[y] := Predecessors[y] or (1 shl x);
+    Predecessors[y] := Predecessors[y] or (1 shl x);
   end;
 
-  procedure fill_predecessors(Destination: tdata; a, b, c: longint; Predecessors: tpred);
+  procedure optimal_search(Data: tdata; a, b, c: longint; Predecessors: tpredecessors);
   var
     x, y: longint;
   begin
-    while (a < b) and (length(Destination[a]) < c) do
+    while (a < b) and (length(Data[a]) < c) do
       a := a + 1;
 
     if a = b then
@@ -155,17 +166,17 @@ var
 
     for y := a to b do
     begin
-      if (Destination[x][c] <> Destination[y][c]) then
+      if (Data[x][c] <> Data[y][c]) then
       begin
-        mark(Destination[x][c], Destination[y][c], Predecessors);
-        fill_predecessors(Destination, x, y - 1, c + 1, Predecessors);
+        mark(Data[x][c], Data[y][c], Predecessors);
+        optimal_search(Data, x, y - 1, c + 1, Predecessors);
         x := y;
       end;
     end;
-    fill_predecessors(Destination, x, b, c + 1, Predecessors);
+    optimal_search(Data, x, b, c + 1, Predecessors);
   end;
 
-  procedure generate_cypher(Predecessors: tpred; Cypher: tcypher);
+  procedure generate_cypher(Predecessors: tpredecessors; Cypher: tcypher);
   var
     i, j, c, k: longint;
   begin
@@ -193,12 +204,12 @@ begin
   for tt := 1 to TMax do
   begin
     randomize_text(Source);
-    sort_text(Source);
+    quicksort_text(Source, 0, N - 1);
     randomize_cypher(Cypher);
     decode(Source, Destination, Cypher);
     FillByte(Predecessors[0], 26 * sizeof(longint), 0);
 
-    fill_predecessors(Destination, 0, N - 1, 1, Predecessors);
+    optimal_search(Destination, 0, N - 1, 1, Predecessors);
     generate_cypher(Predecessors, Cypher);
     decode(Destination, Source, Cypher);
 
