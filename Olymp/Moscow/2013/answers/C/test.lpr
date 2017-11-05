@@ -4,15 +4,18 @@ const
   MaxT = 1000;
   MaxN = 1000;
 
+type
+  tres = ^byte;
+
 var
   t, N, q1, q2: longint;
-  a, b, c: ^byte;
+  a, b, c: tres;
 
-  function full_search(N: longint): longint;
+  function full_search(N: longint; a, b, c: tres): longint;
   var
     i, j, q: longint;
   begin
-    A[1] := 1;
+    a[1] := 1;
 
     for i := 2 to N do
     begin
@@ -65,18 +68,18 @@ var
   end;
 
 begin
+  a := GetMem((MaxN + 2) * sizeof(byte));
+  b := GetMem((MaxN + 2) * sizeof(byte));
+  c := GetMem((MaxN + 2) * sizeof(byte));
   randomize();
+
   for t := 1 to MaxT do
   begin
+    FillByte(a[0], MaxN + 2, 0);
+    FillByte(b[0], MaxN + 2, 0);
+
     N := random(MaxN) + 1;
-
-    a := GetMem((N + 2) * sizeof(byte));
-    b := GetMem((N + 2) * sizeof(byte));
-    c := GetMem((N + 2) * sizeof(byte));
-    FillByte(a[0], N + 2, 0);
-    FillByte(b[0], N + 2, 0);
-
-    q1 := full_search(N);
+    q1 := full_search(N, a, b, c);
     q2 := optimal_search(N);
     if q1 <> q2 then
       writeln('Error!');
