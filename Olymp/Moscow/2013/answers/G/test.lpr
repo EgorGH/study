@@ -4,7 +4,6 @@ uses
   SysUtils;
 
 const
-  TMax = 100;
   NMax = 100;
 
 type
@@ -20,7 +19,7 @@ type
   end;
 
 var
-  N, t: longint;
+  N: longint;
 
   function print_episode(event, a, b: longint): shortstring;
   begin
@@ -38,9 +37,7 @@ var
   var
     i, SecretKeeper, Finder: longint;
   begin
-    optimal_search.size := N + 2 * (N - 1) * (N - 1) + 1;
-
-    optimal_search.ser := GetMem(optimal_search.size * sizeof(shortstring));
+    optimal_search.ser := GetMem((N + 2 * N * N) * sizeof(shortstring));
 
     i := 0;
     for SecretKeeper := 1 to N do
@@ -76,6 +73,7 @@ var
         end;
       end;
     end;
+    optimal_search.size := i;
   end;
 
   function get_episode(serie: shortstring): Episode;
@@ -102,20 +100,69 @@ var
     end;
   end;
 
-  function check_consistency(series: tseries): boolean;
+  function check_consistency(N: longint; series: tseries): boolean;
+  var
+    i, prev_ep: longint;
+    SecretKeepers: longint;
+    Knowers, NotKnowers: ^longint;
+    x: episode;
   begin
+    if series.size <> (N + 2 * (N - 1) * (N - 1) + 1) then
+      exit(False);
 
+    Knowers := GetMem(N * sizeof(longint));
+    NotKnowers := GetMem(N * sizeof(longint));
+
+    SecretKeepers := 0;
+    FillByte(Knowers[0], N * sizeof(longint), 0);
+    FillByte(NotKnowers[0], N * sizeof(longint), 0);
+    prev_ep := -1;
+
+    for i := 0 to N - 1 do
+    begin
+      x := get_episode(series.ser[i]);
+      x.a := x.a - 1;
+      x.b := x.b - 1;
+
+      if (x.event = 0) and (prev_ep <> 0) then
+      begin
+        SecretKeepers := SecretKeepers or (1 shl x.a);
+        prev_ep := 0;
+      end
+      else
+      if (x.event = 1) and (prev_ep <> 1) and (SecretKeepers and (1 shl x.b) = 0) and
+        (NotKnowers[x.a] and (1 shl x.b) = 0) then
+      begin
+        NotKnowers[x.a] := NotKnowers[x.a] or (1 shl x.b);
+        prev_ep := 1;
+      end
+      else
+      if (x.event = 2) and (prev_ep <> 2) and (SecretKeepers and (1 shl x.b) <> 0) and
+        (Knowers[x.a] and (1 shl x.b) = 0) then
+      begin
+        Knowers[x.a] := Knowers[x.a] or (1 shl x.b);
+        prev_ep := 2;
+      end
+      else
+      begin
+        FreeMem(Knowers);
+        FreeMem(NotKnowers);
+        exit(False);
+      end;
+    end;
+
+    FreeMem(Knowers);
+    FreeMem(NotKnowers);
+
+    exit(True);
   end;
 
 begin
-  for t := 1 to TMax do
+  for N := 1 to NMax do
   begin
-    N := random(NMax) + 1;
-    if not check_consistency(optimal_search(N)) then
+    if not check_consistency(N, optimal_search(N)) then
       writeln('Error!');
     FreeMem(optimal_search(N).ser);
   end;
   writeln('Done');
-  readln();
 end.
-
