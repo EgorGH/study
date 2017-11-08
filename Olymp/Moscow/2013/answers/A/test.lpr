@@ -13,7 +13,7 @@ var
   Source, Destination: tdata;
   Cypher: tcypher;
   Predecessors: tpredecessors;
-  N, tt: longint;
+  N, t: longint;
 
   procedure randomize_text(Source: tdata);
   var
@@ -201,7 +201,7 @@ begin
   Predecessors := GetMem(26 * sizeof(longint));
   randomize();
 
-  for tt := 1 to TMax do
+  for t := 1 to TMax do
   begin
     randomize_text(Source);
     quicksort_text(Source, 0, N - 1);
