@@ -17,7 +17,7 @@ type
   end;
 var
   a, b, c, d, k, n: longint;
-  i: longint;
+  t: longint;
   r1, r2, r3: TRes;
 
   procedure init();
@@ -72,7 +72,7 @@ var
     ymin := y;
     rmin := r;
 
-    while (x * delta < finish) and (q < MaxQ) do
+    while (x * delta < finish * delta) and (q < MaxQ) do
     begin
       q := q + 1;
 
@@ -106,7 +106,6 @@ var
     else
       exit(y);
   end;
-
 
   function optimal_search(a, b, c, d, k, n: longint): TRes;
   var
@@ -161,7 +160,7 @@ var
 
 begin
   randomize();
-  for i := 1 to MaxT do
+  for t := 1 to MaxT do
   begin
     init();
     r1 := full_search(a, b, c, d, k, n);
