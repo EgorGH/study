@@ -107,6 +107,21 @@ var
       exit(y);
   end;
 
+  function correct_start(a, b, c, d, k, n, x: longint): longint;
+  var
+    y: longint;
+  begin
+    y := min((k - a * x) div c, (n - b * x) div d);
+
+    while (y < 0) or (k < a * x) or (n < b * x) do
+    begin
+      x := x - 1;
+      y := min((k - a * x) div c, (n - b * x) div d);
+    end;
+
+    exit(x);
+  end;
+
   function optimal_search(a, b, c, d, k, n: longint): TRes;
   var
     x, y, t: longint;
@@ -121,20 +136,18 @@ var
     end;
 
     if a * d - b * c = 0 then
-      exit(full_search(0, min(k div a, n div b), 1, a, b, c, d, k, n));
+    begin
+      x := 0;
+      res := full_search(x, min(k div a, n div b), 1, a, b, c, d, k, n);
+      exit();
+    end;
 
     x := (k * d - n * c) div (a * d - b * c);
     y := (k * b - a * n) div (c * b - a * d);
 
     if x < 0 then
     begin
-      x := min((k - c * y) div a, (n - d * y) div b);
-
-      while (x < 0) or (k < c * y) or (n < d * y) do
-      begin
-        y := y - 1;
-        x := min((k - c * y) div a, (n - d * y) div b);
-      end;
+      y := correct_start(c, d, a, b, k, n, y);
 
       res := optimal_search(c, d, a, b, k, n, y);
 
@@ -144,13 +157,7 @@ var
     end
     else
     begin
-      y := min((k - a * x) div c, (n - b * x) div d);
-
-      while (y < 0) or (k < a * x) or (n < b * x) do
-      begin
-        x := x - 1;
-        y := min((k - a * x) div c, (n - b * x) div d);
-      end;
+      x := correct_start(a, b, c, d, k, n, x);
 
       res := optimal_search(a, b, c, d, k, n, x);
     end;
