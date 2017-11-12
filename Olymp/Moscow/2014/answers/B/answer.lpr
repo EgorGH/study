@@ -35,7 +35,7 @@ var
     exit(((x1 and x2) or (x1 and x3)) or (x2 and x3));
   end;
 
-  procedure F();
+  procedure F(qi: longint);
   var
     i, x, z1, z2, z3: longint;
   begin
@@ -44,7 +44,7 @@ var
     z1 := x;
     z2 := 0;
     z3 := x;
-    for i := 2 to 32 do
+    for i := 2 to qi do
     begin
       Read(x);
       Write(B(z1, x, z2), ' ');
@@ -57,6 +57,6 @@ var
   end;
 
 begin
-  for i := 1 to 7 do
-    F();
+  for i := 1 to 5 do
+    F(5);
 end.
