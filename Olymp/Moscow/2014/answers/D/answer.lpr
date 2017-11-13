@@ -1,87 +1,23 @@
-program test;
+program answer;
 
 uses
   SysUtils;
 
-const
-  MaxT = 100;
-  MaxA = 100;
-  MaxB = 100;
-  MaxNull = 3;
-  MaxProb = 20;
-
 type
   TPair = record
-    a: shortstring;
-    b: shortstring;
+    a: ansistring;
+    b: ansistring;
   end;
 
 var
-  t: longint;
-  r: shortstring;
-  res, save, pair: TPair;
+  N, i: longint;
+  c: ansistring;
+  res, pair: TPair;
 
-  procedure randomize_numbers(var pair: TPair);
+  function optimal_search(pair: TPair; c: ansistring): TPair;
   var
-    i: longint;
-  begin
-    pair.a := IntToStr(random(MaxA));
-    pair.b := IntToStr(random(MaxB));
-
-    for i := 1 to random(MaxNull) do
-      pair.a := '0' + pair.a;
-    for i := 1 to random(MaxNull) do
-      pair.b := '0' + pair.b;
-  end;
-
-  procedure replace_with_questionmarks(var pair: TPair);
-  var
-    i: longint;
-  begin
-    for i := 1 to length(pair.a) do
-      if random(101) <= MaxProb then
-        pair.a[i] := '?';
-    for i := 1 to length(pair.b) do
-      if random(101) <= MaxProb then
-        pair.b[i] := '?';
-  end;
-
-  function f(pair: TPair): shortstring;
-  var
-    a, b, c: shortstring;
-    i, k: longint;
-  begin
-    a := pair.a;
-    b := pair.b;
-
-    if length(b) > length(a) then
-    begin
-      c := a;
-      a := b;
-      b := c;
-    end;
-
-    for i := 1 to length(b) do
-      a[i] := chr(Ord(a[i]) + Ord(b[i]) - Ord('0'));
-
-    k := 0;
-    for i := length(b) downto 1 do
-    begin
-      a[i] := chr(Ord(a[i]) + k);
-      k := (Ord(a[i]) - Ord('0')) div 10;
-      a[i] := chr((Ord(a[i]) - Ord('0')) mod 10 + Ord('0'));
-    end;
-
-    if k > 0 then
-      a := '1' + a;
-
-    exit(a);
-  end;
-
-  function optimal_search(pair: TPair; c: shortstring): TPair;
-  var
-    a, b, t, savea, saveb: shortstring;
-    k: array[0..255] of longint;
+    a, b, t, savea, saveb: ansistring;
+    k: array[0..1000] of longint;
     j, y, i, s: longint;
   begin
     a := pair.a;
@@ -117,7 +53,7 @@ var
           k[i - 1] := 1;
         if (b[i] <> '?') then
         begin
-          if ((StrToInt(a[i]) + StrToInt(b[i])) mod 10 < StrToint(c[i])) then
+          if ((StrToInt(a[i]) + StrToInt(b[i])) mod 10 < StrToInt(c[i])) then
             k[i] := 1;
           if StrToInt(a[i]) + StrToInt(b[i]) > 9 then
             k[i - 1] := 1;
@@ -149,8 +85,7 @@ var
         if k[i - 1] = 0 then
         begin
           a[i] := '0';
-          s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod
-            10);
+          s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod 10);
           b[i] := chr(s + Ord('0'));
         end;
 
@@ -160,8 +95,8 @@ var
             for y := 9 downto 0 do
               if (j + y) mod 10 = StrToInt(c[i]) then
               begin
-                a[i] := chr(j + ord('0'));
-                b[i] := chr(y + ord('0'));
+                a[i] := chr(j + Ord('0'));
+                b[i] := chr(y + Ord('0'));
               end;
         end;
 
@@ -175,15 +110,13 @@ var
 
       if a[i] <> '?' then
       begin
-        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod
-          10);
+        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod 10);
         b[i] := chr(s + Ord('0'));
       end;
 
       if a[i] = '?' then
       begin
-        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(b[i])) mod
-          10);
+        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(b[i])) mod 10);
         a[i] := chr(s + Ord('0'));
       end;
     end;
@@ -195,7 +128,7 @@ var
     end;
 
     if length(saveb) < length(c) then
-      delete(b, length(saveb) + 1, length(c) - length(saveb));
+      Delete(b, length(saveb) + 1, length(c) - length(saveb));
 
     if length(pair.a) < length(pair.b) then
     begin
@@ -209,17 +142,18 @@ var
   end;
 
 begin
-  randomize;
-  for t := 1 to MaxT do
+  readln(N);
+  readln();
+  for i := 1 to N do
   begin
-    randomize_numbers(pair);
-    save := pair;
-    r := f(pair);
-    replace_with_questionmarks(pair);
-    res := optimal_search(pair, r);
-    if (save.a <> res.a) or (save.b <> res.b) then
-      writeln('Error');
+    readln(pair.a);
+    readln(pair.b);
+    readln(c);
+    readln();
+    res := optimal_search(pair, c);
+    writeln(res.a);
+    writeln(res.b);
+    writeln();
   end;
-  writeln('Done');
   readln();
 end.
