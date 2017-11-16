@@ -1,12 +1,13 @@
 program test;
 
 uses
-  SysUtils;
+  SysUtils,
+  Math;
 
 const
-  MaxT = 100;
-  MaxA = 100;
-  MaxB = 100;
+  MaxT = 100000;
+  MaxA = 10000000;
+  MaxB = 10000000;
   MaxNull = 3;
   MaxProb = 20;
 
@@ -18,8 +19,8 @@ type
 
 var
   t: longint;
-  r: shortstring;
-  res, save, pair: TPair;
+  r1, r2: shortstring;
+  pair: TPair;
 
   procedure randomize_numbers(var pair: TPair);
   var
@@ -80,129 +81,70 @@ var
 
   function optimal_search(pair: TPair; c: shortstring): TPair;
   var
-    a, b, t, savea, saveb: shortstring;
-    k: array[0..255] of longint;
-    j, y, i, s: longint;
+    a, b, t: shortstring;
+    k: ^longint;
+    i, s: longint;
   begin
     a := pair.a;
     b := pair.b;
 
+    t[0] := chr(abs(length(a) - length(b)));
+    FillByte(t[1], Ord(t[0]), Ord('0'));
     if length(a) < length(b) then
-    begin
-      t := a;
-      a := b;
-      b := t;
-    end;
+      a := a + t
+    else
+      b := b + t;
 
-    savea := a;
-    saveb := b;
+    t[0] := chr(length(c) - length(a));
+    FillByte(t[1], Ord(t[0]), Ord('0'));
+    a := t + a;
+    b := t + b;
 
-    for i := 1 to length(c) - length(a) do
-    begin
-      a := '0' + a;
-      b := '0' + b;
-    end;
-
-    for i := length(b) + 1 to length(c) do
-      b := b + '0';
-
-    for i := 0 to length(c) + 1 do
-      k[i] := 0;
-
-    for i := length(c) downto 1 do
-    begin
-      if (a[i] <> '?') then
-      begin
-        if (StrToInt(a[i]) + k[i] > StrToInt(c[i])) then
-          k[i - 1] := 1;
-        if (b[i] <> '?') then
-        begin
-          if ((StrToInt(a[i]) + StrToInt(b[i])) mod 10 < StrToint(c[i])) then
-            k[i] := 1;
-          if StrToInt(a[i]) + StrToInt(b[i]) > 9 then
-            k[i - 1] := 1;
-        end;
-      end
-      else
-      if (b[i] <> '?') then
-      begin
-        if (StrToInt(b[i]) + k[i] > StrToInt(c[i])) then
-          k[i - 1] := 1;
-      end
-      else
-      if (a[i] = '?') and (b[i] = '?') and (c[i] = '0') and (k[i] = 1) then
-        k[i - 1] := 1
-      else
-        k[i - 1] := 0;
-    end;
+    s := (length(c) + 2) * sizeof(longint);
+    k := GetMem(s);
+    FillByte(k[0], s, 0);
 
     for i := length(c) downto 1 do
     begin
       if (a[i] <> '?') and (b[i] <> '?') then
       begin
-        k[i - 1] := (StrToInt(a[i]) + StrToInt(b[i])) div 10;
-        continue;
+        k[i + 1] := (10 + Ord(c[i]) - Ord(a[i]) - Ord(b[i]) + Ord('0')) mod 10;
+        k[i] := (Ord(a[i]) - Ord('0') + Ord(b[i]) - Ord('0') + k[i + 1]) div 10;
       end;
+    end;
 
+    for i := 1 to length(c) do
+    begin
       if (a[i] = '?') and (b[i] = '?') then
-      begin
-        if k[i - 1] = 0 then
+        if k[i] = 0 then
         begin
           a[i] := '0';
-          s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod
-            10);
-          b[i] := chr(s + Ord('0'));
-        end;
-
-        if k[i - 1] = 1 then
+          b[i] := chr(Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'));
+        end
+        else
         begin
-          for j := 0 to 9 do
-            for y := 9 downto 0 do
-              if (j + y) mod 10 = StrToInt(c[i]) then
-              begin
-                a[i] := chr(j + ord('0'));
-                b[i] := chr(y + ord('0'));
-              end;
+          a[i] := '9';
+          b[i] := chr(10 + Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'));
         end;
 
-        if (k[i] = 1) and (i > 1) then
-        begin
-          a[i] := '0';
-          b[i] := '9';
-        end;
-        continue;
-      end;
+      if (a[i] = '?') and (b[i] <> '?') then
+        if k[i] = 0 then
+          a[i] := chr(Ord(c[i]) - Ord(b[i]) - k[i + 1] + Ord('0'))
+        else
+          a[i] := chr(10 + Ord(c[i]) - Ord(b[i]) - k[i + 1] + Ord('0'));
 
-      if a[i] <> '?' then
-      begin
-        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod
-          10);
-        b[i] := chr(s + Ord('0'));
-      end;
-
-      if a[i] = '?' then
-      begin
-        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(b[i])) mod
-          10);
-        a[i] := chr(s + Ord('0'));
-      end;
+      if (a[i] <> '?') and (b[i] = '?') then
+        if k[i] = 0 then
+          b[i] := chr(Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'))
+        else
+          b[i] := chr(10 + Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'));
     end;
 
-    if length(c) > length(savea) then
-    begin
-      Delete(a, 1, 1);
-      Delete(b, 1, 1);
-    end;
-
-    if length(saveb) < length(c) then
-      delete(b, length(saveb) + 1, length(c) - length(saveb));
-
-    if length(pair.a) < length(pair.b) then
-    begin
-      t := a;
-      a := b;
-      b := t;
-    end;
+    s := length(c) - max(length(a), length(b));
+    Delete(a, 1, s);
+    Delete(b, 1, s);
+    Delete(a, length(a) + 1, abs(length(a) - length(b)));
+    Delete(b, length(b) + 1, abs(length(a) - length(b)));
 
     optimal_search.a := a;
     optimal_search.b := b;
@@ -213,13 +155,11 @@ begin
   for t := 1 to MaxT do
   begin
     randomize_numbers(pair);
-    save := pair;
-    r := f(pair);
+    r1 := f(pair);
     replace_with_questionmarks(pair);
-    res := optimal_search(pair, r);
-    if (save.a <> res.a) or (save.b <> res.b) then
+    r2 := f(optimal_search(pair, r1));
+    if r1 <> r2 then
       writeln('Error');
   end;
   writeln('Done');
-  readln();
 end.
