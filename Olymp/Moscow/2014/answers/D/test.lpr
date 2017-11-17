@@ -105,49 +105,53 @@ var
     FillByte(k[0], s, 0);
 
     for i := length(c) downto 1 do
-    begin
       if (a[i] <> '?') and (b[i] <> '?') then
       begin
         k[i + 1] := (10 + Ord(c[i]) - Ord(a[i]) - Ord(b[i]) + Ord('0')) mod 10;
         k[i] := (Ord(a[i]) - Ord('0') + Ord(b[i]) - Ord('0') + k[i + 1]) div 10;
       end;
-    end;
 
     for i := 1 to length(c) do
     begin
+      s := Ord(c[i]) - k[i + 1] + Ord('0');
+
       if (a[i] = '?') and (b[i] = '?') then
         if k[i] = 0 then
         begin
           a[i] := '0';
-          b[i] := chr(Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'));
+          b[i] := chr(s - Ord(a[i]));
         end
         else
         begin
           a[i] := '9';
-          b[i] := chr(10 + Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'));
+          b[i] := chr(10 + s - Ord(a[i]));
         end;
 
       if (a[i] = '?') and (b[i] <> '?') then
         if k[i] = 0 then
-          a[i] := chr(Ord(c[i]) - Ord(b[i]) - k[i + 1] + Ord('0'))
+          a[i] := chr(s - Ord(b[i]))
         else
-          a[i] := chr(10 + Ord(c[i]) - Ord(b[i]) - k[i + 1] + Ord('0'));
+          a[i] := chr(10 + s - Ord(b[i]));
 
       if (a[i] <> '?') and (b[i] = '?') then
         if k[i] = 0 then
-          b[i] := chr(Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'))
+          b[i] := chr(s - Ord(a[i]))
         else
-          b[i] := chr(10 + Ord(c[i]) - Ord(a[i]) - k[i + 1] + Ord('0'));
+          b[i] := chr(10 + s - Ord(a[i]));
     end;
 
     s := length(c) - max(length(a), length(b));
     Delete(a, 1, s);
     Delete(b, 1, s);
-    Delete(a, length(a) + 1, abs(length(a) - length(b)));
-    Delete(b, length(b) + 1, abs(length(a) - length(b)));
+
+    s := abs(length(a) - length(b));
+    Delete(a, length(a) + 1, s);
+    Delete(b, length(b) + 1, s);
 
     optimal_search.a := a;
     optimal_search.b := b;
+
+    FreeMem(k);
   end;
 
 begin
