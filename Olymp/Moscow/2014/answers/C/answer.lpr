@@ -11,10 +11,10 @@ const
     i, q, num, n: longint;
     letter: char;
     str: shortstring;
-    dictionary: ^shortstring;
+    dictionary, t: array of shortstring;
   begin
     n := 1;
-    dictionary := GetMem(Lim * n * sizeof(shortstring));
+    SetLength(dictionary, Lim * n);
     dictionary[0] := '';
     for i := 1 to 26 do
       dictionary[i] := chr(i + 64);
@@ -29,16 +29,18 @@ const
       num := StrToInt(copy(str, 1, i - 1));
       letter := str[i + 1];
 
-      if q > Lim * n then
+      if q > Lim * n - 1 then
       begin
         n := n + 1;
-        dictionary := GetMem(Lim * n * sizeof(shortstring));
+        SetLength(t, Lim * n);
+        for i := 0 to Lim * (n - 1) - 1 do
+          t[i] := dictionary[i];
+        dictionary := nil;
+        dictionary := t;
       end;
       dictionary[q] := dictionary[num] + letter;
       Write(destination, dictionary[q]);
     end;
-
-    FreeMem(dictionary);
   end;
 
 begin
