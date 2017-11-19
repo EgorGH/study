@@ -1,144 +1,98 @@
 program answer;
 
 uses
-  SysUtils;
+  SysUtils,
+  Math;
 
 type
   TPair = record
-    a: ansistring;
-    b: ansistring;
+    a: shortstring;
+    b: shortstring;
   end;
 
 var
   N, i: longint;
-  c: ansistring;
+  c: shortstring;
   res, pair: TPair;
 
-  function optimal_search(pair: TPair; c: ansistring): TPair;
+  function optimal_search(pair: TPair; c: shortstring): TPair;
   var
-    a, b, t, savea, saveb: ansistring;
-    k: array[0..1000] of longint;
-    j, y, i, s: longint;
+    a, b, t: shortstring;
+    k: ^longint;
+    i, s: longint;
   begin
     a := pair.a;
     b := pair.b;
 
+    t[0] := chr(abs(length(a) - length(b)));
+    FillByte(t[1], Ord(t[0]), Ord('0'));
     if length(a) < length(b) then
-    begin
-      t := a;
-      a := b;
-      b := t;
-    end;
+      a := a + t
+    else
+      b := b + t;
 
-    savea := a;
-    saveb := b;
+    t[0] := chr(length(c) - length(a));
+    FillByte(t[1], Ord(t[0]), Ord('0'));
+    a := t + a;
+    b := t + b;
 
-    for i := 1 to length(c) - length(a) do
-    begin
-      a := '0' + a;
-      b := '0' + b;
-    end;
-
-    for i := length(b) + 1 to length(c) do
-      b := b + '0';
-
-    for i := 0 to length(c) + 1 do
-      k[i] := 0;
+    s := (length(c) + 2) * sizeof(longint);
+    k := GetMem(s);
+    FillByte(k[0], s, 0);
 
     for i := length(c) downto 1 do
-    begin
-      if (a[i] <> '?') then
-      begin
-        if (StrToInt(a[i]) + k[i] > StrToInt(c[i])) then
-          k[i - 1] := 1;
-        if (b[i] <> '?') then
-        begin
-          if ((StrToInt(a[i]) + StrToInt(b[i])) mod 10 < StrToInt(c[i])) then
-            k[i] := 1;
-          if StrToInt(a[i]) + StrToInt(b[i]) > 9 then
-            k[i - 1] := 1;
-        end;
-      end
-      else
-      if (b[i] <> '?') then
-      begin
-        if (StrToInt(b[i]) + k[i] > StrToInt(c[i])) then
-          k[i - 1] := 1;
-      end
-      else
-      if (a[i] = '?') and (b[i] = '?') and (c[i] = '0') and (k[i] = 1) then
-        k[i - 1] := 1
-      else
-        k[i - 1] := 0;
-    end;
-
-    for i := length(c) downto 1 do
-    begin
       if (a[i] <> '?') and (b[i] <> '?') then
       begin
-        k[i - 1] := (StrToInt(a[i]) + StrToInt(b[i])) div 10;
-        continue;
-      end;
+        k[i + 1] := (10 + Ord(c[i]) - Ord(a[i]) - Ord(b[i]) + Ord('0')) mod 10;
+        k[i] := (Ord(a[i]) - Ord('0') + Ord(b[i]) - Ord('0') + k[i + 1]) div 10;
+      end
+      else if (a[i] <> '?') and (Ord(a[i]) + k[i + 1] > Ord(c[i])) then
+        k[i] := 1
+      else if (b[i] <> '?') and (Ord(b[i]) + k[i + 1] > Ord(c[i])) then
+        k[i] := 1
+      else if k[i + 1] > Ord(c[i]) - ord('0') then
+        k[i] := 1;
 
+
+    for i := 1 to length(c) do
+    begin
       if (a[i] = '?') and (b[i] = '?') then
-      begin
-        if k[i - 1] = 0 then
+        if k[i] = 0 then
         begin
           a[i] := '0';
-          s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod 10);
-          b[i] := chr(s + Ord('0'));
-        end;
-
-        if k[i - 1] = 1 then
+          b[i] := chr(Ord(c[i]) - k[i + 1] + Ord('0') - Ord(a[i]));
+        end
+        else
         begin
-          for j := 0 to 9 do
-            for y := 9 downto 0 do
-              if (j + y) mod 10 = StrToInt(c[i]) then
-              begin
-                a[i] := chr(j + Ord('0'));
-                b[i] := chr(y + Ord('0'));
-              end;
-        end;
-
-        if (k[i] = 1) and (i > 1) then
-        begin
-          a[i] := '0';
           b[i] := '9';
+          a[i] := chr(10 + Ord(c[i]) - k[i + 1] + Ord('0') - Ord(b[i]));
         end;
-        continue;
-      end;
 
-      if a[i] <> '?' then
-      begin
-        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(a[i])) mod 10);
-        b[i] := chr(s + Ord('0'));
-      end;
+      if (a[i] = '?') and (b[i] <> '?') then
+        if k[i] = 0 then
+          a[i] := chr(Ord(c[i]) - k[i + 1] + Ord('0') - Ord(b[i]))
+        else
+          a[i] := chr(10 + Ord(c[i]) - k[i + 1] + Ord('0') - Ord(b[i]));
 
-      if a[i] = '?' then
-      begin
-        s := ((10 + StrToInt(c[i]) - k[i] - StrToInt(b[i])) mod 10);
-        a[i] := chr(s + Ord('0'));
-      end;
+      if (a[i] <> '?') and (b[i] = '?') then
+        if k[i] = 0 then
+          b[i] := chr(Ord(c[i]) - k[i + 1] + Ord('0') - Ord(a[i]))
+        else
+          b[i] := chr(10 + Ord(c[i]) - k[i + 1] + Ord('0') - Ord(a[i]));
     end;
 
-    if length(c) > length(savea) then
-    begin
-      Delete(a, 1, 1);
-      Delete(b, 1, 1);
-    end;
+    s := length(c) - max(length(pair.a), length(pair.b));
+    Delete(a, 1, s);
+    Delete(b, 1, s);
 
-    if length(saveb) < length(c) then
-      Delete(b, length(saveb) + 1, length(c) - length(saveb));
-
-    if length(pair.a) < length(pair.b) then
-    begin
-      t := a;
-      a := b;
-      b := t;
-    end;
+    s := abs(length(pair.a) - length(pair.b));
+    Delete(a, length(pair.a) + 1, s);
+    Delete(b, length(pair.b) + 1, s);
 
     optimal_search.a := a;
     optimal_search.b := b;
+
+    FreeMem(k);
   end;
 
 begin
@@ -155,5 +109,4 @@ begin
     writeln(res.b);
     writeln();
   end;
-  readln();
 end.

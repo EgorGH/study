@@ -5,9 +5,9 @@ uses
   Math;
 
 const
-  MaxT = 100000;
-  MaxA = 10000000;
-  MaxB = 10000000;
+  MaxT = 1000000;
+  MaxA = 1000;
+  MaxB = 1000;
   MaxNull = 3;
   MaxProb = 20;
 
@@ -20,7 +20,7 @@ type
 var
   t: longint;
   r1, r2: shortstring;
-  pair: TPair;
+  Source, destination: TPair;
 
   procedure randomize_numbers(var pair: TPair);
   var
@@ -109,44 +109,49 @@ var
       begin
         k[i + 1] := (10 + Ord(c[i]) - Ord(a[i]) - Ord(b[i]) + Ord('0')) mod 10;
         k[i] := (Ord(a[i]) - Ord('0') + Ord(b[i]) - Ord('0') + k[i + 1]) div 10;
-      end;
+      end
+      else if (a[i] <> '?') and (Ord(a[i]) + k[i + 1] > Ord(c[i])) then
+        k[i] := 1
+      else if (b[i] <> '?') and (Ord(b[i]) + k[i + 1] > Ord(c[i])) then
+        k[i] := 1
+      else if k[i + 1] > Ord(c[i]) - ord('0') then
+        k[i] := 1;
+
 
     for i := 1 to length(c) do
     begin
-      s := Ord(c[i]) - k[i + 1] + Ord('0');
-
       if (a[i] = '?') and (b[i] = '?') then
         if k[i] = 0 then
         begin
-          a[i] := '0';
-          b[i] := chr(s - Ord(a[i]));
+          b[i] := '0';
+          a[i] := chr(Ord(c[i]) - k[i + 1] + Ord('0') - Ord(b[i]));
         end
         else
         begin
-          a[i] := '9';
-          b[i] := chr(10 + s - Ord(a[i]));
+          b[i] := '9';
+          a[i] := chr(10 + Ord(c[i]) - k[i + 1] + Ord('0') - Ord(b[i]));
         end;
 
       if (a[i] = '?') and (b[i] <> '?') then
         if k[i] = 0 then
-          a[i] := chr(s - Ord(b[i]))
+          a[i] := chr(Ord(c[i]) - k[i + 1] + Ord('0') - Ord(b[i]))
         else
-          a[i] := chr(10 + s - Ord(b[i]));
+          a[i] := chr(10 + Ord(c[i]) - k[i + 1] + Ord('0') - Ord(b[i]));
 
       if (a[i] <> '?') and (b[i] = '?') then
         if k[i] = 0 then
-          b[i] := chr(s - Ord(a[i]))
+          b[i] := chr(Ord(c[i]) - k[i + 1] + Ord('0') - Ord(a[i]))
         else
-          b[i] := chr(10 + s - Ord(a[i]));
+          b[i] := chr(10 + Ord(c[i]) - k[i + 1] + Ord('0') - Ord(a[i]));
     end;
 
-    s := length(c) - max(length(a), length(b));
+    s := length(c) - max(length(pair.a), length(pair.b));
     Delete(a, 1, s);
     Delete(b, 1, s);
 
-    s := abs(length(a) - length(b));
-    Delete(a, length(a) + 1, s);
-    Delete(b, length(b) + 1, s);
+    s := abs(length(pair.a) - length(pair.b));
+    Delete(a, length(pair.a) + 1, s);
+    Delete(b, length(pair.b) + 1, s);
 
     optimal_search.a := a;
     optimal_search.b := b;
@@ -158,11 +163,13 @@ begin
   randomize;
   for t := 1 to MaxT do
   begin
-    randomize_numbers(pair);
-    r1 := f(pair);
-    replace_with_questionmarks(pair);
-    r2 := f(optimal_search(pair, r1));
-    if r1 <> r2 then
+    randomize_numbers(Source);
+    r1 := f(Source);
+    replace_with_questionmarks(Source);
+    destination := optimal_search(Source, r1);
+    r2 := f(destination);
+    if (r1 <> r2) or (length(Source.a) <> length(destination.a)) or
+      (length(Source.b) <> length(destination.b)) then
       writeln('Error');
   end;
   writeln('Done');
