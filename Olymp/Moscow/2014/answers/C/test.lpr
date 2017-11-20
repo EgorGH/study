@@ -62,8 +62,7 @@ var
         begin
           n := n + 1;
           SetLength(t, Lim * n);
-          for j := 0 to Lim * (n - 1) - 1 do
-            t[j] := dictionary[j];
+          t := copy(dictionary);
           dictionary := nil;
           dictionary := t;
         end;
@@ -109,8 +108,7 @@ var
       begin
         n := n + 1;
         SetLength(t, Lim * n);
-        for i := 0 to Lim * (n - 1) - 1 do
-          t[i] := dictionary[i];
+        t := copy(dictionary);
         dictionary := nil;
         dictionary := t;
       end;
@@ -122,17 +120,12 @@ var
   function compare(var textA, textB: TextFile): boolean;
   var
     wordA, wordB: shortstring;
-    i: longint;
   begin
     Read(textA, wordA);
     Read(textB, wordB);
 
-    if length(wordA) <> length(wordB) then
+    if wordA <> wordB then
       exit(False);
-
-    for i := 1 to length(wordA) do
-      if wordA[i] <> wordB[i] then
-        exit(False);
 
     exit(True);
   end;

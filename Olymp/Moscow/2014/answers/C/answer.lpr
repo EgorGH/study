@@ -33,8 +33,7 @@ const
       begin
         n := n + 1;
         SetLength(t, Lim * n);
-        for i := 0 to Lim * (n - 1) - 1 do
-          t[i] := dictionary[i];
+        t := copy(dictionary);
         dictionary := nil;
         dictionary := t;
       end;
