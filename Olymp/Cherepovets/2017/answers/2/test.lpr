@@ -11,12 +11,12 @@ var
   num: shortstring;
   t, k: longint;
 
-  function binary_digit_sum(x: longint): longint;
+  function sum(x: longint): longint;
   begin
-    binary_digit_sum := 0;
+    sum := 0;
     while x <> 0 do
     begin
-      binary_digit_sum += x mod 2;
+      sum += x mod 2;
       x := x div 2;
     end;
   end;
@@ -27,12 +27,10 @@ var
     newnum: shortstring;
   begin
     newnum := '';
-
     for i := length(num) downto 1 do
     begin
       if v mod 2 <> 0 then
         newnum := num[i] + newnum;
-
       v := v div 2;
     end;
 
@@ -46,7 +44,7 @@ var
   begin
     for v := 0 to 1 shl (length(num)) - 1 do
     begin
-      if binary_digit_sum(v) = length(num) - k then
+      if sum(v) = length(num) - k then
       begin
         t := eval(v);
         if not found or (t > tmax) then
@@ -56,13 +54,14 @@ var
         end;
       end;
     end;
+
     exit(IntToStr(tmax));
   end;
 
-  function p(start, index: longint): shortstring;
+  function optimal_search(start, index: longint): shortstring;
   var
     i, imax: longint;
-    nmax: shortstring;
+    nmax: char;
     found: boolean = False;
   begin
     if index > length(num) - k then
@@ -78,20 +77,16 @@ var
       end;
     end;
 
-    p := nmax + p(imax + 1, index + 1);
-  end;
-
-  function optimal_search(): shortstring;
-  begin
-    exit(p(1, 1));
+    optimal_search := nmax + optimal_search(imax + 1, index + 1);
   end;
 
 begin
+  randomize;
   for t := 1 to MaxT do
   begin
     num := IntToStr(random(MaxNum) + 10);
     k := random(length(num) - 1) + 1;
-    if full_search() <> optimal_search() then
+    if full_search() <> optimal_search(1, 1) then
       writeln('Error');
   end;
   writeln('Done');
