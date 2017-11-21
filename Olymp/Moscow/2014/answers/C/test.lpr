@@ -6,13 +6,13 @@ uses
 const
   Lim = 30;
   MaxT = 1000;
-  MaxLength = 50;
+  MaxLength = 500;
 
 var
-  Source_generated, destination, source_decrypted: TextFile;
+  Source, destination, decrypted_destination: TextFile;
   t: longint;
 
-  procedure generate_source(var Source: TextFile);
+  procedure generate_word(var Source: TextFile);
   var
     i: longint;
   begin
@@ -22,9 +22,9 @@ var
 
   procedure crypt(var Source, destination: TextFile);
   var
-    word: shortstring;
+    word: ansistring;
     temp: shortstring = '';
-    dictionary, t: array of shortstring;
+    dictionary: array of shortstring;
     n, i, j, q, num, prev_num: longint;
     found: boolean = False;
     Lim: longint = 100;
@@ -42,9 +42,9 @@ var
     for i := 1 to length(word) do
     begin
       temp := temp + word[i];
-      j := 1;
-      while j <= q do
-      begin
+
+      found := False;
+      for j := 1 to q do
         if dictionary[j] = temp then
         begin
           found := True;
@@ -52,8 +52,6 @@ var
           num := j;
           break;
         end;
-        j := j + 1;
-      end;
 
       if not found then
       begin
@@ -61,24 +59,19 @@ var
         if q > Lim * n - 1 then
         begin
           n := n + 1;
-          SetLength(t, Lim * n);
-          t := copy(dictionary);
-          dictionary := nil;
-          dictionary := t;
+          SetLength(dictionary, Lim * n);
         end;
         dictionary[q] := temp;
         Writeln(destination, num, chr(9), temp[length(temp)]);
         temp := '';
       end;
-
-      if i = length(word) then
-        if length(temp) = 1 then
-          writeln(destination, 0, chr(9), temp)
-        else if found then
-          writeln(destination, prev_num, chr(9), temp[length(temp)]);
-
-      found := False;
     end;
+
+    if length(temp) = 1 then
+      prev_num := 0;
+
+    if found then
+      writeln(destination, prev_num, chr(9), temp[length(temp)]);
   end;
 
   procedure decrypt(var Source, destination: TextFile);
@@ -86,7 +79,7 @@ var
     i, q, num, n: longint;
     letter: char;
     str: shortstring;
-    dictionary, t: array of shortstring;
+    dictionary: array of shortstring;
   begin
     n := 1;
     SetLength(dictionary, Lim * n);
@@ -107,10 +100,7 @@ var
       if q > Lim * n - 1 then
       begin
         n := n + 1;
-        SetLength(t, Lim * n);
-        t := copy(dictionary);
-        dictionary := nil;
-        dictionary := t;
+        SetLength(dictionary, Lim * n);
       end;
       dictionary[q] := dictionary[num] + letter;
       Write(destination, dictionary[q]);
@@ -119,7 +109,7 @@ var
 
   function compare(var textA, textB: TextFile): boolean;
   var
-    wordA, wordB: shortstring;
+    wordA, wordB: ansistring;
   begin
     Read(textA, wordA);
     Read(textB, wordB);
@@ -132,34 +122,32 @@ var
 
 begin
   randomize;
+  Assign(Source, 'source.txt');
+  Assign(destination, 'destination.txt');
+  Assign(decrypted_destination, 'decrypted_destination.txt');
   for t := 1 to MaxT do
   begin
-    Assign(Source_generated, 'Source_generated.txt');
-    Assign(destination, 'destination.txt');
-    Assign(Source_decrypted, 'Source_decrypted.txt');
+    Rewrite(Source);
+    generate_word(Source);
 
-    Rewrite(Source_generated);
-    generate_source(Source_generated);
-
-    Reset(Source_generated);
+    Reset(Source);
     Rewrite(destination);
-    crypt(Source_generated, destination);
+    crypt(Source, destination);
 
     Reset(destination);
-    Rewrite(Source_decrypted);
-    decrypt(destination, Source_decrypted);
+    Rewrite(decrypted_destination);
+    decrypt(destination, decrypted_destination);
 
-    Reset(Source_generated);
-    Reset(Source_decrypted);
-    if not compare(Source_generated, Source_decrypted) then
+    Reset(Source);
+    Reset(decrypted_destination);
+    if not compare(Source, decrypted_destination) then
       writeln('Error');
-
-    Close(Source_generated);
-    Close(destination);
-    Close(Source_decrypted);
-    Erase(Source_generated);
-    Erase(destination);
-    Erase(Source_decrypted);
   end;
+  Close(Source);
+  Close(destination);
+  Close(decrypted_destination);
+  Erase(Source);
+  Erase(destination);
+  Erase(decrypted_destination);
   writeln('Done');
 end.

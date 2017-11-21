@@ -6,12 +6,12 @@ uses
 const
   Lim = 1000;
 
-  procedure decrypt(var Source, destination: Text);
+  procedure decrypt(var Source, destination: TextFile);
   var
     i, q, num, n: longint;
     letter: char;
     str: shortstring;
-    dictionary, t: array of shortstring;
+    dictionary: array of shortstring;
   begin
     n := 1;
     SetLength(dictionary, Lim * n);
@@ -32,10 +32,7 @@ const
       if q > Lim * n - 1 then
       begin
         n := n + 1;
-        SetLength(t, Lim * n);
-        t := copy(dictionary);
-        dictionary := nil;
-        dictionary := t;
+        SetLength(dictionary, Lim * n);
       end;
       dictionary[q] := dictionary[num] + letter;
       Write(destination, dictionary[q]);
