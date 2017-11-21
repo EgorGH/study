@@ -11,12 +11,12 @@ var
   num: shortstring;
   t, k: longint;
 
-  function sum(x: longint): longint;
+  function binary_digit_sum(x: longint): longint;
   begin
-    sum := 0;
+    binary_digit_sum := 0;
     while x <> 0 do
     begin
-      sum += x mod 2;
+      binary_digit_sum += x mod 2;
       x := x div 2;
     end;
   end;
@@ -44,7 +44,7 @@ var
   begin
     for v := 0 to 1 shl (length(num)) - 1 do
     begin
-      if sum(v) = length(num) - k then
+      if binary_digit_sum(v) = length(num) - k then
       begin
         t := eval(v);
         if not found or (t > tmax) then
@@ -68,14 +68,12 @@ var
       exit('');
 
     for i := start to k + index do
-    begin
       if not found or (num[i] > nmax) then
       begin
         found := True;
         nmax := num[i];
         imax := i;
       end;
-    end;
 
     optimal_search := nmax + optimal_search(imax + 1, index + 1);
   end;
