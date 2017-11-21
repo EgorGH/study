@@ -1,51 +1,55 @@
 program answer;
 
-uses
-  crt;
-
 type
-  TNum = ^char;
+  tdata = ^char;
 
 var
-  num: TNum;
-  i, k, length: longint;
+  Data: tdata;
+  i, k, size: longint;
 
-  procedure optimal_search(start, index: longint);
+  procedure optimal_search(Data: tdata; size, k, start, index: longint);
   var
     i, imax: longint;
     nmax: char;
     found: boolean = False;
   begin
-    if index > length - k then
-      exit();
-
-    for i := start to k + index - 1 do
+    if k + index = start then
     begin
-      if not found or (num[i] > nmax) then
-      begin
-        found := True;
-        nmax := num[i];
-        imax := i;
-      end;
+      for i := start to size do
+        Write(Data[i]);
+      exit();
     end;
 
+    if index > size - k then
+      exit();
+
+    for i := start to k + index do
+      if not found or (Data[i] > nmax) then
+      begin
+        found := True;
+        nmax := Data[i];
+        imax := i;
+      end;
+
     Write(nmax);
-    optimal_search(imax + 1, index + 1);
+    optimal_search(Data, size, k, imax + 1, index + 1);
   end;
 
 begin
-  num := GetMem(1000000 * sizeof(char));
+  Data := GetMem(1000000 * sizeof(char));
 
-  i := 0;
-  Read(num[i]);
-  while num[i] <> chr(13) do
+  i := 1;
+  Read(Data[i]);
+  while Data[i] <> chr(13) do
   begin
     i := i + 1;
-    Read(num[i]);
+    Read(Data[i]);
   end;
-  length := i;
+
+  size := i - 1;
+
   readln(k);
 
-  optimal_search(0, 1);
+  optimal_search(Data, size, k, 1, 1);
   writeln();
 end.
