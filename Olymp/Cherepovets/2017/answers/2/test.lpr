@@ -4,7 +4,7 @@ uses
   SysUtils;
 
 const
-  MaxT = 10000;
+  MaxT = 100000;
   MaxStr = 100000000;
 
 type
@@ -13,7 +13,7 @@ type
 var
   Data: tdata;
   str: shortstring;
-  size, i, t, k: longint;
+  size, i, t, k, Lim: longint;
 
   function binary_digits_sum(x: longint): longint;
   begin
@@ -31,7 +31,7 @@ var
     newstr: shortstring;
   begin
     newstr := '';
-    for i := size downto 1 do
+    for i := size - 1 downto 0 do
     begin
       if v mod 2 <> 0 then
         newstr := Data[i] + newstr;
@@ -60,47 +60,50 @@ var
     exit(IntToStr(nmax));
   end;
 
-  function optimal_search(Data: tdata; size, k, start, index: longint): shortstring;
+  function optimal_search(Data: tdata; size, k, start: longint): shortstring;
   var
     i, imax: longint;
-    nmax: char;
+    dmax: char;
     found: boolean = False;
   begin
-    if k + index = start then
+    if k = size - start then
+      exit('');
+
+    if k = 0 then
     begin
       optimal_search := '';
-      for i := start to size do
-        optimal_search += data[i];
+      for i := start to size - 1 do
+        optimal_search += Data[i];
       exit(optimal_search);
     end;
 
-    if index > size - k then
-      exit('');
-
-    for i := start to k + index do
-      if not found or (data[i] > nmax) then
+    for i := start to start + k do
+      if not found or (Data[i] > dmax) then
       begin
         found := True;
-        nmax := data[i];
+        dmax := Data[i];
         imax := i;
       end;
 
-    optimal_search := nmax + optimal_search(Data, size, k, imax + 1, index + 1);
+    optimal_search := dmax + optimal_search(Data, size, k - imax + start, imax + 1);
   end;
 
 begin
   randomize;
-  Data := GetMem(1000000 * sizeof(char));
+  Lim := length(IntToStr(MaxStr));
+  Data := GetMem(Lim * sizeof(char));
+
   for t := 1 to MaxT do
   begin
     str := IntToStr(random(MaxStr) + 1);
     size := length(str);
-    for i := 1 to size do
-      Data[i] := str[i];
-    k := random(size - 1) + 1;
-    if full_search(Data, size, k) <> optimal_search(Data, size, k, 1, 1) then
+    k := random(size);
+
+    for i := 0 to size - 1 do
+      Data[i] := str[i + 1];
+
+    if full_search(Data, size, k) <> optimal_search(Data, size, k, 0) then
       writeln('Error');
   end;
   writeln('Done');
 end.
-

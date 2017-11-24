@@ -1,5 +1,8 @@
 program answer;
 
+const
+  Lim = 1000000;
+
 type
   tdata = ^char;
 
@@ -7,49 +10,47 @@ var
   Data: tdata;
   i, k, size: longint;
 
-  procedure optimal_search(Data: tdata; size, k, start, index: longint);
+  procedure optimal_search(Data: tdata; size, k, start: longint);
   var
     i, imax: longint;
-    nmax: char;
+    dmax: char;
     found: boolean = False;
   begin
-    if k + index = start then
+    if k = size - start then
+      exit();
+
+    if k = 0 then
     begin
-      for i := start to size do
+      for i := start to size - 1 do
         Write(Data[i]);
       exit();
     end;
 
-    if index > size - k then
-      exit();
-
-    for i := start to k + index do
-      if not found or (Data[i] > nmax) then
+    for i := start to start + k do
+      if not found or (Data[i] > dmax) then
       begin
         found := True;
-        nmax := Data[i];
+        dmax := Data[i];
         imax := i;
       end;
 
-    Write(nmax);
-    optimal_search(Data, size, k, imax + 1, index + 1);
+    Write(dmax);
+    optimal_search(Data, size, k - imax + start, imax + 1);
   end;
 
 begin
-  Data := GetMem(1000000 * sizeof(char));
+  Data := GetMem(Lim * sizeof(char));
 
-  i := 1;
-  Read(Data[i]);
-  while Data[i] <> chr(13) do
-  begin
-    i := i + 1;
+  i := -1;
+  repeat
+    i += 1;
     Read(Data[i]);
-  end;
+  until (Ord(Data[i]) < 48) or (Ord(Data[i]) > 57);
 
-  size := i - 1;
+  size := i;
 
   readln(k);
 
-  optimal_search(Data, size, k, 1, 1);
+  optimal_search(Data, size, k, 0);
   writeln();
 end.
