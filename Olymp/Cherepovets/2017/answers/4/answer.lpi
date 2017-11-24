@@ -35,7 +35,6 @@
       <Unit0>
         <Filename Value="answer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="answer_slow"/>
       </Unit0>
     </Units>
   </ProjectOptions>
