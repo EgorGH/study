@@ -1,4 +1,4 @@
-program answer;
+program answer_seq;
 
 const
   Lim = 1000000;
@@ -19,33 +19,36 @@ var
     i, imax: longint;
     dmax, d: byte;
   begin
-    if k = src.size - start then
-      exit();
-
-    if k = 0 then
+    while (k <> src.size - start) do
     begin
-      for i := 0 to src.size - start - 1 do
-        dst.data[q + i] := src.data[start + i];
-      exit();
-    end;
-
-    dmax := 0;
-    for i := start to start + k do
-    begin
-      d := src.data[i];
-
-      if d > dmax then
+      if k = 0 then
       begin
-        dmax := d;
-        imax := i;
+        for i := 0 to src.size - start - 1 do
+          dst.Data[q + i] := src.Data[start + i];
+        exit();
       end;
 
-      if d = 9 then
-        break;
-    end;
+      dmax := 0;
+      for i := start to start + k do
+      begin
+        d := src.Data[i];
 
-    dst.Data[q] := dmax;
-    optimal_search(src, dst, k - imax + start, imax + 1, q + 1);
+        if d > dmax then
+        begin
+          dmax := d;
+          imax := i;
+        end;
+
+        if d = 9 then
+          break;
+      end;
+
+      dst.Data[q] := dmax;
+
+      k := k - imax + start;
+      start := imax + 1;
+      q := q + 1;
+    end;
   end;
 
 begin
@@ -56,7 +59,7 @@ begin
   repeat
     i += 1;
     Read(c);
-    src.data[i] := ord(c) - 48;
+    src.Data[i] := Ord(c) - 48;
   until (Ord(c) < 48) or (Ord(c) > 57);
   readln(k);
 

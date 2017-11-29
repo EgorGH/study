@@ -5,7 +5,7 @@ uses
 
 const
   MaxT = 100000;
-  MaxStr = 100000000;
+  MaxNum = 100000000;
 
 type
   longstring = record
@@ -15,7 +15,7 @@ type
 
 var
   src, dst_full, dst_optimal: longstring;
-  str: shortstring;
+  numstr: shortstring;
   i, t, k, Lim: longint;
 
   function binary_digits_sum(x: longint): longint;
@@ -66,10 +66,10 @@ var
       dst.Data[i] := str[i + 1];
   end;
 
-  procedure optimal_search(src, dst: longstring; k, start, q: longint);
+  procedure optimal_search(var src, dst: longstring; k, start, q: longint);
   var
     i, imax: longint;
-    dmax: char;
+    dmax, d: char;
     found: boolean = False;
   begin
     if k = src.size - start then
@@ -77,21 +77,25 @@ var
 
     if k = 0 then
     begin
-      for i := start to src.size - 1 do
-      begin
-        dst.Data[q] := src.Data[i];
-        q := q + 1;
-      end;
+      for i := 0 to src.size - start - 1 do
+        dst.Data[q + i] := src.Data[start + i];
       exit();
     end;
 
     for i := start to start + k do
-      if not found or (src.Data[i] > dmax) then
+    begin
+      d := src.data[i];
+
+      if not found or (d > dmax) then
       begin
         found := True;
-        dmax := src.Data[i];
+        dmax := d;
         imax := i;
       end;
+
+      if d = '9' then
+        break;
+    end;
 
     dst.Data[q] := dmax;
     optimal_search(src, dst, k - imax + start, imax + 1, q + 1);
@@ -99,22 +103,22 @@ var
 
 begin
   randomize;
-  Lim := length(IntToStr(MaxStr));
+  Lim := length(IntToStr(MaxNum));
   src.Data := GetMem(Lim * sizeof(char));
   dst_full.Data := GetMem(Lim * sizeof(char));
   dst_optimal.Data := GetMem(Lim * sizeof(char));
 
   for t := 1 to MaxT do
   begin
-    str := IntToStr(random(MaxStr) + 1);
-    src.size := length(str);
+    numstr := IntToStr(random(MaxNum) + 1);
+    src.size := length(numstr);
     k := random(src.size);
 
     dst_full.size := src.size - k;
     dst_optimal.size := src.size - k;
 
     for i := 0 to src.size - 1 do
-      src.Data[i] := str[i + 1];
+      src.Data[i] := numstr[i + 1];
 
     full_search(src, dst_full);
     optimal_search(src, dst_optimal, k, 0, 0);
