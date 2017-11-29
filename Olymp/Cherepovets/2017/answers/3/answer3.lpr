@@ -1,4 +1,4 @@
-program answer;
+program answer3;
 
 uses
   Math;
@@ -7,7 +7,7 @@ const
   Lim = 18;
 
 type
-  ttable = array of array of longint;
+  ttable = array[1..Lim, 1..Lim * 9] of longint;
 
 var
   i, m, n, k: longint;
@@ -38,14 +38,14 @@ var
     i, j, p: longint;
   begin
     for i := 1 to Lim do
-      for j := 1 to (Lim - 1) * 9 do
+      for j := 1 to Lim * 9 do
         table[i, j] := 0;
 
     for i := 1 to 9 do
       table[1, i] := 1;
 
     for i := 2 to Lim do
-      for j := 1 to (Lim - 1) * 9 do
+      for j := 1 to Lim * 9 do
         for p := 0 to min(j - 1, 9) do
           table[i, j] := table[i, j] + table[i - 1, j - p];
   end;
@@ -68,7 +68,6 @@ var
   end;
 
 begin
-  SetLength(table, Lim + 1, (Lim - 1) * 9 + 1);
   fill_table(table);
 
   readln(n, m);

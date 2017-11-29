@@ -1,20 +1,11 @@
-program test;
-
-uses
-  Math;
+program test1;
 
 const
-  MaxT = 1000;
   MaxN = 3;
-  Lim = 18;
-
-type
-  ttable = array of array of longint;
 
 var
-  t, size, n, k: longint;
+  size, n, k: longint;
   Data: array of longint;
-  table: ttable;
 
   function dsum(x: longint): longint;
   begin
@@ -97,56 +88,37 @@ var
     exit(q);
   end;
 
-  procedure fill_table(var table: ttable);
+  function optimal_search(n, k: longint): longint;
   var
-    i, j, p: longint;
+    kdsum, kdq, a, b, i: longint;
+    q: longint = 0;
   begin
-    for i := 1 to Lim do
-      for j := 1 to (Lim - 1) * 9 do
-        table[i, j] := 0;
-
-    for i := 1 to 9 do
-      table[1, i] := 1;
-
-    for i := 2 to Lim do
-      for j := 1 to (Lim - 1) * 9 do
-        for p := 0 to min(j - 1, 9) do
-          table[i, j] := table[i, j] + table[i - 1, j - p];
-  end;
-
-  function optimal_search(var table: ttable; n, k: longint): longint;
-  var
-    i, j, kdsum, kdq, q: longint;
-  begin
-    q := 0;
     kdsum := dsum(k);
     kdq := dq(k);
-    if kdsum > 1 then
-      q := q + 1;
+    a := power_10(kdq);
+    b := power_10(n);
 
-    for i := kdq + 1 to n do
-      for j := 1 to kdsum - 1 do
-        q := q + table[i, j];
+    for i := a to b do
+    begin
+      if dsum(i) < kdsum then
+        q += 1;
+    end;
 
     exit(q);
   end;
 
 begin
   SetLength(Data, power_10(MaxN));
-  SetLength(table, Lim + 1, (Lim - 1) * 9 + 1);
-  fill_table(table);
 
   randomize;
-  for t := 1 to MaxT do
-  begin
-    n := random(MaxN) + 1;
-    k := random(power_10(n)) + 1;
+  for n := 1 to MaxN do
+    for k := 1 to power_10(n) do
+    begin
+      size := power_10(n);
+      fill_data(Data, size);
 
-    size := power_10(n);
-    fill_data(Data, size);
-
-    if full_search(Data, k) <> optimal_search(table, n, k) then
-      writeln('Error');
-  end;
+      if full_search(Data, k) <> optimal_search(n, k) then
+        writeln('Error');
+    end;
   writeln('Done');
 end.
