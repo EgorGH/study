@@ -12,22 +12,25 @@ var
 
   function optimal_search(): longint;
   var
-    x, y, i, j, d, t: longint;
+    x, y, i, j, d, t, q, s: longint;
   begin
     d := k;
     labyrinth[1, 1] := 1;
+    q := 1;
 
     while d > 0 do
     begin
-      if labyrinth[m, n] = 1 then
+      if labyrinth[m, n] <> 0 then
         if d = k then
           exit(0)
         else
           exit(d + 1);
 
+      s := 0;
+      q := q + 1;
       for i := 1 to m do
         for j := 1 to n do
-          if labyrinth[i, j] = 1 then
+          if labyrinth[i, j] = q - 1 then
             for t := 1 to 4 do
             begin
               x := i + moves[t, 1];
@@ -35,13 +38,19 @@ var
 
               if (x >= 1) and (y >= 1) and (x <= m) and (y <= n) then
                 if (x <> -1) and (y <> -1) and (labyrinth[x, y] = 0) then
-                  labyrinth[x, y] := 1;
+                  labyrinth[x, y] := q;
             end;
 
-      if labyrinth[m, n] = 0 then
+      for i := 1 to m do
+        for j := 1 to n do
+          if labyrinth[i, j] >= q then
+            s := 1;
+
+      if s = 0 then
       begin
         labyrinth[ky[d], kx[d]] := 0;
         d := d - 1;
+        q := q - 2;
       end;
     end;
   end;
