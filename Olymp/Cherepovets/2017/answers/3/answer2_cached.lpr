@@ -6,13 +6,12 @@ uses
 const
   Lim = 18;
 
-type
-  ttable = array[0..Lim, 0..Lim * 9, 0..1] of longint;
 var
-  i, m, n, k: longint;
-  table: ttable;
+  i, m, n: longint;
+  k: int64;
+  cache: array[1..Lim * 9, 1..Lim, 0..1] of int64;
 
-  function dsum(x: longint): longint;
+  function dsum(x: int64): longint;
   begin
     dsum := 0;
     while x > 0 do
@@ -22,7 +21,7 @@ var
     end;
   end;
 
-  function dq(x: longint): longint;
+  function dq(x: int64): longint;
   begin
     dq := 0;
     while x > 0 do
@@ -32,81 +31,71 @@ var
     end;
   end;
 
-  function quantity(a, b: longint; zero: byte): longint;
+  function optimal_search(a, b: longint; c: byte): int64;
   var
     i: longint;
+    q: int64;
   begin
-    if table[a, b, zero] <> -1 then
-      exit(table[a, b, zero]);
-
-    quantity := 0;
-
-    if a = 1 then
-      if b >= 10 then
-      begin
-        table[a, b, zero] := 0;
-        exit(0);
-      end
-      else
-      begin
-        table[a, b, zero] := 1;
-        exit(1);
-      end;
-    if b = 0 then
-    begin
-      table[a, b, zero] := 1;
+    if ((b = 1) and (a <= 9)) or (a = 0) then
       exit(1);
-    end;
+    if (b = 1) and (a >= 10) then
+      exit(0);
 
-    for i := 1 - zero to min(b, 9) do
-    begin
-      quantity := quantity + quantity(a - 1, b - i, 1);
-      table[a, b, zero] := quantity;
-    end;
-  end;
-
-  procedure fill_table(var table: ttable);
-  var
-    i, j: longint;
-  begin
-    for i := 0 to Lim do
-      for j := 0 to Lim * 9 do
-      begin
-        table[i, j, 0] := -1;
-        table[i, j, 1] := -1;
-      end;
-
-    for i := 2 to Lim do
-      for j := 1 to Lim * 9 do
-        table[i, j, 0] := quantity(i, j, 0);
-  end;
-
-  function optimal_search(var table: ttable; n, k: longint): longint;
-  var
-    i, j, kdsum, kdq, q: longint;
-  begin
     q := 0;
-    kdsum := dsum(k);
-    kdq := dq(k);
-    if kdsum > 1 then
-      q := q + 1;
-
-    for i := kdq + 1 to n do
-      for j := 1 to kdsum - 1 do
-        q := q + table[i, j, 0];
+    for i := min(a, 9) downto c do
+      q += optimal_search(a - i, b - 1, 0);
 
     exit(q);
   end;
 
-begin
-  fill_table(table);
+  function optimal_search_cached(a, b: longint; c: byte): int64;
+  begin
+    optimal_search_cached := cache[a, b, c];
+    if optimal_search_cached = -1 then
+    begin
+      optimal_search_cached := optimal_search(a, b, c);
+      cache[a, b, c] := optimal_search_cached;
+    end;
+  end;
 
+  function optimal_search(n: longint; k: int64): int64;
+  var
+    kdsum, kdq, i, j: longint;
+    q: int64;
+  begin
+    kdsum := dsum(k);
+    kdq := dq(k);
+
+    q := 0;
+    if kdsum > 1 then
+      q += 1;
+
+    for i := 1 to kdsum - 1 do
+      for j := kdq + 1 to n do
+        q += optimal_search_cached(i, j, 1);
+
+    exit(q);
+  end;
+
+  procedure prepare_cache(n: longint);
+  var
+    i, j, p: longint;
+  begin
+    for i := 1 to n * 9 do
+      for j := 1 to n do
+        for p := 0 to 1 do
+          cache[i, j, p] := -1;
+  end;
+
+begin
   readln(n, m);
+
+  prepare_cache(n);
 
   for i := 1 to m do
   begin
     Read(k);
-    Write(optimal_search(table, n, k), ' ');
+    Write(optimal_search(n, k), ' ');
   end;
 end.
 

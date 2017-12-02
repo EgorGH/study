@@ -7,13 +7,14 @@ const
   Lim = 18;
 
 type
-  ttable = array[1..Lim, 1..Lim * 9] of longint;
+  ttable = array[1..Lim, 1..Lim * 9] of int64;
 
 var
-  i, m, n, k: longint;
+  i, m, n: longint;
+  k: int64;
   table: ttable;
 
-  function dsum(x: longint): longint;
+  function dsum(x: int64): longint;
   begin
     dsum := 0;
     while x > 0 do
@@ -23,7 +24,7 @@ var
     end;
   end;
 
-  function dq(x: longint): longint;
+  function dq(x: int64): longint;
   begin
     dq := 0;
     while x > 0 do
@@ -50,9 +51,10 @@ var
           table[i, j] := table[i, j] + table[i - 1, j - p];
   end;
 
-  function optimal_search(var table: ttable; n, k: longint): longint;
+  function optimal_search(var table: ttable; n: longint; k: int64): int64;
   var
-    i, j, kdsum, kdq, q: longint;
+    i, j, kdsum, kdq: longint;
+    q: int64;
   begin
     q := 0;
     kdsum := dsum(k);

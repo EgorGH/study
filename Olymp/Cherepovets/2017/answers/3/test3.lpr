@@ -4,7 +4,7 @@ uses
   Math;
 
 const
-  MaxN = 5;
+  MaxN = 4;
   Lim = 18;
 
 type
@@ -68,7 +68,7 @@ var
     i, j, p: longint;
   begin
     for i := 1 to Lim do
-      for j := 1 to Lim  * 9 do
+      for j := 1 to Lim * 9 do
         table[i, j] := 0;
 
     for i := 1 to 9 do
@@ -80,9 +80,10 @@ var
           table[i, j] := table[i, j] + table[i - 1, j - p];
   end;
 
-  function optimal_search(var table: ttable; n, k: longint): longint;
+  function optimal_search(var table: ttable; n: longint; k: int64): int64;
   var
-    i, j, kdsum, kdq, q: longint;
+    i, j, kdsum, kdq: longint;
+    q: int64;
   begin
     q := 0;
     kdsum := dsum(k);
@@ -103,10 +104,7 @@ begin
   randomize;
   for n := 1 to MaxN do
     for k := 1 to power_10(n) do
-    begin
       if full_search(n, k) <> optimal_search(table, n, k) then
         writeln('Error');
-    end;
   writeln('Done');
 end.
-
