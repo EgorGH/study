@@ -63,51 +63,51 @@ var
     exit(q);
   end;
 
-procedure fill_table(var table: ttable);
-var
-  i, j, k, p: longint;
-begin
-  for i := 0 to Lim do
-    for j := 0 to Lim * 9 do
-      for k := 0 to 1 do
-        table[i, j, k] := 0;
+  procedure fill_table(var table: ttable);
+  var
+    i, j, k, p: longint;
+  begin
+    for i := 0 to Lim do
+      for j := 0 to Lim * 9 do
+        for k := 0 to 1 do
+          table[i, j, k] := 0;
 
-  for i := 0 to 9 do
-    for j := 0 to 1 do
-      table[1, i, j] := 1;
+    for i := 0 to 9 do
+      for j := 0 to 1 do
+        table[1, i, j] := 1;
 
-  for i := 10 to Lim * 9 do
-    for j := 0 to 1 do
-      table[1, i, j] := 0;
+    for i := 10 to Lim * 9 do
+      for j := 0 to 1 do
+        table[1, i, j] := 0;
 
-  for i := 0 to Lim do
-    for j := 0 to 1 do
-      table[i, 0, j] := 1;
+    for i := 0 to Lim do
+      for j := 0 to 1 do
+        table[i, 0, j] := 1;
 
-  for i := 2 to Lim do
-    for j := 1 to Lim * 9 do
-      for k := 0 to 1 do
-        for p := 1 - k to min(j, 9) do
-          table[i, j, k] += table[i - 1, j - p, 1];
-end;
+    for i := 2 to Lim do
+      for j := 1 to Lim * 9 do
+        for k := 0 to 1 do
+          for p := 1 - k to min(j, 9) do
+            table[i, j, k] += table[i - 1, j - p, 1];
+  end;
 
-function optimal_search(var table: ttable; n: longint; k: int64): int64;
-var
-  i, j, kdsum, kdq: longint;
-  q: int64;
-begin
-  q := 0;
-  kdsum := dsum(k);
-  kdq := dq(k);
-  if kdsum > 1 then
-    q := q + 1;
+  function optimal_search(var table: ttable; n: longint; k: int64): int64;
+  var
+    i, j, kdsum, kdq: longint;
+    q: int64;
+  begin
+    q := 0;
+    kdsum := dsum(k);
+    kdq := dq(k);
+    if kdsum > 1 then
+      q := q + 1;
 
-  for i := kdq + 1 to n do
-    for j := 1 to kdsum - 1 do
-      q := q + table[i, j, 0];
+    for i := kdq + 1 to n do
+      for j := 1 to kdsum - 1 do
+        q := q + table[i, j, 0];
 
-  exit(q);
-end;
+    exit(q);
+  end;
 
 begin
   fill_table(table);
