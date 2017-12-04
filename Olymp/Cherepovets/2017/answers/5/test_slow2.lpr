@@ -1,7 +1,7 @@
-program answer_slow2;
+program test_slow2;
 
 const
-  MaxN = 10;
+  MaxN = 8;
   MaxSize = 2 * MaxN + 1;
 
 var
@@ -90,25 +90,54 @@ var
       full_search(i, 1, 1);
   end;
 
-  procedure print_data();
+  function check_data(): boolean;
   var
-    i, j: longint;
+    i, j, k, rel: longint;
   begin
-    for i := 1 to N do
-    begin
+    for i := 1 to size do
       for j := 1 to size do
-        Write(Data[i, j], ' ');
-      writeln();
-    end;
+        relations[i, j] := 0;
+
+    for i := 1 to n do
+      for j := 1 to size do
+      begin
+        for k := 1 to j - 1 do
+          if Data[i, k] = Data[i, j] then
+            exit(False);
+
+        if j = 1 then
+          continue;
+
+        rel := relations[Data[i, j], Data[i, j - 1]];
+        if j = size then
+          rel := relations[Data[i, j], Data[i, j - 1]] or relations[Data[i, j], 1];
+
+        if rel = 1 then
+          exit(False);
+
+        relations[Data[i, j], Data[i, j - 1]] := 1;
+        relations[Data[i, j - 1], Data[i, j]] := 1;
+
+        if j = size then
+        begin
+          relations[Data[i, j], 1] := 1;
+          relations[1, Data[i, j]] := 1;
+        end;
+      end;
+
+    exit(True);
   end;
 
 begin
-  readln(n);
-  size := 2 * n + 1;
+  for n := 1 to MaxN do
+  begin
+    size := 2 * n + 1;
+    prepare_data();
+    full_search();
 
-  prepare_data();
-  full_search();
-  print_data();
-
-  readln();
+    if not check_data() then
+      writeln('Error');
+  end;
+  writeln('Done');
 end.
+
