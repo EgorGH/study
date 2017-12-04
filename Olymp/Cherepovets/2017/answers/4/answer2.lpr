@@ -41,8 +41,10 @@ var
 
   function check(): boolean;
   var
-    x, y, a, b, c, d: longint;
+    x, y, a, b, c, d, direction: longint;
   begin
+    direction := 1;
+
     x := 1;
     y := 1;
 
@@ -55,8 +57,40 @@ var
     begin
       print_labyrinth();
 
+      case direction of
+        0:
+        begin
+          a := -1;
+          b := 0;
+          c := 0;
+          d := 1;
+        end;
+        1:
+        begin
+          a := -1;
+          b := 0;
+          c := 0;
+          d := 1;
+        end;
+        2:
+        begin
+          a := -1;
+          b := 0;
+          c := 0;
+          d := 1;
+        end;
+        3:
+        begin
+          a := -1;
+          b := 0;
+          c := 0;
+          d := 1;
+        end;
+      end;
+
       if labyrinth[x + a, y + b] <> -1 then
       begin
+        direction := (direction + 3) mod 4;
         c := a;
         d := b;
         a := c + 1;
@@ -66,6 +100,7 @@ var
 
       if labyrinth[x + c, y + d] = -1 then
       begin
+        direction := (direction + 1) mod 4;
         a := c;
         b := d;
         c := a + 1;

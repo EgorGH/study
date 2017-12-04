@@ -1,4 +1,4 @@
-program answer;
+program answer_slow;
 
 const
   Lim = 500;
@@ -15,12 +15,20 @@ var
     x, y, i, j, d, t, q, s: longint;
   begin
     d := k;
-    labyrinth[1, 1] := 1;
     q := 1;
 
-    while d > 0 do
+    while d >= 0 do
     begin
-      if labyrinth[m, n] <> 0 then
+      if labyrinth[1, 1] = -1 then
+      begin
+        labyrinth[ky[d], kx[d]] := 0;
+        d := d - 1;
+        continue;
+      end;
+
+      labyrinth[1, 1] := 1;
+
+      if labyrinth[m, n] > 0 then
         if d = k then
           exit(0)
         else
