@@ -24,13 +24,13 @@ var
     for i := 0 to n - 1 do
       for j := 0 to m - 1 do
       begin
-        walls[i * n + j + 1].x := i + 1;
-        walls[i * n + j + 1].y := j + 1;
+        walls[i * m + j + 1].x := i + 1;
+        walls[i * m + j + 1].y := j + 1;
       end;
 
     for i := n * m downto 2 do
     begin
-      j := random(1) + 1;
+      j := random(i) + 1;
       t := walls[i];
       walls[i] := walls[j];
       walls[j] := t;
@@ -70,7 +70,7 @@ var
   procedure write_test(t, ans: longint);
   var
     infile, afile: Text;
-    i, k: longint;
+    i: longint;
   begin
     Assign(infile, 'tests/' + format('%.2d', [t]) + '.in');
     Assign(afile, 'tests/' + format('%.2d', [t]) + '.a');
