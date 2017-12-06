@@ -1,4 +1,4 @@
-program answer2;
+program answer;
 
 const
   Lim = 500;
@@ -53,17 +53,17 @@ var
     c := 0;
     d := 1;
 
-    while (labyrinth[1, 1] = 0) and (labyrinth[m, n] = 0) do
+    while (labyrinth[1, 1] < 1) and (labyrinth[m, n] < 1) do
     begin
       print_labyrinth();
 
       case direction of
         0:
         begin
-          a := -1;
-          b := 0;
-          c := 0;
-          d := 1;
+          a := 0;
+          b := -1;
+          c := -1;
+          d := 0;
         end;
         1:
         begin
@@ -74,38 +74,31 @@ var
         end;
         2:
         begin
-          a := -1;
-          b := 0;
-          c := 0;
-          d := 1;
+          a := 0;
+          b := 1;
+          c := 1;
+          d := 0;
         end;
         3:
         begin
-          a := -1;
+          a := 1;
           b := 0;
           c := 0;
-          d := 1;
+          d := -1;
         end;
       end;
 
       if labyrinth[x + a, y + b] <> -1 then
       begin
         direction := (direction + 3) mod 4;
-        c := a;
-        d := b;
-        a := c + 1;
-        b := d - 1;
+        x := x + a;
+        y := y + b;
         labyrinth[x, y] := 1;
+        continue;
       end;
 
       if labyrinth[x + c, y + d] = -1 then
-      begin
         direction := (direction + 1) mod 4;
-        a := c;
-        b := d;
-        c := a + 1;
-        d := b - 1;
-      end;
 
       if labyrinth[x + c, y + d] <> -1 then
       begin
@@ -132,17 +125,5 @@ begin
   end;
 
   writeln(check());
-
-  {
-4 5 9
-1 3
-1 4
-1 5
-2 4
-2 5
-3 2
-3 3
-3 4
-3 5
-}
+  readln();
 end.
