@@ -38,6 +38,8 @@ var
   end;
 
   procedure prepare_data();
+  var
+    i: longint;
   begin
     for i := 1 to k do
       data[walls[i].x, walls[i].y] := i;
