@@ -52,10 +52,6 @@ var
     i: longint;
     rel: byte;
   begin
-    //writeln(a, ' ', b, ' ', Value);
-    //print_data();
-    //readln();
-
     for i := 1 to b - 1 do
       if Data[a, i] = Value then
         exit(False);
@@ -82,13 +78,17 @@ var
     begin
       relations[Data[a, 1], Value] := 1;
       relations[Value, Data[a, 1]] := 1;
-      //if a = 5 then
-      //begin
-      //  writeln(a);
-      //  print_data();
-      //  writeln();
-      //end;
-      exit(full_search(a + 1, 1, 1));
+
+      if not full_search(a + 1, 1, 1) then
+      begin
+        relations[Data[a, b - 1], Value] := 0;
+        relations[Value, Data[a, b - 1]] := 0;
+        relations[Data[a, 1], Value] := 0;
+        relations[Value, Data[a, 1]] := 0;
+        exit(False);
+      end
+      else
+        exit(True);
     end;
 
     for i := 1 to size do
@@ -108,13 +108,10 @@ var
   end;
 
 begin
-  n := 6;
-  //readln(n);
+  readln(n);
   size := 2 * n + 1;
 
   prepare_data();
   full_search(2, 1, 1);
   print_data();
-
-  readln();
 end.

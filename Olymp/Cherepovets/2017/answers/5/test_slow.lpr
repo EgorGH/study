@@ -59,11 +59,24 @@ var
     relations[Data[a, b - 1], Value] := 1;
     relations[Value, Data[a, b - 1]] := 1;
 
+    if (a = n) and (b = size) then
+      exit(True);
+
     if b = size then
     begin
       relations[Data[a, 1], Value] := 1;
       relations[Value, Data[a, 1]] := 1;
-      exit(True);
+
+      if not full_search(a + 1, 1, 1) then
+      begin
+        relations[Data[a, b - 1], Value] := 0;
+        relations[Value, Data[a, b - 1]] := 0;
+        relations[Data[a, 1], Value] := 0;
+        relations[Value, Data[a, 1]] := 0;
+        exit(False);
+      end
+      else
+        exit(True);
     end;
 
     for i := 1 to size do
@@ -80,14 +93,6 @@ var
     end;
 
     exit(False);
-  end;
-
-  procedure full_search();
-  var
-    i: longint;
-  begin
-    for i := 2 to n do
-      full_search(i, 1, 1);
   end;
 
   function check_data(): boolean;
@@ -133,7 +138,7 @@ begin
   begin
     size := 2 * n + 1;
     prepare_data();
-    full_search();
+    full_search(2, 1, 1);
 
     if not check_data() then
       writeln('Error');
