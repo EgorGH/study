@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -10,7 +10,7 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="answer_seq"/>
+      <Title Value="gen_test"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -33,8 +33,9 @@
     </RunParams>
     <Units Count="1">
       <Unit0>
-        <Filename Value="answer_seq.lpr"/>
+        <Filename Value="gen_test.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="gen_test"/>
       </Unit0>
     </Units>
   </ProjectOptions>
@@ -42,12 +43,15 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="answer_seq"/>
+      <Filename Value="gen_test"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

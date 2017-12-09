@@ -3,39 +3,35 @@ program answer;
 const
   Lim = 1000000;
 
-type
-  longstring = record
-    Data: ^byte;
-    size: longint;
-  end;
-
 var
-  src, dst: longstring;
+  src, dst: array[0..Lim] of byte;
   c: char;
-  i, k: longint;
+  d, i, k, src_size, dst_size: longint;
 
-  procedure optimal_search(var src, dst: longstring; k, start, q: longint);
+  procedure optimal_search(k, start: longint);
   var
     i, imax: longint;
     dmax, d: byte;
+    found: boolean = False;
   begin
-    if k = src.size - start then
+    if k = src_size - start then
       exit();
 
     if k = 0 then
     begin
-      for i := 0 to src.size - start - 1 do
-        dst.data[q + i] := src.data[start + i];
+      for i := 0 to src_size - start - 1 do
+        dst[dst_size + i] := src[start + i];
+      dst_size += src_size - start;
       exit();
     end;
 
-    dmax := 0;
     for i := start to start + k do
     begin
-      d := src.data[i];
+      d := src[i];
 
-      if d > dmax then
+      if not found or (d > dmax) then
       begin
+        found := True;
         dmax := d;
         imax := i;
       end;
@@ -44,28 +40,27 @@ var
         break;
     end;
 
-    dst.Data[q] := dmax;
-    optimal_search(src, dst, k - imax + start, imax + 1, q + 1);
+    dst[dst_size] := dmax;
+    dst_size += 1;
+    optimal_search(k - imax + start, imax + 1);
   end;
 
 begin
-  src.Data := GetMem(Lim * sizeof(byte));
-  dst.Data := GetMem(Lim * sizeof(byte));
-
-  i := -1;
+  i := 0;
   repeat
-    i += 1;
     Read(c);
-    src.data[i] := ord(c) - 48;
-  until (Ord(c) < 48) or (Ord(c) > 57);
+    d := Ord(c) - 48;
+    src[i] := d;
+    i += 1;
+  until (d < 0) or (d > 9);
   readln(k);
 
-  src.size := i;
-  dst.size := src.size - k;
+  src_size := i - 1;
+  dst_size := 0;
 
-  optimal_search(src, dst, k, 0, 0);
+  optimal_search(k, 0);
 
-  for i := 0 to dst.size - 1 do
-    Write(dst.Data[i]);
+  for i := 0 to dst_size - 1 do
+    Write(dst[i]);
   writeln();
 end.

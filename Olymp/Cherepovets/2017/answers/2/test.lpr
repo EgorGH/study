@@ -4,19 +4,13 @@ uses
   SysUtils;
 
 const
-  MaxT = 100000;
-  MaxNum = 100000000;
-
-type
-  longstring = record
-    Data: ^char;
-    size: longint;
-  end;
+  MaxT = 10000;
+  Lim = 10;
 
 var
-  src, dst_full, dst_optimal: longstring;
-  numstr: shortstring;
-  i, t, k, Lim: longint;
+  src, dst: array[0..Lim] of byte;
+  str: shortstring;
+  i, k, t, src_size, dst_size: longint;
 
   function binary_digits_sum(x: longint): longint;
   begin
@@ -28,63 +22,64 @@ var
     end;
   end;
 
-  function eval(var src: longstring; v: longint): longint;
+  function eval(v: longint): shortstring;
   var
-    str: shortstring;
-    i: longint;
+    str: shortstring = '';
+    i: longint = 0;
   begin
-    str := '';
-    for i := src.size - 1 downto 0 do
+    while v > 0 do
     begin
       if v mod 2 <> 0 then
-        str := src.Data[i] + str;
+        str := str + IntToStr(src[i]);
       v := v div 2;
+      i += 1;
     end;
-
-    exit(StrToInt(str));
+    exit(str);
   end;
 
-  procedure full_search(var src, dst: longstring);
+  function full_search(): shortstring;
   var
-    str: shortstring;
-    i, num, nmax: longint;
+    str, strmax: shortstring;
+    i: longint;
     found: boolean = False;
   begin
-    for i := 0 to (1 shl src.size) - 1 do
-      if binary_digits_sum(i) = dst.size then
+    i := 0;
+    while i < (1 shl src_size) do
+    begin
+      if binary_digits_sum(i) = src_size - k then
       begin
-        num := eval(src, i);
-        if not found or (num > nmax) then
+        str := eval(i);
+        if not found or (str > strmax) then
         begin
           found := True;
-          nmax := num;
+          strmax := str;
         end;
       end;
-
-    str := IntToStr(nmax);
-    for i := 0 to length(str) - 1 do
-      dst.Data[i] := str[i + 1];
+      i += 1;
+    end;
+    exit(strmax);
   end;
 
-  procedure optimal_search(var src, dst: longstring; k, start, q: longint);
+  procedure optimal_search(k, start: longint);
   var
     i, imax: longint;
-    dmax, d: char;
+    dmax, d: byte;
     found: boolean = False;
   begin
-    if k = src.size - start then
+    if k = src_size - start then
       exit();
 
     if k = 0 then
     begin
-      for i := 0 to src.size - start - 1 do
-        dst.Data[q + i] := src.Data[start + i];
+      for i := 0 to src_size - start - 1 do
+        dst[dst_size + i] := src[start + i];
+      dst_size += src_size - start;
       exit();
     end;
 
     for i := start to start + k do
     begin
-      d := src.data[i];
+      d := src[i];
 
       if not found or (d > dmax) then
       begin
@@ -93,38 +88,33 @@ var
         imax := i;
       end;
 
-      if d = '9' then
+      if d = 9 then
         break;
     end;
 
-    dst.Data[q] := dmax;
-    optimal_search(src, dst, k - imax + start, imax + 1, q + 1);
+    dst[dst_size] := dmax;
+    dst_size += 1;
+    optimal_search(k - imax + start, imax + 1);
   end;
 
 begin
   randomize;
-  Lim := length(IntToStr(MaxNum));
-  src.Data := GetMem(Lim * sizeof(char));
-  dst_full.Data := GetMem(Lim * sizeof(char));
-  dst_optimal.Data := GetMem(Lim * sizeof(char));
 
   for t := 1 to MaxT do
   begin
-    numstr := IntToStr(random(MaxNum) + 1);
-    src.size := length(numstr);
-    k := random(src.size);
+    src_size := random(Lim) + 1;
+    src[0] := random(9) + 1;
+    for i := 1 to src_size - 1 do
+      src[i] := random(10);
+    k := random(src_size);
 
-    dst_full.size := src.size - k;
-    dst_optimal.size := src.size - k;
+    str := full_search();
 
-    for i := 0 to src.size - 1 do
-      src.Data[i] := numstr[i + 1];
+    dst_size := 0;
+    optimal_search(k, 0);
 
-    full_search(src, dst_full);
-    optimal_search(src, dst_optimal, k, 0, 0);
-
-    for i := 0 to src.size - k - 1 do
-      if dst_full.Data[i] <> dst_optimal.Data[i] then
+    for i := 0 to src_size - k - 1 do
+      if str[i + 1] <> IntToStr(dst[i]) then
         writeln('Error');
   end;
   writeln('Done');

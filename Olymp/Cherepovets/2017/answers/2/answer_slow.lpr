@@ -4,17 +4,12 @@ uses
   SysUtils;
 
 const
-  Lim = 1000000;
-
-type
-  longstring = record
-    Data: ^char;
-    size: longint;
-  end;
+  Lim = 30;
 
 var
-  src, dst: longstring;
-  i, k: longint;
+  src: array[0..Lim] of byte;
+  c: char;
+  d, i, k, src_size: longint;
 
   function binary_digits_sum(x: longint): longint;
   begin
@@ -26,63 +21,55 @@ var
     end;
   end;
 
-  function eval(var src: longstring; v: longint): longint;
+  function eval(v: longint): shortstring;
   var
-    str: shortstring;
-    i: longint;
+    str: shortstring = '';
+    i: longint = 0;
   begin
-    str := '';
-    for i := src.size - 1 downto 0 do
+    while v > 0 do
     begin
       if v mod 2 <> 0 then
-        str := src.Data[i] + str;
+        str := str + IntToStr(src[i]);
       v := v div 2;
+      i += 1;
     end;
-
-    exit(StrToInt(str));
+    exit(str);
   end;
 
-  procedure full_search(var src, dst: longstring);
+  function full_search(): shortstring;
   var
-    str: shortstring;
-    i, num, nmax: longint;
+    str, strmax: shortstring;
+    i: longint;
     found: boolean = False;
   begin
-    for i := 0 to (1 shl src.size) - 1 do
-      if binary_digits_sum(i) = dst.size then
+    i := 0;
+    while i < (1 shl src_size) do
+    begin
+      if binary_digits_sum(i) = src_size - k then
       begin
-        num := eval(src, i);
-        if not found or (num > nmax) then
+        str := eval(i);
+        if not found or (str > strmax) then
         begin
           found := True;
-          nmax := num;
+          strmax := str;
         end;
       end;
-
-    str := IntToStr(nmax);
-    for i := 0 to length(str) - 1 do
-      dst.Data[i] := str[i + 1];
+      i += 1;
+    end;
+    exit(strmax);
   end;
 
 begin
-  src.Data := GetMem(Lim * sizeof(char));
-  dst.Data := GetMem(Lim * sizeof(char));
-
-  i := -1;
+  i := 0;
   repeat
+    Read(c);
+    d := Ord(c) - 48;
+    src[i] := d;
     i += 1;
-    Read(src.Data[i]);
-  until (Ord(src.Data[i]) < 48) or (Ord(src.Data[i]) > 57);
+  until (d < 0) or (d > 9);
   readln(k);
 
-  src.size := i;
-  dst.size := src.size - k;
+  src_size := i - 1;
 
-  full_search(src, dst);
-
-  for i := 0 to dst.size - 1 do
-    Write(dst.Data[i]);
-  writeln();
+  writeln(full_search());
 end.
-
-

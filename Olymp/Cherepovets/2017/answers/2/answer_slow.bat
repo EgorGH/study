@@ -1,5 +1,5 @@
 @echo off
-fpc answer_slow.lpr -oanswer_slow.exe > answer_slow.tmp
-answer_slow.exe < 01.in > 01.out
-fc /A 01.out 01.a           
-del *.out *.tmp *.exe *.o
+fpc -MobjFPC %~n0.lpr > %~n0.tmp
+for %%i in (tests\0*.in) do (%~n0.exe <%%i >tests\%%~ni.out
+fc /A tests\%%~ni.out tests\%%~ni.a)
+del tests\*.out %~n0.exe %~n0.tmp %~n0.o

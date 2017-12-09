@@ -1,9 +1,5 @@
 @echo off
-fpc answer.lpr -oanswer.exe > answer.tmp
-answer.exe < 01.in > 01.out
-fc /A 01.out 01.a
-answer.exe < 02.in > 02.out
-fc /A 02.out 02.a
-answer.exe < 03.in > 03.out
-fc /A 03.out 03.a
-del *.out *.exe *.tmp *.o
+fpc -MobjFPC %~n0.lpr > %~n0.tmp
+for %%i in (tests\*.in) do (%~n0.exe <%%i >tests\%%~ni.out
+fc /A tests\%%~ni.out tests\%%~ni.a)
+del tests\*.out %~n0.exe %~n0.tmp %~n0.o
