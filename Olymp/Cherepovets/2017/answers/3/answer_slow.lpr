@@ -1,9 +1,10 @@
 program answer_slow;
 
+uses
+  Math;
+
 var
-  size, n, m, i: longint;
-  k: longint;
-  Data: array of longint;
+  i, m, n, k: longint;
 
   function dsum(x: longint): longint;
   begin
@@ -35,67 +36,31 @@ var
     end;
   end;
 
-  function full_search(var Data: array of longint; k: longint): longint;
+  function full_search(n, k: longint): longint;
   var
-    i, q, kdq: longint;
+    kdsum, kdq, a, b, i: longint;
+    q: longint = 0;
   begin
+    kdsum := dsum(k);
     kdq := dq(k);
-    q := 0;
-    i := 0;
+    a := power_10(kdq);
+    b := power_10(n);
 
-    while Data[i] <> k do
+    for i := a to b do
     begin
-      if kdq < dq(Data[i]) then
+      if dsum(i) < kdsum then
         q += 1;
-      i += 1;
     end;
 
     exit(q);
   end;
 
-  function compare(a, b: longint): longint;
-  var
-    adsum, bdsum: longint;
-  begin
-    adsum := dsum(a);
-    bdsum := dsum(b);
-
-    if (adsum > bdsum) or (adsum = bdsum) and (a > b) then
-      exit(1);
-    if (adsum < bdsum) or (adsum = bdsum) and (a < b) then
-      exit(-1);
-    exit(0);
-  end;
-
-  procedure fill_data(var Data: array of longint; size: longint);
-  var
-    i, imin, j, t: longint;
-  begin
-    for i := 0 to size - 1 do
-      Data[i] := i + 1;
-
-    for i := 0 to size - 2 do
-    begin
-      imin := i;
-      for j := i + 1 to size - 1 do
-        if compare(Data[j], Data[imin]) < 0 then
-          imin := j;
-      t := Data[imin];
-      Data[imin] := Data[i];
-      Data[i] := t;
-    end;
-  end;
-
 begin
   readln(n, m);
-
-  size := power_10(n);
-  SetLength(Data, size);
-  fill_data(Data, size);
 
   for i := 1 to m do
   begin
     Read(k);
-    Write(full_search(Data, k), ' ');
+    Write(full_search(n, k), ' ');
   end;
 end.
