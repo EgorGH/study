@@ -107,18 +107,13 @@ var
     exit(False);
   end;
 
-  procedure full_search();
-  begin
-    full_search(2, 1, 1);
-  end;
-
 begin
   n := 6;
   //readln(n);
   size := 2 * n + 1;
 
   prepare_data();
-  full_search();
+  full_search(2, 1, 1);
   print_data();
 
   readln();
