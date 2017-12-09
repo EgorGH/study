@@ -85,4 +85,5 @@ begin
   end;
 
   writeln(optimal_search());
+  readln();
 end.
