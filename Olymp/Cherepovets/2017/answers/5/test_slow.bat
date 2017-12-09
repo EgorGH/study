@@ -1,4 +1,4 @@
 @echo off
-fpc test_slow.lpr -otest_slow.exe > test_slow.tmp
-test_slow.exe
-del *.tmp *.exe *.o
+fpc -MobjFPC %~n0.lpr > %~n0.tmp
+%~n0.exe
+del %~n0.tmp %~n0.exe %~n0.o

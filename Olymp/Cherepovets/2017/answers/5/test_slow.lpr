@@ -1,153 +1,143 @@
 program test_slow;
 
-uses
-  SysUtils;
-
 const
-  MaxT = 3;
+  MaxN = 8;
+  MaxSize = 2 * MaxN + 1;
 
 var
-  m: array[1..9, 1..9] of byte;
-  ans: array[1..MaxT] of longint;
-  N, t: longint;
+  size, n: longint;
+  Data: array[1..MaxN, 1..MaxSize] of longint;
+  relations: array[1..MaxSize, 1..MaxSize] of byte;
 
-  procedure clear_m();
+  procedure prepare_data();
   var
     i, j: longint;
   begin
-    for i := 1 to 9 do
-      for j := 1 to 9 do
-        m[i, j] := 0;
+    for i := 1 to size do
+      for j := 1 to size do
+        Data[i, j] := 0;
+
+    for i := 1 to size do
+      for j := 1 to size do
+        relations[i, j] := 0;
+
+    for i := 1 to size do
+      Data[1, i] := i;
+
+    for i := 1 to size - 1 do
+    begin
+      j := i + 1;
+      relations[i, j] := 1;
+      relations[j, i] := 1;
+    end;
+
+    relations[size, 1] := 1;
+    relations[1, size] := 1;
   end;
 
-  procedure clear_ans();
+  function full_search(a, b, Value: longint): boolean;
+  var
+    i: longint;
+    rel: byte;
+  begin
+    for i := 1 to b - 1 do
+      if Data[a, i] = Value then
+        exit(False);
+
+    if b = 1 then
+      rel := 0
+    else if b = size then
+      rel := relations[Value, 1] or relations[Data[a, b - 1], Value]
+    else
+      rel := relations[Data[a, b - 1], Value];
+
+    if rel = 1 then
+      exit(False);
+
+    Data[a, b] := Value;
+
+    relations[Data[a, b - 1], Value] := 1;
+    relations[Value, Data[a, b - 1]] := 1;
+
+    if b = size then
+    begin
+      relations[Data[a, 1], Value] := 1;
+      relations[Value, Data[a, 1]] := 1;
+      exit(True);
+    end;
+
+    for i := 1 to size do
+      if full_search(a, b + 1, i) then
+        exit(True);
+
+    relations[Data[a, b - 1], Value] := 0;
+    relations[Value, Data[a, b - 1]] := 0;
+
+    if b = size then
+    begin
+      relations[Data[a, 1], Value] := 0;
+      relations[Value, Data[a, 1]] := 0;
+    end;
+
+    exit(False);
+  end;
+
+  procedure full_search();
   var
     i: longint;
   begin
-    for i := 1 to MaxT do
-      ans[i] := 0;
+    for i := 2 to n do
+      full_search(i, 1, 1);
   end;
 
-  procedure full_search(N: longint);
+  function check_data(): boolean;
   var
-    a, b, s: shortstring;
-    MaxNum, i, j, p, start, fin, t, prev, d, q, k: longint;
-    error: boolean;
+    i, j, k, rel: longint;
   begin
-    a := '';
-    b := '';
-    MaxNum := 2 * N + 1;
-    for i := 1 to MaxNum do
-    begin
-      a := a + IntToStr(i);
-      b := b + '9';
-    end;
+    for i := 1 to size do
+      for j := 1 to size do
+        relations[i, j] := 0;
 
-    start := StrToInt(a);
-    fin := StrToInt(b);
-    k := 0;
-
-    for i := start to fin do
-    begin
-      error := False;
-
-      if pos('0', IntToStr(i)) <> 0 then
-        continue;
-
-      s := IntToStr(i);
-      for j := 1 to MaxNum - 1 do
-        for p := j + 1 to MaxNum do
-          if (s[j] = s[p]) or (StrToInt(s[j]) > MaxNum) or (StrToInt(s[p]) > MaxNum) then
-            error := True;
-
-      if error then
-        continue;
-
-      q := 0;
-      t := i;
-      prev := t mod 10;
-      t := t div 10;
-      while t <> 0 do
-      begin
-        d := t mod 10;
-        if m[prev, d] = 0 then
-          q := q + 1;
-        prev := d;
-
-        t := t div 10;
-
-        if (t = 0) and (m[i mod 10, prev] = 0) then
-          q := q + 1;
-      end;
-
-      if q = MaxNum then
-      begin
-        t := i;
-        prev := t mod 10;
-        t := t div 10;
-        while t <> 0 do
-        begin
-          d := t mod 10;
-          m[prev, d] := 1;
-          m[d, prev] := 1;
-          prev := d;
-
-          t := t div 10;
-        end;
-
-        m[i mod 10, prev] := 1;
-        m[prev, i mod 10] := 1;
-
-        k := k + 1;
-        ans[k] := i;
-      end;
-    end;
-  end;
-
-  function check(n: longint): boolean;
-  var
-    i, x, prev, d: longint;
-  begin
     for i := 1 to n do
-    begin
-      x := ans[i];
-      prev := x mod 10;
-      x := x div 10;
-      while x <> 0 do
+      for j := 1 to size do
       begin
-        d := x mod 10;
-        if m[prev, d] = 1 then
+        for k := 1 to j - 1 do
+          if Data[i, k] = Data[i, j] then
+            exit(False);
+
+        if j = 1 then
+          continue;
+
+        rel := relations[Data[i, j], Data[i, j - 1]];
+        if j = size then
+          rel := relations[Data[i, j], Data[i, j - 1]] or relations[Data[i, j], 1];
+
+        if rel = 1 then
           exit(False);
-        m[prev, d] := 1;
-        m[d, prev] := 1;
-        prev := d;
 
-        x := x div 10;
+        relations[Data[i, j], Data[i, j - 1]] := 1;
+        relations[Data[i, j - 1], Data[i, j]] := 1;
+
+        if j = size then
+        begin
+          relations[Data[i, j], 1] := 1;
+          relations[1, Data[i, j]] := 1;
+        end;
       end;
-
-      if m[ans[i] mod 10, prev] = 1 then
-        exit(False);
-      m[ans[i] mod 10, prev] := 1;
-      m[prev, ans[i] mod 10] := 1;
-    end;
 
     exit(True);
   end;
 
-
 begin
-  for t := 1 to MaxT do
+  for n := 1 to MaxN do
   begin
-    clear_m();
-    clear_ans();
+    size := 2 * n + 1;
+    prepare_data();
+    full_search();
 
-    N := t;
-    full_search(N);
-
-    clear_m();
-
-    if not check(N) then
+    if not check_data() then
       writeln('Error');
   end;
   writeln('Done');
 end.
+
