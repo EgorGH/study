@@ -149,13 +149,13 @@ var
   begin
     for i := 1 to m do
       for j := 1 to n do
-        if data[i, j] = -1 then
-          data[i, j] := 0;
+        if Data[i, j] = -1 then
+          Data[i, j] := 0;
   end;
 
-  function check(): boolean;
+  function is_possible_optimal(): boolean;
   var
-    x, y, a, b, c, d, direction: longint;
+    a, b, c, d, i, x, y, direction: longint;
   begin
     direction := 1;
 
@@ -167,6 +167,15 @@ var
     c := 0;
     d := 1;
     max := 0;
+
+    if Data[1, 1] <> 0 then
+      for i := 1 to k do
+        if Data[walls[i].y, walls[i].x] = Data[1, 1] then
+        begin
+          max := i;
+          exit(False);
+        end;
+
     while (Data[1, 1] > -1) and (Data[m, n] > -1) do
     begin
       //print_data();
@@ -214,14 +223,14 @@ var
       end;
 
       if Data[x + c, y + d] > 0 then
-        direction := (direction + 1) mod 4;
-
-      if Data[x + c, y + d] < 1 then
       begin
-        x := x + c;
-        y := y + d;
-        Data[x, y] := -1;
+        direction := (direction + 1) mod 4;
+        continue;
       end;
+
+      x := x + c;
+      y := y + d;
+      Data[x, y] := -1;
     end;
 
     if Data[1, 1] = -1 then
@@ -233,19 +242,13 @@ var
   function optimal_search(): longint;
   var
     i: longint;
-    possible: boolean;
   begin
-    print_data();
-
-    possible := check();
-    while not possible do
+    while not is_possible_optimal() do
     begin
       print_data();
-
       for i := max to k do
         Data[walls[i].y, walls[i].x] := 0;
       clear_path();
-      possible := check();
     end;
 
     exit(max);
@@ -265,6 +268,7 @@ begin
     a := full_search();
 
     prepare_data_2();
+    print_data();
     b := optimal_search();
 
     if a <> b then
