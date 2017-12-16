@@ -55,10 +55,8 @@ var
     b := power_10(n);
 
     for i := a to b do
-    begin
       if dsum(i) < kdsum then
         q += 1;
-    end;
 
     exit(q);
   end;
@@ -102,21 +100,16 @@ var
   function optimal_search(n: longint; k: int64): int64;
   var
     kdsum, kdq: longint;
-    q: int64;
   begin
-    q := 0;
     kdsum := dsum(k);
     kdq := dq(k);
 
     if kdsum = 1 then
-      exit(0)
-    else
-      q := q + 1;
+      exit(0);
+    if kdq = n then
+      exit(1);
 
-    if kdq + 1 <= n then
-      q := q + Data[kdq + 1, kdsum - 1];
-
-    exit(q);
+    exit(Data[kdq + 1, kdsum - 1] + 1);
   end;
 
 begin

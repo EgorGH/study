@@ -47,10 +47,8 @@ var
     b := power_10(n);
 
     for i := a to b do
-    begin
       if dsum(i) < kdsum then
         q += 1;
-    end;
 
     exit(q);
   end;
