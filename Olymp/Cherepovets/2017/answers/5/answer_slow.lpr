@@ -73,4 +73,5 @@ begin
   size := 2 * n + 1;
   full_search(1, 1, 1);
   print_data();
+  readln();
 end.
