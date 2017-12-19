@@ -1,5 +1,8 @@
 program answer_slow;
 
+uses
+  SysUtils;
+
 const
   Lim = 500;
 
@@ -9,81 +12,86 @@ type
   end;
 
 var
-  m, n, k, i: longint;
-  Data: array[0..Lim + 1, 0..Lim + 1] of shortint;
-  moves: array[1..4, 1..2] of shortint = ((1, 0), (-1, 0), (0, -1), (0, 1));
+  i, n, m, k: longint;
+  Data: array[0..Lim + 1, 0..Lim + 1] of longint;
   walls: array[1..Lim * Lim] of tpoint;
+  moves: array[1..4, 1..2] of longint = ((-1, 0), (0, 1), (1, 0), (0, -1));
 
   procedure prepare_data();
   var
-    i: longint;
+    i, j: longint;
   begin
-    for i := 0 to m + 1 do
-    begin
-      Data[i, 0] := -1;
-      Data[i, n + 1] := -1;
-    end;
+    for i := 1 to n do
+      for j := 1 to m do
+        Data[i, j] := 0;
 
     for i := 0 to n + 1 do
     begin
-      Data[0, i] := -1;
-      Data[m + 1, i] := -1;
+      Data[i, m + 1] := k + 1;
+      Data[i, 0] := k + 1;
     end;
+
+    for i := 0 to m + 1 do
+    begin
+      Data[n + 1, i] := k + 1;
+      Data[0, i] := k + 1;
+    end;
+
+    for i := 1 to k do
+      Data[walls[i].x, walls[i].y] := i;
   end;
 
   function is_possible(): boolean;
   var
-    q, i, j, k: longint;
-    f: boolean;
+    i, j, k, q: longint;
+    found: boolean;
   begin
-    if Data[1, 1] = 0 then
-      Data[1, 1] := 1;
+    if Data[1, 1] > 0 then
+      exit(False);
+
+    Data[1, 1] := -1;
+
     repeat
       q := 0;
-      for i := 1 to m do
-        for j := 1 to n do
+      for i := 1 to n do
+        for j := 1 to m do
           if Data[i, j] = 0 then
           begin
-            f := False;
+            found := False;
             for k := 1 to 4 do
-              if Data[i + moves[k, 1], j + moves[k, 2]] = 1 then
-                f := True;
-            if f then
+              if Data[i + moves[k, 1], j + moves[k, 2]] = -1 then
+                found := True;
+            if found then
             begin
-              q += 1;
-              Data[i, j] := 1;
+              Data[i, j] := -1;
+              q := q + 1;
             end;
           end;
-    until (q = 0) or (Data[m, n] = 1);
-    exit(Data[m, n] = 1);
+    until (Data[n, m] = -1) or (q = 0);
+
+    exit(Data[n, m] = -1);
   end;
 
-  function optimal_search(): longint;
+  function full_search(): longint;
   var
-    d: longint;
+    i: longint;
   begin
-    d := k;
-    while not is_possible() and (d > 0) do
+    if is_possible() then
+      exit(0);
+
+    for i := k downto 1 do
     begin
-      Data[walls[d].y, walls[d].x] := 0;
-      d := d - 1;
+      Data[walls[i].x, walls[i].y] := 0;
+      if is_possible() then
+        exit(i);
     end;
-    if d = k then
-      exit(0)
-    else
-      exit(d + 1);
   end;
 
 begin
-  readln(m, n, k);
-  prepare_data();
-
+  readln(n, m, k);
   for i := 1 to k do
-  begin
-    readln(walls[i].y, walls[i].x);
-    Data[walls[i].y, walls[i].x] := -1;
-  end;
+    readln(walls[i].x, walls[i].y);
 
-  writeln(optimal_search());
-  readln();
+  prepare_data();
+  writeln(full_search());
 end.

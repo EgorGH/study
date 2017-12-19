@@ -12,21 +12,21 @@ type
   end;
 
 var
-  Data: array[0..Lim + 1, 0..Lim + 1] of smallint;
-  moves: array[1..4, 1..2] of shortint = ((1, 0), (-1, 0), (0, -1), (0, 1));
+  t, n, m, k: longint;
+  Data: array[0..Lim + 1, 0..Lim + 1] of longint;
   walls: array[1..Lim * Lim] of tpoint;
-  k, m, n, t: longint;
+  moves: array[1..4, 1..2] of longint = ((-1, 0), (0, 1), (1, 0), (0, -1));
 
   procedure randomize_walls();
   var
     i, j: longint;
     t: tpoint;
   begin
-    for i := 0 to m - 1 do
-      for j := 0 to n - 1 do
+    for i := 1 to n do
+      for j := 1 to m do
       begin
-        walls[i * n + j + 1].y := i + 1;
-        walls[i * n + j + 1].x := j + 1;
+        walls[(i - 1) * m + j].x := i;
+        walls[(i - 1) * m + j].y := j;
       end;
 
     for i := n * m downto 2 do
@@ -42,87 +42,105 @@ var
   var
     i, j: longint;
   begin
-    for i := 0 to m + 1 do
-      for j := 0 to n + 1 do
-        data[i, j] := 0;
-
-    for i := 0 to m + 1 do
-    begin
-      Data[i, 0] := -1;
-      Data[i, n + 1] := -1;
-    end;
+    for i := 1 to n do
+      for j := 1 to m do
+        Data[i, j] := 0;
 
     for i := 0 to n + 1 do
     begin
-      Data[0, i] := -1;
-      Data[m + 1, i] := -1;
+      Data[i, m + 1] := k + 1;
+      Data[i, 0] := k + 1;
+    end;
+
+    for i := 0 to m + 1 do
+    begin
+      Data[n + 1, i] := k + 1;
+      Data[0, i] := k + 1;
     end;
 
     for i := 1 to k do
-      data[walls[i].y, walls[i].x] := -1;
+      Data[walls[i].x, walls[i].y] := i;
   end;
 
-  function is_possible(): boolean;
+  procedure print_data();
   var
-    q, i, j, k: longint;
-    f: boolean;
+    i, j: longint;
   begin
-    if Data[1, 1] = 0 then
-      Data[1, 1] := 1;
-    repeat
-      q := 0;
-      for i := 1 to m do
-        for j := 1 to n do
-          if Data[i, j] = 0 then
-          begin
-            f := False;
-            for k := 1 to 4 do
-              if Data[i + moves[k, 1], j + moves[k, 2]] = 1 then
-                f := True;
-            if f then
-            begin
-              q += 1;
-              Data[i, j] := 1;
-            end;
-          end;
-    until (q = 0) or (Data[m, n] = 1);
-    exit(Data[m, n] = 1);
-  end;
+    writeln(n, ' ', m, ' ', k);
 
-  function full_search(): longint;
-  var
-    d: longint;
-  begin
-    d := k;
-    while not is_possible() and (d > 0) do
+    for i := 0 to n + 1 do
     begin
-      Data[walls[d].y, walls[d].x] := 0;
-      d := d - 1;
+      for j := 0 to m + 1 do
+        Write(Data[i, j]: 3);
+      writeln();
     end;
-    if d = k then
-      exit(0)
-    else
-      exit(d + 1);
+    writeln();
   end;
 
-  procedure write_test(t: longint);
+  procedure write_test(t, ans: longint);
   var
     infile, afile: Text;
     i: longint;
   begin
     Assign(infile, format('tests/%.2d.in', [t]));
     Assign(afile, format('tests/%.2d.a', [t]));
-    Rewrite(infile);
-    Rewrite(afile);
+    rewrite(infile);
+    rewrite(afile);
 
-    writeln(infile, m, ' ', n, ' ', k);
+    writeln(infile, n, ' ', m, ' ', k);
     for i := 1 to k do
-      writeln(infile, walls[i].y, ' ', walls[i].x);
+      writeln(infile, walls[i].x, ' ', walls[i].y);
 
-    writeln(afile, full_search());
+    writeln(afile, ans);
 
     Close(infile);
     Close(afile);
+  end;
+
+  function is_possible(): boolean;
+  var
+    i, j, k, q: longint;
+    found: boolean;
+  begin
+    if Data[1, 1] > 0 then
+      exit(False);
+
+    Data[1, 1] := -1;
+
+    repeat
+      q := 0;
+      for i := 1 to n do
+        for j := 1 to m do
+          if Data[i, j] = 0 then
+          begin
+            found := False;
+            for k := 1 to 4 do
+              if Data[i + moves[k, 1], j + moves[k, 2]] = -1 then
+                found := True;
+            if found then
+            begin
+              Data[i, j] := -1;
+              q := q + 1;
+            end;
+          end;
+    until (Data[n, m] = -1) or (q = 0);
+
+    exit(Data[n, m] = -1);
+  end;
+
+  function full_search(): longint;
+  var
+    i: longint;
+  begin
+    if is_possible() then
+      exit(0);
+
+    for i := k downto 1 do
+    begin
+      Data[walls[i].x, walls[i].y] := 0;
+      if is_possible() then
+        exit(i);
+    end;
   end;
 
 begin
@@ -130,40 +148,50 @@ begin
 
   for t := 1 to 9 do
   begin
-    m := random(20) + 1;
-    n := random(20) + 1;
+    m := random(10) + 1;
+    n := random(10) + 1;
     k := random(m * n) + 1;
 
     randomize_walls();
     prepare_data();
 
-    write_test(t);
+    write_test(t, full_search());
   end;
 
-  for t := 10 to 19 do
+  for t := 10 to 12 do
   begin
     m := 20;
     n := 20;
-    k := random(m * n) + 1;
+    k := 400;
 
     randomize_walls();
     prepare_data();
 
-    write_test(t);
+    write_test(t, full_search());
   end;
 
-  for t := 20 to 23 do
+  for t := 20 to 22 do
   begin
-    m := random(500) + 1;
-    n := random(500) + 1;
-    k := random(100) + 1;
+    m := 500;
+    n := 500;
+    k := 100;
 
     randomize_walls();
     prepare_data();
 
-    write_test(t);
+    write_test(t, full_search());
   end;
 
+  //for t := 30 to 32 do
+  //begin
+  //  m := 500;
+  //  n := 500;
+  //  k := 250000;
+  //
+  //  randomize_walls();
+  //  prepare_data();
+  //
+  //  write_test(t, full_search());
+  //end;
   writeln('Done');
 end.
-
