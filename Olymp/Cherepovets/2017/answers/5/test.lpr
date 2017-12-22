@@ -38,35 +38,27 @@ var
 
   procedure optimal_search();
   var
-    i, j: longint;
+    i, j, prev: longint;
   begin
     for i := 1 to size do
       Data[1, i] := i;
 
+    for i := 1 to n do
+      data[i, 1] := 1;
+
     for i := 2 to n do
-    begin
-      Data[i, 1] := 1;
       for j := 2 to size do
       begin
-        if j = 3 then
-        begin
-          Data[i, j - 1] := Data[i - 1, j];
-          continue;
-        end;
-
-        if j = size - 1 then
-        begin
-          Data[i, j + 1] := Data[i - 1, j];
-          continue;
-        end;
-
-        if j mod 2 = 0 then
-          Data[i, j + 2] := Data[i - 1, j];
-
-        if j mod 2 <> 0 then
-          Data[i, j - 2] := Data[i - 1, j];
+        prev := data[i - 1, j];
+        if prev = 2 then
+          data[i, j] := prev + 1
+        else if prev = size then
+          data[i, j] := prev - 1
+        else if prev mod 2 = 0 then
+          data[i, j] := prev - 2
+        else
+          data[i, j] := prev + 2;
       end;
-    end;
   end;
 
   function check_data(): boolean;
