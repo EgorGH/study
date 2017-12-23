@@ -191,7 +191,7 @@ begin
   //  randomize_walls();
   //  prepare_data();
   //
-  //  write_test(t, full_search());
+  //  write_test(t, 0);
   //end;
   writeln('Done');
 end.

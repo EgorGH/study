@@ -4,8 +4,8 @@ uses
   SysUtils;
 
 const
-  Lim = 500;
-  MaxT = 10;
+  Lim = 15;
+  MaxT = 100000;
 
 type
   tpoint = record
@@ -136,7 +136,7 @@ var
 
   function is_possible_optimal(): boolean;
   var
-    a, b, c, d, i, x, y, direction: longint;
+    a, b, c, d, i, x, y, q, direction: longint;
   begin
     direction := 1;
 
@@ -147,7 +147,9 @@ var
     b := 0;
     c := 0;
     d := 1;
+
     max := 0;
+    q := 0;
 
     if Data[1, 1] <> 0 then
       for i := 1 to k do
@@ -165,14 +167,8 @@ var
           exit(False);
         end;
 
-    while (Data[1, 1] > -1) and (Data[m, n] > -1) do
+    while Data[m, n] > -1 do
     begin
-      if (Data[x + a, y + b] > max) and (Data[x + a, y + b] <= k) then
-        max := Data[x + a, y + b];
-
-      if (Data[x, y] = -1) and (direction = 1) then
-        exit(False);
-
       case direction of
         0:
         begin
@@ -204,8 +200,15 @@ var
         end;
       end;
 
+      if (Data[x + a, y + b] > max) and (Data[x + a, y + b] <= k) then
+        max := Data[x + a, y + b];
+
+      if (x = 1) and (y = 1) and (Data[1, 1] = -1) and (direction = 0) or (q = 10) then
+        exit(False);
+
       if Data[x + a, y + b] < 1 then
       begin
+        q := 0;
         direction := (direction + 3) mod 4;
         x := x + a;
         y := y + b;
@@ -215,6 +218,7 @@ var
 
       if Data[x + c, y + d] > 0 then
       begin
+        q += 1;
         direction := (direction + 1) mod 4;
         continue;
       end;
@@ -224,33 +228,25 @@ var
       Data[x, y] := -1;
     end;
 
-    if Data[1, 1] = -1 then
-      exit(False)
-    else
-      exit(True);
+    exit(True);
   end;
 
   function optimal_search(): longint;
   var
-    i, j: longint;
+    i, j, d: longint;
   begin
-    //print_data();
     if is_possible_optimal() then
       exit(0);
 
     for i := k downto 1 do
     begin
-      //print_data();
-      for j := max to k do
-        Data[walls[j].x, walls[j].y] := 0;
-
-      if is_possible_optimal() then
-        exit(max);
-
       clear_path();
+      d := max;
+      for j := d to k do
+        Data[walls[j].x, walls[j].y] := 0;
+      if is_possible_optimal() then
+        exit(d);
     end;
-
-    exit(max);
   end;
 
 begin
@@ -264,20 +260,13 @@ begin
     randomize_walls();
 
     prepare_data();
-    //print_data();
     a := full_search();
 
     prepare_data();
-    //print_data();
     b := optimal_search();
 
     if a <> b then
-    begin
       writeln('error');
-      //prepare_data();
-      //b := optimal_search();
-    end;
   end;
   writeln('Done');
-  readln();
 end.

@@ -1,47 +1,58 @@
 program answer;
 
+uses
+  SysUtils;
+
 const
   Lim = 500;
-  LimK = Lim * Lim;
 
-var
-  m, n, k, i: longint;
-  labyrinth: array[0..Lim + 1, 0..Lim + 1] of longint;
-  ky, kx: array[1..LimK] of longint;
-
-  procedure prepare_labyrinth();
-  var
-    i: longint;
-  begin
-    for i := 0 to m + 1 do
-    begin
-      labyrinth[i, 0] := 1;
-      labyrinth[i, n + 1] := 1;
-    end;
-
-    for i := 0 to n + 1 do
-    begin
-      labyrinth[0, i] := 1;
-      labyrinth[m + 1, i] := 1;
-    end;
+type
+  tpoint = record
+    x, y: longint;
   end;
 
-  procedure print_labyrinth();
+var
+  Data: array[0..Lim + 1, 0..Lim + 1] of smallint;
+  walls: array[1..Lim * Lim] of tpoint;
+  m, n, k, i, max: longint;
+
+  procedure prepare_data();
   var
     i, j: longint;
   begin
+    for i := 1 to n do
+      for j := 1 to m do
+        Data[i, j] := 0;
+
+    for i := 0 to n + 1 do
+    begin
+      Data[i, m + 1] := k + 1;
+      Data[i, 0] := k + 1;
+    end;
+
     for i := 0 to m + 1 do
     begin
-      for j := 0 to n + 1 do
-        Write(labyrinth[i, j]: 3);
-      writeln();
+      Data[n + 1, i] := k + 1;
+      Data[0, i] := k + 1;
     end;
-    writeln();
+
+    for i := 1 to k do
+      Data[walls[i].x, walls[i].y] := i;
   end;
 
-  function check(): boolean;
+  procedure clear_path();
   var
-    x, y, a, b, c, d, direction: longint;
+    i, j: longint;
+  begin
+    for i := 1 to n do
+      for j := 1 to m do
+        if Data[i, j] = -1 then
+          Data[i, j] := 0;
+  end;
+
+  function is_possible_optimal(): boolean;
+  var
+    a, b, c, d, i, x, y, q, direction: longint;
   begin
     direction := 1;
 
@@ -53,10 +64,27 @@ var
     c := 0;
     d := 1;
 
-    while (labyrinth[1, 1] > -1) and (labyrinth[m, n] > -1) do
-    begin
-      print_labyrinth();
+    max := 0;
+    q := 0;
 
+    if Data[1, 1] <> 0 then
+      for i := 1 to k do
+        if Data[walls[i].x, walls[i].y] = Data[1, 1] then
+        begin
+          max := i;
+          exit(False);
+        end;
+
+    if Data[n, m] <> 0 then
+      for i := 1 to k do
+        if Data[walls[i].x, walls[i].y] = Data[n, m] then
+        begin
+          max := i;
+          exit(False);
+        end;
+
+    while Data[n, m] > -1 do
+    begin
       case direction of
         0:
         begin
@@ -88,42 +116,61 @@ var
         end;
       end;
 
-      if labyrinth[x + a, y + b] < 1 then
+      if (Data[x + a, y + b] > max) and (Data[x + a, y + b] <= k) then
+        max := Data[x + a, y + b];
+
+      if (x = 1) and (y = 1) and (Data[1, 1] = -1) and (direction = 0) or (q = 10) then
+        exit(False);
+
+      if Data[x + a, y + b] < 1 then
       begin
+        q := 0;
         direction := (direction + 3) mod 4;
         x := x + a;
         y := y + b;
-        labyrinth[x, y] := -1;
+        Data[x, y] := -1;
         continue;
       end;
 
-      if labyrinth[x + c, y + d] > 0 then
-        direction := (direction + 1) mod 4;
-
-      if labyrinth[x + c, y + d] < 1 then
+      if Data[x + c, y + d] > 0 then
       begin
-        x := x + c;
-        y := y + d;
-        labyrinth[x, y] := -1;
+        q += 1;
+        direction := (direction + 1) mod 4;
+        continue;
       end;
+
+      x := x + c;
+      y := y + d;
+      Data[x, y] := -1;
     end;
 
-    if labyrinth[1, 1] = -1 then
-      exit(False)
-    else
-      exit(True);
+    exit(True);
+  end;
+
+  function optimal_search(): longint;
+  var
+    i, j, d: longint;
+  begin
+    if is_possible_optimal() then
+      exit(0);
+
+    for i := k downto 1 do
+    begin
+      clear_path();
+      d := max;
+      for j := d to k do
+        Data[walls[j].x, walls[j].y] := 0;
+      if is_possible_optimal() then
+        exit(d);
+    end;
   end;
 
 begin
-  readln(m, n, k);
-  prepare_labyrinth();
-
+  readln(n, m, k);
   for i := 1 to k do
-  begin
-    readln(ky[i], kx[i]);
-    labyrinth[ky[i], kx[i]] := i;
-  end;
+    readln(walls[i].x, walls[i].y);
 
-  writeln(check());
+  prepare_data();
+  writeln(optimal_search());
   readln();
 end.
