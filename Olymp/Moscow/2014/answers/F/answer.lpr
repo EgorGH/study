@@ -1,11 +1,7 @@
 program answer;
 
-uses
-  strutils;
-
 const
   Lim = 850;
-
 var
   words: array[1..Lim] of shortstring;
   codes, visits, max_phrase: array[1..Lim] of longint;
@@ -25,11 +21,6 @@ var
   var
     i: longint;
   begin
-    if codes[start] shr 26 = 1 then
-      exit();
-
-    visits[start] := 1;
-
     if bits_count(used_letters) > max_size then
     begin
       max_size := bits_count(used_letters);
@@ -37,10 +28,12 @@ var
     end;
 
     for i := start + 1 to n do
-      if codes[i] and used_letters = 0 then
+    begin
+      visits[i] := 1;
+      if (codes[i] and used_letters = 0) and (codes[i] shr 26 = 0) then
         full_search(i, used_letters or codes[i]);
-
-    visits[start] := 0;
+      visits[i] := 0;
+    end;
   end;
 
   procedure fill_codes();
@@ -53,10 +46,9 @@ var
       code := 0;
       w := words[i];
       for j := 1 to length(w) do
-        if pos(w[j], w) = rpos(w[j], w) then
-          code := code or (1 shl (Ord(w[j]) - Ord('a')))
-        else
-          code := 1 shl 26;
+        code := code or (1 shl (Ord(w[j]) - Ord('a')));
+      if bits_count(code) < length(w) then
+        code := 1 shl 26;
       codes[i] := code;
     end;
   end;
@@ -67,12 +59,10 @@ begin
     readln(words[i]);
 
   fill_codes();
-  for i := 1 to n do
-    full_search(i, codes[i]);
+  full_search(0, 0);
 
   writeln(max_size);
   for i := 1 to n do
     if max_phrase[i] = 1 then
       Write(words[i], ' ');
 end.
-
