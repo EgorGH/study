@@ -1,36 +1,40 @@
 program answer_slow;
 
 const
-  Lim = 100000;
+  MaxT = 100000;
+  MaxN = 100000;
 
 var
-  n, m, k: longint;
-  i, j, temp, t: longint;
-  mas: array[1..Lim] of longint;
+  n, m, k, i: longint;
+  t: array[1..MaxT] of longint;
+
+  function full_search(): longint;
+  var
+    mas: array[1..MaxN] of longint;
+    i, j, temp: longint;
+  begin
+    for i := 1 to n do
+      mas[i] := i;
+
+    for i := 1 to k do
+    begin
+      temp := mas[t[i] mod n + 1];
+      for j := t[i] mod n downto 1 do
+        mas[j + 1] := mas[j];
+      mas[1] := temp;
+    end;
+
+    for i := 1 to n do
+      if mas[i] = m then
+        exit(i);
+  end;
 
 begin
   readln(n);
-
-  for i := 1 to n do
-    mas[i] := i;
-
   readln(m);
-
   readln(k);
   for i := 1 to k do
-  begin
-    readln(t);
-    temp := mas[(t + 1) mod n];
-    for j := t mod n downto 1 do
-      mas[j + 1] := mas[j];
-    mas[1] := temp;
-  end;
-
-  for i := 1 to n do
-    if mas[i] = m then
-    begin
-      writeln(i);
-      break;
-    end;
+    readln(t[i]);
+  writeln(full_search());
 end.
 
