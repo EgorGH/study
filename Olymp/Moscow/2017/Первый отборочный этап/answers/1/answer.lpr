@@ -1,30 +1,24 @@
 program answer;
 
-var a, b, c: int64;
+var
+  a, b, c: longint;
 
-  function optimal_search(a, b, c: int64): int64;
-  var
-    i, q: int64;
+  function flights_count(x: longint; include: boolean): longint;
   begin
-    q := 0;
+    flights_count := x div c;
+    if not include and (x mod c = 0) then
+      flights_count -= 1;
+  end;
 
-    i := a;
-    while (i mod c <> 0) and (i <= b) do
-      i := i + 1;
-
-    while (i <= b) do
-    begin
-      i := i + c;
-      q := q + 1;
-    end;
-
-    exit(q);
+  function optimal_search(): longint;
+  begin
+    exit(flights_count(b, true) - flights_count(a, false));
   end;
 
 begin
   readln(a);
   readln(b);
   readln(c);
-  writeln(optimal_search(a, b, c));
+  writeln(optimal_search());
 end.
 
