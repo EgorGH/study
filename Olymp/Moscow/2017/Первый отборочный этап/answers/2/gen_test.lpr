@@ -3,26 +3,23 @@ program gen_test;
 uses
   SysUtils;
 
-const
-  MaxN = 100000;
-  MaxK = 100000;
-  MaxT = 100000;
+const Lim = 100000;
 
 var
-  n, m, k, i, test: longint;
-  t: array[1..MaxT] of longint;
+  n, m, k, i, t: longint;
+  data: array[1..Lim] of longint;
 
   function optimal_search(): longint;
   var
-    i, len, pos: longint;
+    i, idx, pos: longint;
   begin
     pos := m;
     for i := 1 to k do
     begin
-      len := t[i] mod n;
-      if len + 1 > pos then
+      idx := data[i] mod n + 1;
+      if idx > pos then
         pos += 1
-      else if len + 1 = pos then
+      else if idx = pos then
         pos := 1;
     end;
     exit(pos);
@@ -32,7 +29,7 @@ var
   var
     infile, afile: Text;
   begin
-    Assign(infile, format('tests/%.2d.in', [test]));
+    Assign(infile, format('tests/%.2d.', [test]));
     Assign(afile, format('tests/%.2d.a', [test]));
     rewrite(infile);
     rewrite(afile);
@@ -41,46 +38,34 @@ var
     writeln(infile, m);
     writeln(infile, k);
     for i := 1 to k do
-      writeln(infile, t[i]);
+      writeln(infile, data[i]);
     writeln(afile, optimal_search());
 
     Close(infile);
     Close(afile);
   end;
 
+  procedure process_test(maxn, maxk, maxt, t:longint);
+  begin
+    n := maxn;
+    m := random(n) + 1;
+    k := maxk;
+    for i := 1 to k do
+      data[i] := random(maxt) + 1;
+    write_test(t);
+  end;
+
 begin
   randomize();
-  for test := 1 to 9 do
-  begin
-    n := random(3) + 1;
-    m := random(n) + 1;
-    k := random(3) + 1;
-    for i := 1 to k do
-      t[i] := random(n - 1) + 1;
 
-    write_test(test);
-  end;
+  for t := 10 to 12 do
+    process_test(3, 3, 2, t);
 
-  for test := 10 to 19 do
-  begin
-    n := random(100) + 1;
-    m := random(n) + 1;
-    k := random(100) + 1;
-    for i := 1 to k do
-      t[i] := random(MaxT) + 1;
+  for t := 20 to 22 do
+    process_test(100, 100, 300, t);
 
-    write_test(test);
-  end;
+  for t := 30 to 32 do
+    process_test(Lim, Lim, Lim, t);
 
-  for test := 20 to 22 do
-  begin
-    n := random(MaxN) + 1;
-    m := random(n) + 1;
-    k := random(MaxK) + 1;
-    for i := 1 to k do
-      t[i] := random(MaxT) + 1;
-
-    write_test(test);
-  end;
   writeln('Done');
 end.

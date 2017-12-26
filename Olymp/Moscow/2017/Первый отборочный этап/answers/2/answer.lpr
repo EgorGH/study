@@ -9,15 +9,15 @@ var
 
   function optimal_search(): longint;
   var
-    i, len, pos: longint;
+    i, idx, pos: longint;
   begin
     pos := m;
     for i := 1 to k do
     begin
-      len := t[i] mod n;
-      if len + 1 > pos then
+      idx := t[i] mod n + 1;
+      if idx > pos then
         pos += 1
-      else if len + 1 = pos then
+      else if idx = pos then
         pos := 1;
     end;
     exit(pos);

@@ -1,65 +1,67 @@
 program test;
 
+uses
+  SysUtils;
+
 const
-  MaxTest = 10000;
-  MaxN = 1000;
-  MaxK = 1000;
-  MaxT = 1000;
+  Lim = 100000;
+  MaxT = 100000;
 
 var
-  tst, n, m, k, i: longint;
-  t: array[1..MaxT] of longint;
-
-  function full_search(): longint;
-  var
-    mas: array[1..MaxN] of longint;
-    i, j, temp: longint;
-  begin
-    for i := 1 to n do
-      mas[i] := i;
-
-    for i := 1 to k do
-    begin
-      temp := mas[t[i] mod n + 1];
-      for j := t[i] mod n downto 1 do
-        mas[j + 1] := mas[j];
-      mas[1] := temp;
-    end;
-
-    for i := 1 to n do
-      if mas[i] = m then
-        exit(i);
-  end;
+  n, m, k, i, t: longint;
+  Data: array[1..Lim] of longint;
 
   function optimal_search(): longint;
   var
-    i, len, pos: longint;
+    i, idx, pos: longint;
   begin
     pos := m;
     for i := 1 to k do
     begin
-      len := t[i] mod n;
-      if len + 1 > pos then
+      idx := Data[i] mod n + 1;
+      if idx > pos then
         pos += 1
-      else if len + 1 = pos then
+      else if idx = pos then
         pos := 1;
     end;
     exit(pos);
   end;
 
+  function full_search(): longint;
+  var
+    w: array[1..Lim] of longint;
+    i, j, temp: longint;
+  begin
+    for i := 1 to n do
+      w[i] := i;
+
+    for i := 1 to k do
+    begin
+      temp := w[Data[i] mod n + 1];
+      for j := Data[i] mod n downto 1 do
+        w[j + 1] := w[j];
+      w[1] := temp;
+    end;
+
+    for i := 1 to n do
+      if w[i] = m then
+        exit(i);
+  end;
+
+  function process_test(maxn, maxk, maxt: longint): boolean;
+  begin
+    n := maxn;
+    m := random(n) + 1;
+    k := maxk;
+    for i := 1 to k do
+      Data[i] := random(maxt) + 1;
+    exit(optimal_search() = full_search());
+  end;
+
 begin
   randomize();
-  for tst := 1 to MaxTest do
-  begin
-    n := random(MaxN) + 1;
-    m := random(n) + 1;
-    k := random(MaxK) + 1;
-    for i := 1 to k do
-      t[i] := random(MaxT) + 1;
-
-    if full_search() <> optimal_search() then
-      writeln('Error');
-  end;
-  writeln('Done');
+  for t := 1 to MaxT do
+    if not process_test(10, 20, 30) then
+      writeln('error!');
+  writeln('done!');
 end.
-
