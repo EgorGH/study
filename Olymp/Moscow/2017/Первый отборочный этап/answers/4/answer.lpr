@@ -4,20 +4,33 @@ const
   Lim = 100000;
 
 var
-  i, k, n: longint;
+  i: longint;
+  k, n: longint;
   Data: array[1..Lim] of longint;
 
-  function optimal_search(): int64;
+  function optimal_search(): qword;
   var
-    i, j, free_space: longint;
-    ans: int64;
+    i: longint;
+    free_space, x: qword;
   begin
-    ans := 0;
+    free_space := 0;
+    optimal_search := 0;
+
     for i := n downto 1 do
     begin
-
+      if data[i] > free_space then
+      begin
+        data[i] -= free_space;
+        if data[i] mod k <> 0 then
+          x := data[i] div k + 1
+        else
+          x := data[i] div k;
+        optimal_search += 2 * i * x;
+        free_space := x * k - data[i];
+      end
+      else
+        free_space -= data[i];
     end;
-    exit(ans);
   end;
 
 begin
@@ -27,5 +40,4 @@ begin
     readln(Data[i]);
 
   writeln(optimal_search());
-  readln();
 end.
