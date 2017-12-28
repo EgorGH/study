@@ -23,7 +23,12 @@ var
 
   function optimal_search(): longint;
   begin
-    exit(flights_count(b, true) - flights_count(a, false));
+    exit(flights_count(b, True) - flights_count(a, False));
+  end;
+
+  function process_test(): boolean;
+  begin
+    exit(optimal_search() = full_search());
   end;
 
 begin
@@ -31,8 +36,8 @@ begin
   for c := 1 to 10 do
     for a := 1 to 100 do
       for b := a to 100 do
-        if full_search() <> optimal_search() then
-          writeln('Error');
+        if not process_test() then
+          writeln('error!');
   writeln('Done');
 end.
 
