@@ -5,7 +5,7 @@ const
 
 var
   n, m, k, i: longint;
-  t: array[1..MaxT] of longint;
+  data: array[1..MaxT] of longint;
 
   function optimal_search(): longint;
   var
@@ -14,7 +14,7 @@ var
     pos := m;
     for i := 1 to k do
     begin
-      idx := t[i] mod n + 1;
+      idx := data[i] mod n + 1;
       if idx > pos then
         pos += 1
       else if idx = pos then
@@ -28,7 +28,7 @@ begin
   readln(m);
   readln(k);
   for i := 1 to k do
-    readln(t[i]);
+    readln(data[i]);
   writeln(optimal_search());
 end.
 
