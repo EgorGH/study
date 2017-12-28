@@ -1,50 +1,29 @@
 program answer_slow;
 
+uses
+  Math;
+
 const
   Lim = 100000;
 
 var
   i, k, n: longint;
-  Data: array[1..Lim] of longint;
+  Data: array[0..Lim] of qword;
 
   function full_search(): qword;
   var
-    i, j: longint;
-    free_space: qword;
+    i, p: longint;
+    time: qword = 0;
   begin
-    full_search := 0;
-
-    i := n;
-    while i >= 1 do
-    begin
-      if data[i] = 0 then
+    for i := n downto 1 do
+      while Data[i] > 0 do
       begin
-        i -= 1;
-        continue;
+        p := min(Data[i], k);
+        Data[i] -= p;
+        Data[i - 1] += p;
+        time += 2;
       end;
-
-      free_space := k;
-      full_search += i * 2;
-
-      if Data[i] > free_space then
-        Data[i] -= free_space
-      else
-      begin
-        for j := i downto 1 do
-          if Data[j] <= free_space then
-          begin
-            free_space -= Data[j];
-            Data[j] := 0;
-          end
-          else
-          begin
-            Data[j] -= free_space;
-            break;
-          end;
-
-        i -= 1;
-      end;
-    end;
+    exit(time);
   end;
 
 begin

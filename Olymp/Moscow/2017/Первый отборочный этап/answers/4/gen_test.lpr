@@ -1,38 +1,27 @@
 program gen_test;
 
 uses
-  SysUtils;
+  SysUtils, math;
 
 const
   Lim = 100000;
 
 var
   k, n, t: longint;
-  Data: array[1..Lim] of longint;
+  Data: array[0..Lim] of qword;
 
   function optimal_search(): qword;
   var
     i: longint;
-    free_space, x: qword;
+    time: qword = 0;
   begin
-    free_space := 0;
-    optimal_search := 0;
-
     for i := n downto 1 do
     begin
-      if data[i] > free_space then
-      begin
-        data[i] -= free_space;
-        if data[i] mod k <> 0 then
-          x := data[i] div k + 1
-        else
-          x := data[i] div k;
-        optimal_search += 2 * i * x;
-        free_space := x * k - data[i];
-      end
-      else
-        free_space -= data[i];
+      time += 2 * i * (Data[i] div k);
+      Data[i - 1] += Data[i] mod k;
+      time += IfThen(Data[i] mod k > 0, 2, 0);
     end;
+    exit(time);
   end;
 
   procedure write_test(t: longint);

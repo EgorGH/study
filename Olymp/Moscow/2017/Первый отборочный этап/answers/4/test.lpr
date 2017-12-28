@@ -1,95 +1,66 @@
 program test;
 
+uses
+  Math;
+
 const
-  MaxT = 10000;
-  Lim = 100000;
+  MaxT = 1000000;
+  Lim = 100;
 
 var
   k, n, t: longint;
-  Data: array[1..Lim] of longint;
+  Data: array[0..Lim] of qword;
 
   function full_search(): qword;
   var
-    i, j: longint;
-    free_space: qword;
-    Data_copy: array[1..Lim] of longint;
+    i, p: longint;
+    time: qword = 0;
   begin
-    full_search := 0;
-    Data_copy := data;
-
-    i := n;
-    while i >= 1 do
-    begin
-      if Data_copy[i] = 0 then
+    for i := n downto 1 do
+      while Data[i] > 0 do
       begin
-        i -= 1;
-        continue;
+        p := min(Data[i], k);
+        Data[i] -= p;
+        Data[i - 1] += p;
+        time += 2;
       end;
-
-      free_space := k;
-      full_search += i * 2;
-
-      if Data_copy[i] > free_space then
-        Data_copy[i] -= free_space
-      else
-      begin
-        for j := i downto 1 do
-          if Data_copy[j] <= free_space then
-          begin
-            free_space -= Data_copy[j];
-            Data_copy[j] := 0;
-          end
-          else
-          begin
-            Data_copy[j] -= free_space;
-            break;
-          end;
-
-        i -= 1;
-      end;
-    end;
+    exit(time);
   end;
 
   function optimal_search(): qword;
   var
     i: longint;
-    free_space, x: qword;
+    time: qword = 0;
   begin
-    free_space := 0;
-    optimal_search := 0;
-
     for i := n downto 1 do
     begin
-      if Data[i] > free_space then
-      begin
-        Data[i] -= free_space;
-        if Data[i] mod k <> 0 then
-          x := Data[i] div k + 1
-        else
-          x := Data[i] div k;
-        optimal_search += 2 * i * x;
-        free_space := x * k - Data[i];
-      end
-      else
-        free_space -= Data[i];
+      time += 2 * i * (Data[i] div k);
+      Data[i - 1] += Data[i] mod k;
+      time += IfThen(Data[i] mod k > 0, 2, 0);
     end;
+    exit(time);
   end;
 
   function process_test(maxk, maxn, maxdata: longint): boolean;
   var
-    i: longint;
+    i, a, b: longint;
+    data_original: array[0..Lim] of longint;
   begin
     k := random(maxk) + 1;
     n := random(maxn) + 1;
     for i := 1 to n do
-      Data[i] := random(maxdata + 1);
-    exit(full_search() = optimal_search());
+      data_original[i] := random(maxdata + 1);
+    Data := data_original;
+    a := full_search();
+    Data := data_original;
+    b := optimal_search();
+    exit(a = b);
   end;
 
 begin
   randomize();
   for t := 1 to MaxT do
-    if not process_test(1000, 1000, 1000) then
+    if not process_test(10, 10, 10) then
       writeln('error!');
   writeln('done!');
 end.
