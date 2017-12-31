@@ -1,4 +1,4 @@
-program gen_test;
+program test;
 
 uses
   SysUtils,
@@ -6,6 +6,7 @@ uses
   Math;
 
 const
+  MaxT = 1000;
   SECS_IN_MIN = 60;
   SECS_IN_HOUR = 60 * SECS_IN_MIN;
   SECS_IN_DAY = 24 * SECS_IN_HOUR;
@@ -18,6 +19,13 @@ type
 var
   t: longint;
   a, b, c: ttime;
+
+    operator = (a, b: ttime): boolean;
+  begin
+    if (a.h = b.h) and (a.m = b.m) and (a.s = b.s) then
+      exit(true);
+    exit(false);
+  end;
 
   function time2sec(time: ttime): longint;
   begin
@@ -33,9 +41,35 @@ var
     sec2time.s := x;
   end;
 
-  function time2str(time: ttime): shortstring;
+  function add_second(time: ttime): ttime;
   begin
-    exit(format('%.2d:%.2d:%.2d', [time.h, time.m, time.s]));
+    time.s := (time.s + 1) mod 60;
+    if time.s = 0 then
+      time.m := (time.m + 1) mod 60;
+    if (time.s = 0) and (time.m = 0) then
+      time.h := (time.h + 1) mod 24;
+    exit(time);
+  end;
+
+  function full_search(): ttime;
+  var
+    diff: longint;
+  begin
+    diff := 0;
+    while c <> a do
+    begin
+      a := add_second(a);
+      diff += 1;
+    end;
+
+    diff := ceil(diff / 2);
+
+    while diff > 0 do
+    begin
+      b := add_second(b);
+      diff -= 1;
+    end;
+    exit(b);
   end;
 
   function optimal_search(): ttime;
@@ -47,38 +81,20 @@ var
     exit(sec2time(seconds));
   end;
 
-  procedure write_test(test: longint);
-  var
-    infile, afile: Text;
-  begin
-    Assign(infile, format('tests/%.2d.', [test]));
-    Assign(afile, format('tests/%.2d.a', [test]));
-    rewrite(infile);
-    rewrite(afile);
-
-    writeln(infile, time2str(a));
-    writeln(infile, time2str(b));
-    writeln(infile, time2str(c));
-
-    writeln(afile, time2str(optimal_search()));
-
-    Close(infile);
-    Close(afile);
-  end;
-
-  procedure process_test(t: longint);
+  function process_test(): boolean;
   begin
     a := sec2time(random(SECS_IN_DAY) + 1);
     b := sec2time(random(SECS_IN_DAY) + 1);
     c := sec2time(random(SECS_IN_DAY) + 1);
-    write_test(t);
+    exit(full_search() = optimal_search());
   end;
 
 begin
   randomize();
 
-  for t := 10 to 20 do
-    process_test(t);
+  for t := 1 to MaxT do
+    if not process_test() then
+      writeln('Error!');
 
   writeln('Done');
 end.

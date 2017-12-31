@@ -4,9 +4,9 @@ uses
   SysUtils, strutils, math;
 
 const
-  SecsInMin = 60;
-  SecsInHour = 60 * SecsInMin;
-  SecsInDay = 24 * SecsInHour;
+  SECS_IN_MIN = 60;
+  SECS_IN_HOUR = 60 * SECS_IN_MIN;
+  SECS_IN_DAY = 24 * SECS_IN_HOUR;
 
 type
   ttime = record
@@ -26,15 +26,15 @@ var
 
   function time2sec(time: ttime): longint;
   begin
-    exit(time.h * SecsInHour + time.m * SecsInMin + time.s);
+    exit(time.h * SECS_IN_HOUR + time.m * SECS_IN_MIN + time.s);
   end;
 
   function sec2time(x: longint): ttime;
   begin
-    sec2time.h := (x div SecsInHour) mod 24;
-    x := x mod SecsInHour;
-    sec2time.m := x div SecsInMin;
-    x := x mod SecsInMin;
+    sec2time.h := (x div SECS_IN_HOUR) mod 24;
+    x := x mod SECS_IN_HOUR;
+    sec2time.m := x div SECS_IN_MIN;
+    x := x mod SECS_IN_MIN;
     sec2time.s := x;
   end;
 
@@ -43,16 +43,13 @@ var
     exit(format('%.2d:%.2d:%.2d', [time.h, time.m, time.s]));
   end;
 
-  function optimal_search(): shortstring;
+  function optimal_search(): ttime;
   var
-    time: ttime;
-    d, diff, time_sec: longint;
+    diff, seconds: longint;
   begin
-    d := time2sec(c) - time2sec(a);
-    diff := IfThen(d > 0, d, d + SecsInDay);
-    time_sec := time2sec(b) + diff div 2 + diff mod 2;
-    time := sec2time(time_sec);
-    exit(time2str(time));
+    diff := (time2sec(c) - time2sec(a) + SECS_IN_DAY) mod SECS_IN_DAY;
+    seconds := time2sec(b) + ceil(diff / 2);
+    exit(sec2time(seconds));
   end;
 
 begin
@@ -60,5 +57,5 @@ begin
   read_time(b);
   read_time(c);
 
-  writeln(optimal_search());
+  writeln(time2str(optimal_search()));
 end.
