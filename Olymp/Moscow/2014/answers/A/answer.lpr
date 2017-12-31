@@ -1,165 +1,120 @@
 program answer;
 
 uses
-  strutils;
+  strutils,
+  Math;
 
 const
-  Lim = 10000;
+  NLim = 10000;
+  MLim = 10000;
 
 type
-  tdata = ^longint;
+  torder = array[1..MLim] of longint;
 
 var
-  goods: array[1..Lim] of shortstring;
-  relations: array[1..Lim, 1..Lim] of longint;
-  always, often: tdata;
-  k, n, qA, qO, size: longint;
-  str: ansistring;
+  goods: array[1..MLim] of shortstring;
+  Data: array[1..NLim] of torder;
+  always, often: torder;
+  n, m: longint;
 
-  procedure process_purchase(str: ansistring);
+  function get_goods_id(Name: shortstring): longint;
   var
-    g: shortstring;
-    i, j, position: longint;
+    i: longint;
   begin
-    for i := 1 to WordCount(str, [' ']) do
+    for i := 1 to m do
+      if goods[i] = Name then
+        exit(i);
+    m += 1;
+    goods[m] := Name;
+    exit(m);
+  end;
+
+  procedure read_data();
+  var
+    i, j: longint;
+    s: ansistring;
+  begin
+    readln(n);
+    for i := 1 to n + 1 do
     begin
-      position := 0;
-      size += 1;
-      g := ExtractWord(i, str, [' ']);
-
-      for j := 1 to size - 1 do
-        if goods[j] = g then
-        begin
-          position := j;
-          size -= 1;
-          break;
-        end;
-
-      if position = 0 then
-      begin
-        goods[size] := g;
-        position := size;
-      end;
-
-      relations[k, position] := 1;
+      readln(s);
+      for j := 1 to wordcount(s, StdWordDelims) do
+        Data[i, get_goods_id(ExtractWord(j, s, StdWordDelims))] := 1;
     end;
   end;
 
-  procedure make_recommendations();
+  procedure full_search(var order, always, often: torder);
   var
-    i, j, k, qi, qj: longint;
+    i, j, k, lim: longint;
+    sum: torder;
   begin
-    for i := 1 to size do
-      if relations[n + 1, i] = 1 then
-        for j := 1 to size do
-          if j <> i then
-          begin
-            qi := 0;
-            qj := 0;
-
-            for k := 1 to n do
-              if (relations[k, i] = 1) then
-              begin
-                qi += 1;
-                if (relations[k, j] = 1) then
-                  qj += 1;
-              end;
-
-            if qi = qj then
-            begin
-              qA += 1;
-              always[qA] := j;
-            end;
-
-            if qi <= qj * 2 then
-            begin
-              qO += 1;
-              often[qO] := j;
-            end;
-          end;
-
-    for i := 1 to qA do
-      for j := 1 to size do
-        if j <> always[i] then
-        begin
-          qi := 0;
-          qj := 0;
-
-          for k := 1 to n do
-            if relations[k, always[i]] = 1 then
-            begin
-              qi += 1;
-              if relations[k, j] = 1 then
-                qj += 1;
-            end;
-
-          if qi <= qj * 2 then
-          begin
-            qO += 1;
-            often[qO] := j;
-          end;
-        end;
+    for i := 1 to m do
+      if order[i] = 1 then
+      begin
+        FillByte(sum[1], m * sizeof(longint), 0);
+        for j := 1 to n do
+          if Data[j, i] = 1 then
+            for k := 1 to m do
+              sum[k] += Data[j, k];
+        lim := sum[i];
+        for k := 1 to m do
+          if sum[k] = lim then
+            always[k] := 1
+          else if sum[k] * 2 >= lim then
+            often[k] := 1;
+      end;
   end;
 
-  function check(x: longint; fAlways: boolean): boolean;
+  procedure remove_order(var a, b: torder);
   var
     i: longint;
   begin
-    if x = 0 then
-      exit(False);
-
-    for i := 1 to size do
-      if (relations[n + 1, i] = 1) and (i = x) then
-        exit(False);
-
-    if not fAlways then
-      for i := 1 to qA do
-        if always[i] = x then
-          exit(False);
-
-    exit(True);
+    for i := 1 to m do
+      if b[i] = 1 then
+        a[i] := 0;
   end;
 
-  procedure delete_repeated_elements(var data: tdata; x: longint);
+  procedure print_order(var a: torder);
   var
-    i, j: longint;
+    i, j, min: longint;
+    q: longint = 0;
+    t: shortstring;
+    temp: array[1..MLim] of shortstring;
   begin
-    for i := 1 to x - 1 do
-      for j := i + 1 to x do
-        if (data[i] = data[j]) and (data[i] <> 0) then
-          data[j] := 0;
-  end;
+    for i := 1 to m do
+      if a[i] = 1 then
+      begin
+        q += 1;
+        temp[q] := goods[i];
+      end;
 
-  procedure print_recommendations();
-  var
-    i: longint;
-  begin
-    delete_repeated_elements(always, qA);
-    delete_repeated_elements(often, qO);
-    for i := 1 to qA do
-      if check(always[i], True) then
-        Write(goods[always[i]], ' ');
+    for i := 1 to q - 1 do
+    begin
+      min := i;
+      for j := i + 1 to q do
+        if temp[min] > temp[j] then
+          min := j;
+      if min <> i then
+      begin
+        t := temp[i];
+        temp[i] := temp[min];
+        temp[min] := t;
+      end;
+    end;
+
+    for i := 1 to q do
+      write(temp[i], ' ');
     writeln();
-    for i := 1 to qO do
-      if check(often[i], False) then
-        Write(goods[often[i]], ' ');
   end;
 
 begin
-  readln(n);
+  read_data();
+  full_search(Data[n + 1], always, often);
+  remove_order(always, Data[n + 1]);
+  full_search(always, often, often);
+  remove_order(often, Data[n + 1]);
+  remove_order(often, always);
 
-  always := GetMem(n * n * sizeof(longint));
-  often := GetMem(n * n * sizeof(longint));
-
-  size := 0;
-  for k := 1 to n + 1 do
-  begin
-    readln(str);
-    process_purchase(str);
-  end;
-
-  qA := 0;
-  qO := 0;
-  make_recommendations();
-  print_recommendations();
+  print_order(always);
+  print_order(often);
 end.

@@ -81,7 +81,7 @@ begin
   randomize();
 
   for t := 10 to 14 do
-    process_test(10, 10, t);
+    process_test(30, 30, t);
 
   //for t := 20 to 22 do
   //  process_test(100, 100, 300, t);
