@@ -14,7 +14,7 @@ type
 
 var
   Data: array[0..Lim + 1, 0..Lim + 1] of smallint;
-  moves: array[1..4, 1..2] of shortint = ((1, 0), (-1, 0), (0, -1), (0, 1));
+  moves: array[1..4, 1..2] of shortint = ((0, -1), (-1, 0), (0, 1), (1, 0));
   walls: array[1..Lim * Lim] of tpoint;
   a, b, k, m, n, t, max: longint;
 
@@ -134,19 +134,27 @@ var
           Data[i, j] := 0;
   end;
 
-  function is_possible_optimal(): boolean;
+  function is_possible_optimal(xx, yy: longint): boolean;
   var
-    a, b, c, d, i, x, y, q, direction: longint;
+    a, b, c, d, i, x, y, q, direction, startdir: longint;
   begin
-    direction := 1;
+    startdir := -1;
 
-    x := 1;
-    y := 1;
+    for i := 0 to 3 do
+      if Data[xx + moves[i + 1, 1], yy + moves[i + 1, 2]] <> 0 then
+        startdir := i;
 
-    a := -1;
-    b := 0;
-    c := 0;
-    d := 1;
+    if startdir = -1 then
+    begin
+      startdir := 1;
+      xx := 1;
+      yy := 1;
+    end;
+
+    direction := startdir;
+
+    x := xx;
+    y := yy;
 
     max := 0;
     q := 0;
@@ -203,7 +211,8 @@ var
       if (Data[x + a, y + b] > max) and (Data[x + a, y + b] <= k) then
         max := Data[x + a, y + b];
 
-      if (x = 1) and (y = 1) and (Data[1, 1] = -1) and (direction = 0) or (q = 10) then
+      if (x = xx) and (y = yy) and (Data[xx, yy] = -1) and (direction = startdir) or
+        (q = 10) then
         exit(False);
 
       if Data[x + a, y + b] < 1 then
@@ -226,6 +235,7 @@ var
       x := x + c;
       y := y + d;
       Data[x, y] := -1;
+      //print_data();
     end;
 
     exit(True);
@@ -235,16 +245,24 @@ var
   var
     i, j, d: longint;
   begin
-    if is_possible_optimal() then
+    if is_possible_optimal(1, 1) then
       exit(0);
 
     for i := k downto 1 do
     begin
       clear_path();
+
       d := max;
       for j := d to k do
         Data[walls[j].x, walls[j].y] := 0;
-      if is_possible_optimal() then
+
+      if (walls[max].x = m) and (walls[max].y = n) then
+      begin
+        walls[max].x := 1;
+        walls[max].y := 1;
+      end;
+
+      if is_possible_optimal(walls[max].x, walls[max].y) then
         exit(d);
     end;
   end;
@@ -265,8 +283,14 @@ begin
     prepare_data();
     b := optimal_search();
 
-    if a <> b then
+    if (a <> b) then
+    begin
       writeln('error');
+      prepare_data();
+      print_data();
+      b := optimal_search();
+      print_data();
+    end;
   end;
   writeln('Done');
 end.
