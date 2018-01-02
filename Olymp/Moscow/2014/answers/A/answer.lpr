@@ -1,6 +1,7 @@
 program answer;
 
 uses
+  classes,
   strutils,
   Math;
 
@@ -76,34 +77,19 @@ var
 
   procedure print_order(var a: torder);
   var
-    i, j, min: longint;
-    q: longint = 0;
-    t: shortstring;
-    temp: array[1..MLim] of shortstring;
+    i: longint;
+    list: TStringList;
   begin
+    list := TStringList.Create();
+
     for i := 1 to m do
       if a[i] = 1 then
-      begin
-        q += 1;
-        temp[q] := goods[i];
-      end;
+        list.Add(goods[i]);
 
-    for i := 1 to q - 1 do
-    begin
-      min := i;
-      for j := i + 1 to q do
-        if temp[min] > temp[j] then
-          min := j;
-      if min <> i then
-      begin
-        t := temp[i];
-        temp[i] := temp[min];
-        temp[min] := t;
-      end;
-    end;
+    list.Sort();
 
-    for i := 1 to q do
-      write(temp[i], ' ');
+    for i := 0 to list.Count - 1 do
+      write(list[i], ' ');
     writeln();
   end;
 
