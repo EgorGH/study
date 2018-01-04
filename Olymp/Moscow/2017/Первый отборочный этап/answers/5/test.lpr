@@ -1,14 +1,26 @@
-program gen_test;
+program test;
 
 uses
-  SysUtils, strutils;
+  SysUtils,
+  strutils,
+  Math;
 
 const
-  Lim = 100000;
+  MaxT = 10000;
 
 var
   t: longint;
   s: ansistring;
+
+  function digit_sum(x: longint): longint;
+  begin
+    digit_sum := 0;
+    while x <> 0 do
+    begin
+      digit_sum += x mod 10;
+      x := x div 10;
+    end;
+  end;
 
   function digit_sum(s: ansistring): longint;
   var
@@ -17,6 +29,34 @@ var
     digit_sum := 0;
     for i := 1 to length(s) do
       digit_sum += Ord(s[i]) - Ord('0');
+  end;
+
+  function power_10(x: longint): longint;
+  begin
+    power_10 := 1;
+    while x <> 0 do
+    begin
+      power_10 *= 10;
+      x -= 1;
+    end;
+  end;
+
+  function full_search(s: ansistring): ansistring;
+  var
+    d, n, w: longint;
+  begin
+    n := StrToInt(s);
+    w := length(s) div 2;
+    d := power_10(w);
+
+    if n = d * d - 1 then
+      exit(format('%.*d%.*d', [w + 1, 1, w + 1, 1]));
+
+    repeat
+      n += 1;
+    until digit_sum(n div d) = digit_sum(n mod d);
+
+    exit(format('%.*d%.*d', [w, n div d, w, n mod d]));
   end;
 
   function get_leftstr(s: ansistring): ansistring;
@@ -36,10 +76,10 @@ var
     i := length(s) + 1;
     repeat
       i -= 1;
-      b += Ord('9') - Ord(s[i]);
+      b += ord('9') - ord(s[i]);
       s[i] := '9';
     until a <= b;
-    s[i] := chr(Ord(s[i]) + a - b);
+    s[i] := chr(ord(s[i]) + a - b);
     b := a;
   end;
 
@@ -86,43 +126,19 @@ var
     exit(s);
   end;
 
-  procedure write_test(t: longint);
+  function process_test(): boolean;
   var
-    infile, afile: Text;
+    d: longint;
   begin
-    Assign(infile, format('tests/%.2d.', [t]));
-    Assign(afile, format('tests/%.2d.a', [t]));
-    rewrite(infile);
-    rewrite(afile);
-
-    writeln(infile, s);
-    writeln(afile, optimal_search(s));
-
-    Close(infile);
-    Close(afile);
-  end;
-
-  procedure process_test(maxsize, t: longint);
-  var
-    i: longint;
-  begin
-    SetLength(s, maxsize);
-    for i := 1 to maxsize do
-      s[i] := chr(random(10) + ord('0'));
-    write_test(t);
+    d := power_10(4) - 1;
+    s := format('%.*d%.*d', [4, random(d) + 1, 4, random(d) + 1]);
+    exit(full_search(s) = optimal_search(s));
   end;
 
 begin
   randomize();
-
-  for t := 10 to 12 do
-    process_test(8, t);
-
-  for t := 20 to 22 do
-    process_test(16, t);
-
-  for t := 30 to 32 do
-    process_test(Lim, t);
-
+  for t := 1 to MaxT do
+    if not process_test() then
+      writeln('error');
   writeln('done!');
 end.

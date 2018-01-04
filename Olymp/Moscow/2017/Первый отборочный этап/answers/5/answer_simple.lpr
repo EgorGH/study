@@ -1,10 +1,10 @@
 program answer_simple;
 
 uses
-  SysUtils, strutils, math;
+  SysUtils;
 
 var
-  t: shortstring;
+  s: ansistring;
 
   function digit_sum(x: longint): longint;
   begin
@@ -16,55 +16,35 @@ var
     end;
   end;
 
-  function full_search(): shortstring;
-  var
-    t1, t2, s1, s2, len: longint;
+  function power_10(x: longint): longint;
   begin
-    len := length(t) div 2;
-    t1 := StrToInt(copy(t, 1, len));
-    t2 := StrToInt(copy(t, len + 1, len));
-
-    if t = DupeString('9', len * 2) then
-      exit(DupeString(DupeString('0', len) + '1', 2));
-
-    if t2 = round(power(10, len)) - 1 then
+    power_10 := 1;
+    while x <> 0 do
     begin
-      t1 += 1;
-      t2 := 0;
-      s1 := digit_sum(t1) + 1;
-      s2 := 0;
-    end
-    else
-    begin
-      t2 += 1;
-      s1 := digit_sum(t1);
-      s2 := digit_sum(t2);
+      power_10 *= 10;
+      x -= 1;
     end;
+  end;
 
-    while s1 <> s2 do
-    begin
-      if t2 = round(power(10, len)) - 1 then
-      begin
-        t1 += 1;
-        t2 := 0;
-      end
-      else
-        t2 += 1;
+  function full_search(s: ansistring): ansistring;
+  var
+    d, n, w: longint;
+  begin
+    n := StrToInt(s);
+    w := length(s) div 2;
+    d := power_10(w);
 
-      if t2 mod 10 = 0 then
-      begin
-        s1 := digit_sum(t1);
-        s2 := digit_sum(t2);
-        continue;
-      end;
+    if n = d * d - 1 then
+      exit(format('%.*d%.*d', [w + 1, 1, w + 1, 1]));
 
-      s2 += 1;
-    end;
+    repeat
+      n += 1;
+    until digit_sum(n div d) = digit_sum(n mod d);
 
-    exit(format('%.*d%.*d', [len, t1, len, t2]));
+    exit(format('%.*d%.*d', [w, n div d, w, n mod d]));
   end;
 
 begin
-  readln(t);
+  readln(s);
   writeln(full_search());
 end.

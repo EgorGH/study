@@ -1,13 +1,9 @@
-program gen_test;
+program answer;
 
 uses
   SysUtils, strutils;
 
-const
-  Lim = 100000;
-
 var
-  t: longint;
   s: ansistring;
 
   function digit_sum(s: ansistring): longint;
@@ -86,43 +82,7 @@ var
     exit(s);
   end;
 
-  procedure write_test(t: longint);
-  var
-    infile, afile: Text;
-  begin
-    Assign(infile, format('tests/%.2d.', [t]));
-    Assign(afile, format('tests/%.2d.a', [t]));
-    rewrite(infile);
-    rewrite(afile);
-
-    writeln(infile, s);
-    writeln(afile, optimal_search(s));
-
-    Close(infile);
-    Close(afile);
-  end;
-
-  procedure process_test(maxsize, t: longint);
-  var
-    i: longint;
-  begin
-    SetLength(s, maxsize);
-    for i := 1 to maxsize do
-      s[i] := chr(random(10) + ord('0'));
-    write_test(t);
-  end;
-
 begin
-  randomize();
-
-  for t := 10 to 12 do
-    process_test(8, t);
-
-  for t := 20 to 22 do
-    process_test(16, t);
-
-  for t := 30 to 32 do
-    process_test(Lim, t);
-
-  writeln('done!');
+  readln(s);
+  writeln(optimal_search(s));
 end.
