@@ -20,11 +20,9 @@ var
   t: longint;
   a, b, c: ttime;
 
-    operator = (a, b: ttime): boolean;
+  operator = (a, b: ttime): boolean;
   begin
-    if (a.h = b.h) and (a.m = b.m) and (a.s = b.s) then
-      exit(true);
-    exit(false);
+    exit((a.h = b.h) and (a.m = b.m) and (a.s = b.s));
   end;
 
   function time2sec(time: ttime): longint;

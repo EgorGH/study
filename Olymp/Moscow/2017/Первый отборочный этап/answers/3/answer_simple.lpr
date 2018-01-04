@@ -15,9 +15,7 @@ var
 
   operator = (a, b: ttime): boolean;
   begin
-    if (a.h = b.h) and (a.m = b.m) and (a.s = b.s) then
-      exit(true);
-    exit(false);
+    exit((a.h = b.h) and (a.m = b.m) and (a.s = b.s));
   end;
 
   procedure read_time(var time: ttime);
