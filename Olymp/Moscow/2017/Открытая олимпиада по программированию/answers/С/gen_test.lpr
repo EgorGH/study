@@ -2,9 +2,7 @@ program gen_test;
 
 uses
   Math,
-  fgl,
-  SysUtils,
-  strutils;
+  SysUtils;
 
 const
   SLim = 10000;
@@ -17,8 +15,25 @@ var
   Next: array[ordA..ordz, 1..SLim] of smallint;
   exist: array[1..TLim] of smallint;
   removed, minremoved: array[1..SLim] of byte;
+  cache: array[1..SLim, 1..TLim] of smallint;
   test, qremoved, minqremoved: smallint;
   s, t: ansistring;
+
+  procedure optimal_search(snum, tnum: longint); forward;
+
+
+
+  procedure optimal_search_cached(snum, tnum: longint);
+  var
+    qcached: smallint;
+  begin
+    qcached := cache[snum, tnum];
+    if (qcached = 0) or (qcached > qremoved) then
+    begin
+      cache[snum, tnum] := qremoved;
+      optimal_search(snum, tnum);
+    end;
+  end;
 
   procedure optimal_search(snum, tnum: longint);
   var
@@ -47,9 +62,8 @@ var
           qremoved += 1;
         end;
 
-
       if exist[tnum] >= nextp then
-        optimal_search(nextp, tnum)
+        optimal_search_cached(nextp, tnum)
       else if qremoved < minqremoved then
       begin
         minqremoved := qremoved;
@@ -69,6 +83,7 @@ var
       tnum += 1;
     end;
   end;
+
 
   procedure prepare();
   var
@@ -104,6 +119,10 @@ var
           exist[i] := j;
           break;
         end;
+
+    for i := 1 to SLim do
+      for j := 1 to TLim do
+        cache[i, j] := 0;
   end;
 
   procedure write_test(test: longint; var ans: ansistring);
@@ -153,16 +172,22 @@ begin
     process_test(test, 10, 3, 2);
 
   for test := 10 to 19 do
-    process_test(test, 15, 15, 52);
+    process_test(test, 15, 5, 2);
 
   for test := 20 to 29 do
-    process_test(test, 100, 52, 52);
+    process_test(test, 100, 10, 2);
 
   for test := 30 to 39 do
-    process_test(test, 500, 500, 52);
+    process_test(test, 500, 50, 2);
 
-  //for test := 40 to 49 do
-  //  process_test(test, 4000, 400, 52);
+  for test := 40 to 49 do
+    process_test(test, 500, 50, 2);
+
+  for test := 50 to 59 do
+    process_test(test, 500, 50, 52);
+
+  for test := 60 to 69 do
+    process_test(test, 500, 50, 52);
 
   writeln('done!');
 end.

@@ -1,9 +1,7 @@
 program answer;
 
 uses
-  fgl,
-  SysUtils,
-  strutils;
+  SysUtils;
 
 const
   SLim = 10000;
@@ -16,8 +14,23 @@ var
   Next: array[ordA..ordz, 1..SLim] of smallint;
   exist: array[1..TLim] of smallint;
   removed, minremoved: array[1..SLim] of byte;
+  cache: array[1..SLim, 1..TLim] of smallint;
   i, qremoved, minqremoved: smallint;
   s, t: ansistring;
+
+  procedure optimal_search(snum, tnum: longint); forward;
+
+  procedure optimal_search_cached(snum, tnum: longint);
+  var
+    qcached: smallint;
+  begin
+    qcached := cache[snum, tnum];
+    if (qcached = 0) or (qcached > qremoved) then
+    begin
+      cache[snum, tnum] := qremoved;
+      optimal_search(snum, tnum);
+    end;
+  end;
 
   procedure optimal_search(snum, tnum: longint);
   var
@@ -46,9 +59,8 @@ var
           qremoved += 1;
         end;
 
-
       if exist[tnum] >= nextp then
-        optimal_search(nextp, tnum)
+        optimal_search_cached(nextp, tnum)
       else if qremoved < minqremoved then
       begin
         minqremoved := qremoved;
@@ -74,13 +86,8 @@ var
     i, j, p: smallint;
   begin
     minqremoved := smallint.MaxValue;
-    FillByte(minremoved[1], SLim, 0);
-
     qremoved := 0;
-    FillByte(removed[1], SLim, 0);
 
-    for i := ordA to ordz do
-      FillByte(avail[i, 1], SLim, 0);
     for i := 1 to length(s) do
       avail[Ord(s[i]), i] := 1;
 
@@ -95,7 +102,6 @@ var
       end;
     end;
 
-    FillByte(exist[1], TLim, 0);
     for i := length(t) downto 1 do
       for j := length(s) - length(t) + i downto 1 do
         if (avail[Ord(t[i]), j] > 0) and ((i = length(t)) or (exist[i + 1] > j)) then
@@ -112,7 +118,6 @@ begin
   prepare();
   if exist[1] > 0 then
     optimal_search(1, 1);
-
 
   for i := 1 to length(s) do
     if minremoved[i] = 0 then
