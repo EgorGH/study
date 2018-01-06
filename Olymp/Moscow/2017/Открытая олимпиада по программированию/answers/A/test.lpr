@@ -4,7 +4,7 @@ uses
   SysUtils, math;
 
 const
-  MaxT = 10000;
+  MaxT = 100000;
 
 var
   t: longint;
@@ -48,7 +48,7 @@ begin
   randomize();
 
   for t := 1 to MaxT do
-    process_test(1000, 1000, t);
+    process_test(100, 100, t);
 
   writeln('Done');
 end.
