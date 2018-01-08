@@ -20,9 +20,9 @@ var
   keys: array[1..Lim] of longint;
   t, n, m: longint;
 
-  procedure full_search();
+  function full_search(): ansistring;
   var
-    i, j, k, sum: longint;
+    i, j, k, sum, smax, idxleft, idxright: longint;
     found: boolean = False;
   begin
     for i := 1 to n do
@@ -43,6 +43,9 @@ var
           idxright := j;
         end;
       end;
+
+    writestr(full_search, smax, LineEnding,
+      idxleft, ' ', idxright);
   end;
 
   procedure init_node(var node: TNode; idx, val: longint; sum: int64);
@@ -172,20 +175,20 @@ var
     writeln(dst);
   end;
 
-  function process_test(t, nmax, amax: longint): boolean;
+  function process_test(nmax, amax: longint): boolean;
   var
     i: longint;
   begin
     n := nmax;
     for i := 1 to n do
       Data[i] := random(amax * 2 + 1) - amax;
-    exit(full_search() = optimal_search());
+    exit(full_search() = node_to_string(optimal_search()));
   end;
 
 begin
   Randomize();
   for t := 1 to MaxT do
-    process_test(t, 10, 2);
+    process_test(10, 2);
 
   writeln('done!');
 end.
