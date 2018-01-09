@@ -12,7 +12,7 @@ var
   begin
     smax := 0;
     for i := 1 to min(w, h) do
-      for j := 0 to min(i, max(w, h) - i) do
+      for j := 0 to min(min(w, h), max(w, h) - i) do
         if i * i + j * j > smax then
           smax := i * i + j * j;
     exit(smax);
