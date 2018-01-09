@@ -23,26 +23,23 @@ var
   function full_search(): ansistring;
   var
     i, j, k, sum, smax, idxleft, idxright: longint;
-    found: boolean = False;
   begin
+    smax := data[1];
     for i := 1 to n do
       for j := i to n do
-      begin
-        if Data[i] <> Data[j] then
-          continue;
-
-        sum := 0;
-        for k := i to j do
-          sum += Data[k];
-
-        if not found or (sum > smax) then
+        if Data[i] = Data[j] then
         begin
-          found := True;
-          smax := sum;
-          idxleft := i;
-          idxright := j;
+          sum := 0;
+          for k := i to j do
+            sum += Data[k];
+
+          if sum > smax then
+          begin
+            smax := sum;
+            idxleft := i;
+            idxright := j;
+          end;
         end;
-      end;
 
     writestr(full_search, smax, LineEnding,
       idxleft, ' ', idxright);
