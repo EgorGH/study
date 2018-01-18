@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="4">
+      <Unit0>
+        <Filename Value="answer.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="114"/>
+        <CursorPos Y="129"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\B\answer.lpr"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="72"/>
+        <CursorPos X="19" Y="74"/>
+        <UsageCount Value="12"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\..\2013\answers\A\answer.lpr"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\..\2013\answers\A\test.lpr"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="22"/>
+        <CursorPos Y="32"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="122" Column="40" TopLine="90"/>
+      </Position1>
+      <Position2>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="124" TopLine="90"/>
+      </Position2>
+      <Position3>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="123" TopLine="90"/>
+      </Position3>
+      <Position4>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="124" TopLine="90"/>
+      </Position4>
+      <Position5>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="119" Column="84" TopLine="92"/>
+      </Position5>
+      <Position6>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="115" TopLine="92"/>
+      </Position6>
+      <Position7>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="116" TopLine="92"/>
+      </Position7>
+      <Position8>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="115" TopLine="92"/>
+      </Position8>
+      <Position9>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="116" TopLine="92"/>
+      </Position9>
+      <Position10>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="115" TopLine="92"/>
+      </Position10>
+      <Position11>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="116" TopLine="92"/>
+      </Position11>
+      <Position12>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="115" TopLine="92"/>
+      </Position12>
+      <Position13>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="116" TopLine="92"/>
+      </Position13>
+      <Position14>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="119" TopLine="92"/>
+      </Position14>
+      <Position15>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="121" TopLine="92"/>
+      </Position15>
+      <Position16>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="123" TopLine="92"/>
+      </Position16>
+      <Position17>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="124" TopLine="92"/>
+      </Position17>
+      <Position18>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="123" TopLine="92"/>
+      </Position18>
+      <Position19>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="124" TopLine="92"/>
+      </Position19>
+      <Position20>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="123" TopLine="92"/>
+      </Position20>
+      <Position21>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="117" Column="85" TopLine="92"/>
+      </Position21>
+      <Position22>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="123" TopLine="92"/>
+      </Position22>
+      <Position23>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="124" TopLine="92"/>
+      </Position23>
+      <Position24>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="127" TopLine="92"/>
+      </Position24>
+      <Position25>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="113" Column="52" TopLine="93"/>
+      </Position25>
+      <Position26>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="129" TopLine="107"/>
+      </Position26>
+      <Position27>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="131" TopLine="107"/>
+      </Position27>
+      <Position28>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="137" Column="63" TopLine="107"/>
+      </Position28>
+      <Position29>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="132" TopLine="107"/>
+      </Position29>
+      <Position30>
+        <Filename Value="answer.lpr"/>
+        <Caret Line="153" TopLine="132"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <Watches Count="15">
+      <Item1>
+        <Expression Value="u"/>
+      </Item1>
+      <Item2>
+        <Expression Value="v"/>
+      </Item2>
+      <Item3>
+        <Expression Value="i"/>
+      </Item3>
+      <Item4>
+        <Expression Value="i"/>
+      </Item4>
+      <Item5>
+        <Expression Value="a"/>
+      </Item5>
+      <Item6>
+        <Expression Value="b"/>
+      </Item6>
+      <Item7>
+        <Expression Value="sum"/>
+      </Item7>
+      <Item8>
+        <Expression Value="smin"/>
+      </Item8>
+      <Item9>
+        <Expression Value="list"/>
+      </Item9>
+      <Item10>
+        <Expression Value="start"/>
+      </Item10>
+      <Item11>
+        <Expression Value="finish"/>
+      </Item11>
+      <Item12>
+        <Expression Value="list[5]"/>
+      </Item12>
+      <Item13>
+        <Expression Value="list[6]"/>
+      </Item13>
+      <Item14>
+        <Expression Value="list[7]"/>
+      </Item14>
+      <Item15>
+        <Expression Value="size"/>
+      </Item15>
+    </Watches>
+  </Debugging>
+</CONFIG>

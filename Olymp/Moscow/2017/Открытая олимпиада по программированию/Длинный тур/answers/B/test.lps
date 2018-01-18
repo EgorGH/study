@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="1">
+      <Unit0>
+        <Filename Value="test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="13"/>
+        <CursorPos X="16" Y="37"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+    </Units>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="test.lpr"/>
+        <Caret Line="48" Column="14" TopLine="9"/>
+      </Position1>
+      <Position2>
+        <Filename Value="test.lpr"/>
+        <Caret Line="27" Column="8" TopLine="11"/>
+      </Position2>
+      <Position3>
+        <Filename Value="test.lpr"/>
+        <Caret Line="25" Column="42" TopLine="6"/>
+      </Position3>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

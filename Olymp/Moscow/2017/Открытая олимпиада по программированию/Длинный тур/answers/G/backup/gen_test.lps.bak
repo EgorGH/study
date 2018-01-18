@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="gen_test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="74"/>
+        <CursorPos X="24" Y="92"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\..\..\Первый отборочный этап\answers\5\gen_test.lpr"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="86"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\Первый отборочный этап\answers\4\gen_test.lpr"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\Первый отборочный этап\answers\3\gen_test.lpr"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\2014\answers\A\gen_test.lpr"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="9"/>
+        <CursorPos X="29" Y="29"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit4>
+    </Units>
+    <JumpHistory Count="5" HistoryIndex="4">
+      <Position1>
+        <Filename Value="gen_test.lpr"/>
+        <Caret Line="22" Column="15" TopLine="4"/>
+      </Position1>
+      <Position2>
+        <Filename Value="gen_test.lpr"/>
+        <Caret Line="70" Column="25" TopLine="42"/>
+      </Position2>
+      <Position3>
+        <Filename Value="gen_test.lpr"/>
+        <Caret Line="86" Column="5" TopLine="57"/>
+      </Position3>
+      <Position4>
+        <Filename Value="gen_test.lpr"/>
+        <Caret Line="14" Column="13" TopLine="21"/>
+      </Position4>
+      <Position5>
+        <Filename Value="gen_test.lpr"/>
+        <Caret Line="71" Column="34" TopLine="54"/>
+      </Position5>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

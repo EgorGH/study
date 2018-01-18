@@ -1,0 +1,112 @@
+program gen_test;
+
+uses
+  SysUtils;
+
+const
+  Lim = 10000;
+
+type
+  toptions = (to_screen, to_file);
+
+var
+  t: longint;
+  n, m: longint;
+  flights: array[1..Lim, 1..Lim] of longint;
+
+  procedure print_flights(var dst: Text; option: toptions);
+  var
+    i, j: longint;
+  begin
+    if option = to_screen then
+    begin
+      Write('': 3);
+      for i := 1 to n do
+        Write(i: 3);
+      writeln();
+      for i := 1 to n do
+      begin
+        Write(i: 3);
+        for j := 1 to n do
+          if flights[i, j] <> -1 then
+            Write(flights[i, j]: 3)
+          else
+            write('':3);
+        writeln();
+      end;
+    end;
+
+    if option = to_file then
+    begin
+      writeln(dst, n, ' ', m);
+      for i := 1 to n do
+        for j := i + 1 to n do
+          if flights[i, j] <> -1 then
+            writeln(dst, i, ' ', j, ' ', flights[i, j]);
+    end;
+  end;
+
+  procedure add_flight(u, v, c: longint);
+  begin
+    flights[u, v] := c;
+    flights[v, u] := c;
+  end;
+
+  procedure delete_flight(u, v: longint);
+  begin
+    flights[u, v] := -1;
+    flights[v, u] := -1;
+  end;
+
+  procedure write_test(t, ans, a, b: longint);
+  var
+    infile, afile: Text;
+  begin
+    Assign(infile, format('tests/%.2d.', [t]));
+    Assign(afile, format('tests/%.2d.a', [t]));
+    rewrite(infile);
+    rewrite(afile);
+
+    print_flights(infile, to_file);
+    writeln(infile, '1');
+    writeln(infile, '3 ', a, ' ', b);
+    writeln(afile, ans);
+
+    Close(infile);
+    Close(afile);
+  end;
+
+  procedure process_test(maxn, maxm, maxc: int64; t: longint);
+  var
+    i, j, a, b, ans, u, v: longint;
+  begin
+    n := maxn;
+    m := maxm;
+
+    for i := 1 to n do
+      for j := 1 to n do
+        flights[i, j] := -1;
+
+    for i := 1 to m do
+    begin
+      u := random(n - 1) + 2;
+      v := random(u - 1) + 1;
+      add_flight(u, v, random(maxc) + 1);
+    end;
+    a := random(n - 1) + 2;
+    b := random(a - 1) + 1;
+    print_flights(output, to_screen);
+    writeln(a, ' ', b);
+    readln(ans);
+    write_test(t, ans, a, b);
+    writeln();
+  end;
+
+begin
+  randomize();
+
+  for t := 13 to 13 do
+    process_test(20, 100, 25, t);
+
+  writeln('Done');
+end.
